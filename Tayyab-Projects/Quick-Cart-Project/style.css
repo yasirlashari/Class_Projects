@@ -1,13 +1,9 @@
-/* ============================
-   QuickCart - Style Sheet
-   ============================ */
-
 :root {
   --primary: #0aa6de;
   --primary-dark: #0887b5;
   --accent: #ff6b35;
-  --bg: #f0f4f8;
-  --white: #ffffff;
+  --bg: rgba(211, 233, 134, 0.685);
+  --white: #f8aa0088;
   --dark: #1a1a2e;
   --text: #333;
   --text2: #666;
@@ -32,9 +28,6 @@ body {
   min-height: 100vh;
 }
 
-/* ========================
-   NAVBAR
-======================== */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -114,9 +107,6 @@ body {
   font-weight: 700;
 }
 
-/* ========================
-   HERO
-======================== */
 .hero {
   background: linear-gradient(
     135deg,
@@ -162,10 +152,6 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(10, 166, 222, 0.4);
 }
-
-/* ========================
-   PAGE HEADER
-======================== */
 .page-header {
   text-align: center;
   padding: 50px 20px 20px;
@@ -191,10 +177,6 @@ body {
 .page-header input:focus {
   border-color: var(--primary);
 }
-
-/* ========================
-   PRODUCTS
-======================== */
 .featured-products {
   text-align: center;
   padding: 50px 20px;
@@ -287,10 +269,6 @@ body {
   font-size: 1rem;
   padding: 40px;
 }
-
-/* ========================
-   CART SIDEBAR
-======================== */
 .cart-overlay {
   position: fixed;
   inset: 0;
@@ -312,7 +290,7 @@ body {
   bottom: 0;
   width: 380px;
   max-width: 100vw;
-  background: var(--white);
+  background: var(--card-bg);
   z-index: 900;
   display: flex;
   flex-direction: column;

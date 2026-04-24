@@ -1,28 +1,88 @@
 const products = [
-    {
-        id: 1,
-        name: "Product 1 - Perfumes",
-        price: 25,
-        image: "https://i.pinimg.com/736x/9c/b2/5b/9cb25b1f0ed06b93ddf9689dd39ca0cf.jpg"
-    },
-    {
-        id: 2,
-        name: "Product 2 - Polo T-Shirt",
-        price: 30,
-        image: "https://tse3.mm.bing.net/th/id/OIP.RLGEOTBNCsd7_HUxGzPjjQHaIr?rs=1&pid=ImgDetMain&o=7&rm=3"
-    },
-    {
-        id: 3,
-        name: "Product 3 - Formal Shirt",
-        price: 20,
-        image: "https://tse3.mm.bing.net/th/id/OIP.uGYkmMlMKarOtbOvRQko_wHaE4?rs=1&pid=ImgDetMain&o=7&rm=3"
-    },
-    {
-        id: 4,
-        name: "Product 4 - Sports Wear",
-        price: 25,
-        image: "https://th.bing.com/th/id/OIP.h-rpfiQiN9vLrJzKEfwBHwHaE7?w=298&h=199&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3"
-    }
+  {
+    id: 1,
+    name: "Perfumes",
+    price: 25,
+    image:
+      "https://i.pinimg.com/736x/9c/b2/5b/9cb25b1f0ed06b93ddf9689dd39ca0cf.jpg",
+  },
+  {
+    id: 2,
+    name: "Polo T-Shirt",
+    price: 30,
+    image:
+      "https://tse3.mm.bing.net/th/id/OIP.RLGEOTBNCsd7_HUxGzPjjQHaIr?rs=1&pid=ImgDetMain&o=7&rm=3",
+  },
+  {
+    id: 3,
+    name: "Formal Shirt",
+    price: 20,
+    image:
+      "https://tse3.mm.bing.net/th/id/OIP.uGYkmMlMKarOtbOvRQko_wHaE4?rs=1&pid=ImgDetMain&o=7&rm=3",
+  },
+  {
+    id: 4,
+    name: "Sports Wear",
+    price: 25,
+    image:
+      "https://th.bing.com/th/id/OIP.h-rpfiQiN9vLrJzKEfwBHwHaE7?w=298&h=199&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3",
+  },
+  {
+    id: 5,
+    name: "Sneakers",
+    price: 15,
+    image:
+      "https://onedegree.com.pk/cdn/shop/files/001_0003_009593984-749-42_up_jpg_1.jpg?v=1773400763&width=640",
+  },
+  {
+    id: 6,
+    name: "Toys",
+    price: 5,
+    image:
+      "https://www.telegraph.co.uk/content/dam/recommended/2024/09/25/TELEMMGLPICT000395471929_17272789739160_trans_NvBQzQNjv4BqqVzuuqpFlyLIwiB6NTmJwfSVWeZ_vEN7c6bHu2jJnT8.jpeg?imwidth=640",
+  },
+  {
+    id: 7,
+    name: "Tablets",
+    price: 200,
+    image:
+      "https://i5.walmartimages.com/seo/Lenovo-Tab-M10-Plus-2022-10-FHD-Long-Battery-Life-Tablet-128GB-Android-Storm-Grey_6d20d86e-e339-4dea-a97d-788dbf71f08c.50da7e377a5410315db7b2430fc13a86.png",
+  },
+  {
+    id: 8,
+    name: "Snacks",
+    price: 5,
+    image:
+      "https://oldfashioncandy.com/wp-content/uploads/2014/07/Mega-Variety-25-1-e1720019542149.jpeg",
+  },
+  {
+    id: 9,
+    name: "Dumble",
+    price: 15,
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQPd9rxSyLvQEvW8TqQ6T_5Z5xhyeKFoUnAw&s",
+  },
+  {
+    id: 10,
+    name: "Kitchen Accessories",
+    price: 10,
+    image:
+      "https://www.allinonestore.pk/cdn/shop/files/12-pcs-silicone-cooking-utensils-set-933819.webp?v=1755460541",
+  },
+  {
+    id: 11,
+    name: "School Accessories Set",
+    price: 15,
+    image:
+      "https://img.freepik.com/free-vector/school-student-stationary-supplies-shelf_3446-469.jpg",
+  },
+  {
+    id: 12,
+    name: "Bag",
+    price: 50,
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtgRHUdIrtzyTBeNc54Q_W-6RvqY5r52KsVw&s",
+  },
 ];
 const WHATSAPP_NUMBER = "923213118485";
 
@@ -66,8 +126,6 @@ function addToCart(productId) {
     saveCart();
     updateCartUI();
     showToast(`✅ ${product.name} cart mein add ho gaya!`);
-
-    // Button feedback
     const btn = document.getElementById(`btn-${productId}`);
     if (btn) {
         btn.textContent = "✓ Added!";
@@ -110,8 +168,6 @@ function renderCartItems() {
     const footer = document.getElementById("cartFooter");
     const totalEl = document.getElementById("cartTotal");
     if (!body) return;
-
-    // Remove old items
     body.querySelectorAll(".cart-item").forEach(el => el.remove());
 
     if (cart.length === 0) {
