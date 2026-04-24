@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ur">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About - Al-Ilm School</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+    }
+
+    .site-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #2c3e50;
+      color: white;
+      padding: 10px 20px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo img {
+      width: 50px;
+    }
+
+    .main-nav a {
+      color: white;
+      margin-left: 15px;
+      text-decoration: none;
+    }
+
+    .main-nav a.active {
+      font-weight: bold;
+      border-bottom: 2px solid #fff;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* About Section */
+    .about-content {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .about-image img {
+      width: 300px;
+      border-radius: 10px;
+    }
+
+    .about-text {
+      flex: 1;
+    }
+
+    .contact-list li {
+      margin-bottom: 10px;
+    }
+
+    .site-footer {
+      text-align: center;
+      background: #2c3e50;
+      color: white;
+      padding: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="logo">
+      <img src="image2.png" alt="">
+      <h1>Al-Ilm School</h1>
+    </div>
+
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="Students.html">Students</a>
+      <a href="Teachers.html">Teachers</a>
+      <a href="Monthly_fee.html">Fees</a>
+      <a href="About_Page.html" class="active">About</a>
+    </nav>
+  </header>
+
+  <!-- Main -->
+  <main class="container">
+
+    <!-- About Section with Image -->
+    <section class="card">
+      <div class="about-content">
+
+        <div class="about-image">
+          <img src="data:image/jpeg;base64,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" alt="">
+        </div>
+
+        <div class="about-text">
+          <h2>About Al-Ilm School</h2>
+          <p>
+            Al-Ilm School aims to provide quality education to students from diverse backgrounds.
+            Our mission is to foster a love for learning and equip students with the skills they need to succeed in
+            life.
+          </p>
+          <p>
+            Founded in 2000, we have grown to become one of the leading educational institutions
+            in the region, offering classes from Nursery to Class X.
+          </p>
+          <p>
+            Our dedicated team of teachers and staff work tirelessly to create a nurturing environment
+            where every student can thrive.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="card">
+      <h2>Contact Us</h2>
+      <p>If you have any questions, feel free to contact us:</p>
+
+      <ul class="contact-list">
+        <li>Email: <a href="indharabdullah30@gmail.com">info@alilmschool.com</a></li>
+        <li>Phone: <a href="03047622004">03047622004</a></li>
+        <li>Address: Titan saylani sukkur</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>&copy; 2025 Al-Ilm School</p>
+  </footer>
+
+</body>
+
+</html>

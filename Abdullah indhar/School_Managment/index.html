@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Home - Al-Ilm School</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+    }
+
+    .site-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #2c3e50;
+      color: white;
+      padding: 10px 20px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo img {
+      width: 50px;
+    }
+
+    .main-nav a {
+      color: white;
+      margin-left: 15px;
+      text-decoration: none;
+    }
+
+    .main-nav a.active {
+      font-weight: bold;
+      border-bottom: 2px solid #fff;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    /* Stats */
+    .stats {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    .stat {
+      flex: 1;
+      min-width: 150px;
+      background: #ecf0f1;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .stat h3 {
+      margin: 0;
+      font-size: 28px;
+      color: #2c3e50;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #2c3e50;
+      color: white;
+      padding: 10px 15px;
+      text-decoration: none;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+
+    .btn.secondary {
+      background: #7f8c8d;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .site-footer {
+      text-align: center;
+      background: #2c3e50;
+      color: white;
+      padding: 10px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="logo">
+      <img src="/school_logo.png" alt="Logo">
+      <h1>Al-Ilm School</h1>
+    </div>
+
+    <nav class="main-nav">
+      <a href="index.html" class="active">Home</a>
+      <a href="Students.html">Students</a>
+      <a href="Teachers.html">Teachers</a>
+      <a href="Monthly_fee.html">Fees</a>
+      <a href="About_Page.html">About</a>
+    </nav>
+  </header>
+
+  <!-- Main -->
+  <main class="container">
+
+    <!-- Stats Section -->
+    <section class="card">
+      <h2>Dashboard Overview</h2>
+
+      <div class="stats">
+        <div class="stat">
+          <h3>600</h3>
+          <p>Total Students</p>
+        </div>
+        <div class="stat">
+          <h3>18</h3>
+          <p>Total Teachers</p>
+        </div>
+        <div class="stat">
+          <h3>Nursery - X</h3>
+          <p>Available Classes</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Links -->
+    <section class="card">
+      <h2>Quick Links</h2>
+      <p>
+        <a class="btn" href="index2.html">View Students</a>
+        <a class="btn secondary" href="index3.html">View Teachers</a>
+      </p>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>&copy; 2025 Al-Ilm School. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Teachers - Al-Ilm School</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+    }
+
+    .site-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #2c3e50;
+      color: white;
+      padding: 10px 20px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo img {
+      width: 50px;
+    }
+
+    .main-nav a {
+      color: white;
+      margin-left: 15px;
+      text-decoration: none;
+    }
+
+    .main-nav a.active {
+      font-weight: bold;
+      border-bottom: 2px solid #fff;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    table th, table td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+
+    table th {
+      background: #2c3e50;
+      color: white;
+    }
+
+    .site-footer {
+      text-align: center;
+      background: #2c3e50;
+      color: white;
+      padding: 10px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="logo">
+      <img src="/school_logo.png" alt="Logo">
+      <h1>Al-Ilm School</h1>
+    </div>
+
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="Students.html">Students</a>
+      <a href="Teachers.html" class="active">Teachers</a>
+      <a href="Monthly_fee.html">Fees</a>
+      <a href="About_Page.html">About</a>
+    </nav>
+  </header>
+
+  <!-- Main -->
+  <main class="container">
+    <section class="card">
+      <h2>Teachers Records</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Employee ID</th>
+              <th>Name</th>
+              <th>Role</th>
+              <th>Subject</th>
+              <th>Contact</th>
+              <th>Salary</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>T-001</td><td>Mrs. Sobia</td><td>Senior Teacher</td><td>Math</td><td>0301-1112222</td><td>Rs. 40,000</td></tr>
+            <tr><td>T-002</td><td>Mr. Kamran</td><td>Experienced Teacher</td><td>Science</td><td>0302-3334444</td><td>Rs. 35,000</td></tr>
+            <tr><td>T-003</td><td>Ms. Rabia</td><td>Junior Teacher</td><td>English</td><td>0303-5556666</td><td>Rs. 30,000</td></tr>
+            <tr><td>T-004</td><td>Mr. Aslam</td><td>Senior Teacher</td><td>Urdu</td><td>0304-7778888</td><td>Rs. 40,000</td></tr>
+            <tr><td>T-005</td><td>Ms. Nida</td><td>Experienced Teacher</td><td>Computer</td><td>0305-9990001</td><td>Rs. 35,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Salary Levels</h3>
+      <ul>
+        <li>Junior Teacher → Rs. 30,000</li>
+        <li>Experienced Teacher → Rs. 35,000</li>
+        <li>Senior Teacher → Rs. 40,000</li>
+      </ul>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>&copy; 2025 Al-Ilm School. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>

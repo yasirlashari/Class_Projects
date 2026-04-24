@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Students - Al-Ilm School</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+    }
+
+    .site-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #2c3e50;
+      color: white;
+      padding: 10px 20px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo img {
+      width: 50px;
+    }
+
+    .main-nav a {
+      color: white;
+      margin-left: 15px;
+      text-decoration: none;
+    }
+
+    .main-nav a.active {
+      font-weight: bold;
+      border-bottom: 2px solid #fff;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    table th, table td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+
+    table th {
+      background: #2c3e50;
+      color: white;
+    }
+
+    /* Form Styling */
+    .form-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    label {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      font-size: 14px;
+    }
+
+    input, select {
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #2c3e50;
+      color: white;
+      padding: 10px 15px;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    .btn:hover {
+      background: #34495e;
+    }
+
+    .site-footer {
+      text-align: center;
+      background: #2c3e50;
+      color: white;
+      padding: 10px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="logo">
+      <img src="/school_logo.png" alt="Logo">
+      <h1>Al-Ilm School</h1>
+    </div>
+
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="Students.html" class="active">Students</a>
+      <a href="Teachers.html">Teachers</a>
+      <a href="Monthly_fee.html">Fees</a>
+      <a href="About_Page.html">About</a>
+    </nav>
+  </header>
+
+  <!-- Main -->
+  <main class="container">
+
+    <!-- Student Table -->
+    <section class="card">
+      <h2>General Register — Students</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Admission No</th>
+              <th>Name</th>
+              <th>Class</th>
+              <th>Section</th>
+              <th>Date of Birth</th>
+              <th>Guardian</th>
+              <th>Contact No</th>
+              <th>Monthly Fee</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>2025-001</td><td>Abdullah</td><td>V</td><td>A</td><td>2013-05-12</td><td>Abdul Haque</td><td>0300-1234567</td><td>Rs. 4,000</td></tr>
+            <tr><td>2025-002</td><td>Ahmed Ali</td><td>V</td><td>B</td><td>2013-08-09</td><td>Mrs. Ali</td><td>0301-9876543</td><td>Rs. 4,000</td></tr>
+            <tr><td>2025-003</td><td>Sana Raza</td><td>III</td><td>A</td><td>2015-02-20</td><td>Mr. Raza</td><td>0302-5556667</td><td>Rs. 4,000</td></tr>
+            <tr><td>2025-004</td><td>Bilal Hussain</td><td>VII</td><td>C</td><td>2011-11-01</td><td>Mr. Hussain</td><td>0303-4445556</td><td>Rs. 5,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Add Student Form -->
+    <section class="card">
+      <h2>Add Student</h2>
+
+      <form class="add-student-form">
+        <div class="form-row">
+          <label>Admission No<input type="text" required></label>
+          <label>Name<input type="text" required></label>
+        </div>
+
+        <div class="form-row">
+          <label>Class
+            <select>
+              <option>Nursery</option>
+              <option>KG</option>
+              <option>I</option>
+              <option>II</option>
+              <option>III</option>
+              <option>IV</option>
+              <option>V</option>
+              <option>VI</option>
+              <option>VII</option>
+              <option>VIII</option>
+              <option>IX</option>
+              <option>X</option>
+            </select>
+          </label>
+          <label>Section<input type="text"></label>
+        </div>
+
+        <div class="form-row">
+          <label>Date of Birth<input type="date"></label>
+          <label>Guardian Name<input type="text"></label>
+        </div>
+
+        <div class="form-row">
+          <label>Contact No<input type="tel"></label>
+          <label>Monthly Fee<input type="text" placeholder="Rs. 4,000"></label>
+        </div>
+
+        <p><button class="btn">Add Student</button></p>
+      </form>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>&copy; 2025 Al-Ilm School. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
