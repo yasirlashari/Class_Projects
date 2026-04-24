@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Biryani Order App</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #bbb7b1;
+    text-align: center;
+}
+
+.container {
+    margin-top: 30px;
+}
+
+h1 {
+    color: #d35400;
+
+}
+
+img {
+    width: 250px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+select, button {
+    padding: 10px;
+    margin: 10px;
+}
+
+button {
+    background: #d35400;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+#result {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #020d02f4;
+    white-space: pre-line;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+    <h1>🍛 Biryani Order System</h1>
+
+    <!-- Image -->
+    <img src="Veg-Kofta-Biryani-H1.webp" height="200px">
+
+    <br>
+
+    <select id="biryaniType">
+        <option value="">Select Biryani</option>
+        <option value="Chicken Biryani">Chicken Biryani</option>
+        <option value="Beef Biryani">Beef Biryani</option>
+        <option value="Sindhi Biryani">Sindhi Biryani</option>
+    </select>
+
+    <br>
+
+    <select id="quantity">
+        <option value="">Quantity</option>
+        <option value="1">1 Plate</option>
+        <option value="2">2 Plates</option>
+        <option value="3">3 Plates</option>
+    </select>
+
+    <br>
+
+    <button onclick="orderBiryani()">Order Now</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+function orderBiryani() {
+    let type = document.getElementById("biryaniType").value;
+    let qty = document.getElementById("quantity").value;
+
+    if (type === "" || qty === "") {
+        document.getElementById("result").innerText = "Please select biryani & quantity!";
+        return;
+    }
+
+    let price = 0;
+
+    if (type === "Chicken Biryani") price = 450;
+    if (type === "Beef Biryani") price = 300;
+    if (type === "Sindhi Biryani") price = 280;
+
+    let total = price * qty;
+
+    document.getElementById("result").innerText =
+        "✅ You ordered " + qty + " " + type + "\nTotal: Rs " + total;
+}
+</script>
+
+</body>
+</html>
