@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Cart - Contact</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">⚡ QuickCart</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="product.html">Products</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html" class="active">Contact</a></li>
+    </ul>
+    <button class="cart-icon-btn" onclick="toggleCart()">
+      🛒 Cart <span class="cart-badge" id="cartBadge">0</span>
+    </button>
+  </nav>
+
+  <!-- CART SIDEBAR -->
+  <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+      <h2>🛒 Your Cart</h2>
+      <button class="close-cart" onclick="toggleCart()">✕</button>
+    </div>
+    <div class="cart-body" id="cartBody">
+      <div class="cart-empty" id="cartEmpty">
+        <p>😕 Cart khali hai!</p>
+        <span>Koi product add karo</span>
+      </div>
+    </div>
+    <div class="cart-footer" id="cartFooter" style="display:none;">
+      <div class="cart-total-row">
+        <span>Total:</span>
+        <strong id="cartTotal">$0</strong>
+      </div>
+      <button class="btn-whatsapp" onclick="orderOnWhatsApp()">
+        📲 WhatsApp par Order karo
+      </button>
+      <button class="btn-clear" onclick="clearCart()">🗑️ Cart Clear karo</button>
+    </div>
+  </div>
+
+  <main class="bio-page">
+    <div class="bio-card contact-card">
+      <h1>📞 Contact Us</h1>
+      <p>Koi bhi sawal ho toh hum se rabta karo!</p>
+      <div class="contact-list">
+        <div class="contact-item">
+          <span>📧</span>
+          <a href="mailto:QuickCart44@gmail.com">QuickCart44@gmail.com</a>
+        </div>
+        <div class="contact-item">
+          <span>📱</span>
+          <a href="https://wa.me/923213118485">0321-3118485</a>
+        </div>
+        <div class="contact-item">
+          <span>📍</span>
+          <span>Bunder Road, Sukkur</span>
+        </div>
+      </div>
+      <a href="https://wa.me/923213118485" class="hero-btn" target="_blank">💬 WhatsApp par Message karo</a>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© 2025 QuickCart — Made with ❤️</p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>updateCartUI();</script>
+</body>
+</html>

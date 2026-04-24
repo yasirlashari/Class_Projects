@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Cart - Home</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">⚡ QuickCart</div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="product.html">Products</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <button class="cart-icon-btn" onclick="toggleCart()">
+      🛒 Cart <span class="cart-badge" id="cartBadge">0</span>
+    </button>
+  </nav>
+
+  <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+      <h2>🛒 Your Cart</h2>
+      <button class="close-cart" onclick="toggleCart()">✕</button>
+    </div>
+    <div class="cart-body" id="cartBody">
+      <div class="cart-empty" id="cartEmpty">
+        <p>😕 Cart khali hai!</p>
+        <span>Koi product add karo</span>
+      </div>
+    </div>
+    <div class="cart-footer" id="cartFooter" style="display:none;">
+      <div class="cart-total-row">
+        <span>Total:</span>
+        <strong id="cartTotal">$0</strong>
+      </div>
+      <button class="btn-whatsapp" onclick="orderOnWhatsApp()">
+        📲 WhatsApp par Order karo
+      </button>
+      <button class="btn-clear" onclick="clearCart()">🗑️ Cart Clear karo</button>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="hero-content">
+      <h1>Welcome to <span>QuickCart</span></h1>
+      <p>Best products at amazing prices! 🎉</p>
+      <a href="product.html" class="hero-btn">Shop Now →</a>
+    </div>
+  </header>
+
+  <section class="featured-products">
+    <h2>⭐ Featured Products</h2>
+    <div class="products-container" id="featuredGrid"></div>
+  </section>
+
+  <footer class="footer">
+    <p>© 2025 QuickCart — Made with ❤️</p>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="script.js"></script>
+  <script>
+    const featured = products.slice(0, 3);
+    renderProducts('featuredGrid', featured);
+    updateCartUI();
+  </script>
+</body>
+</html>

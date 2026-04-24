@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Cart - About</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">⚡ QuickCart</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="product.html">Products</a></li>
+      <li><a href="about.html" class="active">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <button class="cart-icon-btn" onclick="toggleCart()">
+      🛒 Cart <span class="cart-badge" id="cartBadge">0</span>
+    </button>
+  </nav>
+  <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+      <h2>🛒 Your Cart</h2>
+      <button class="close-cart" onclick="toggleCart()">✕</button>
+    </div>
+    <div class="cart-body" id="cartBody">
+      <div class="cart-empty" id="cartEmpty">
+        <p>😕 Cart khali hai!</p>
+        <span>Koi product add karo</span>
+      </div>
+    </div>
+    <div class="cart-footer" id="cartFooter" style="display:none;">
+      <div class="cart-total-row">
+        <span>Total:</span>
+        <strong id="cartTotal">$0</strong>
+      </div>
+      <button class="btn-whatsapp" onclick="orderOnWhatsApp()">
+        📲 WhatsApp par Order karo
+      </button>
+      <button class="btn-clear" onclick="clearCart()">🗑️ Cart Clear karo</button>
+    </div>
+  </div>
+
+  <main class="bio-page">
+    <div class="bio-card">
+      <h1>⚡ About QuickCart</h1>
+      <p>QuickCart ek simple aur fast online store hai jo aapki shopping ko easy banata hai. Hum best quality products affordable prices par offer karte hain.</p>
+      <div class="about-stats">
+        <div class="stat-box">
+          <strong>100+</strong>
+          <span>Products</span>
+        </div>
+        <div class="stat-box">
+          <strong>500+</strong>
+          <span>Customers</span>
+        </div>
+        <div class="stat-box">
+          <strong>24/7</strong>
+          <span>Support</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© 2025 QuickCart — Made with ❤️</p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>updateCartUI();</script>
+</body>
+</html>
