@@ -1,0 +1,94 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #1a1a1a;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.game-container {
+    text-align: center;
+    background: #2a2a2a;
+    padding: 20px;
+    width: 350px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+
+/* Fade-in title */
+h1 {
+    margin-bottom: 15px;
+    animation: fadeIn 1s ease-in-out;
+}
+
+.score p {
+    font-size: 1.2rem;
+    margin: 5px 0;
+}
+
+/* Button Animations */
+button {
+    margin: 10px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.3s;
+}
+
+button:hover {
+    background: #444;
+    transform: scale(1.1);
+}
+
+/* Button click "pop" */
+button:active {
+    transform: scale(0.9);
+}
+
+/* Result Text Animation */
+#resultText {
+    margin-top: 20px;
+    font-size: 1.3rem;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+}
+
+/* Shake Animation for computer pick */
+.shake {
+    animation: shake 0.5s;
+}
+
+/* Pop animation for score */
+.pop {
+    animation: pop 0.3s;
+}
+
+/* Keyframes */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
