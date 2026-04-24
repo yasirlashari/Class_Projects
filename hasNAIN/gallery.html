@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Saylani Web Competition 2025</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(to right, #0b2c5f, #6a003a);
+
+        }
+
+        img {
+            height: 50px;
+        }
+
+        a {
+            text-decoration: none;
+            color: white;
+        }
+
+        a:hover {
+            border-radius: 10px;
+            background-color: black;
+            font-size: 30px;
+            height: 50px;
+            width: 50px;
+            transition: all 0.5s ease-in-out;
+            color: pink;
+            box-shadow: 3px 5px 9px pink;
+            border: 2px solid white;
+            cursor: pointer;
+        }
+
+        .abc {
+            text-align: center;
+            text-shadow: 3px 5px 9px black;
+
+        }
+
+        .main {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+
+        }
+
+        button {
+            border-radius: 50px;
+            background-color: darkblue;
+            color: white;
+        }
+
+        button:hover {
+            font-size: 30px;
+            background-color: black;
+            color: pink;
+            transition: all 0.5s ease-in-out;
+            box-shadow: 4px 6px 10px black;
+            cursor: pointer;
+        }
+
+        #h {
+            height: 20vh;
+            border-radius: 10px;
+            box-shadow: 4px 5px 12px black;
+            transition: 0.3s;
+        }
+
+        #h:hover {
+
+            transform: translateY(-5px);
+            cursor: pointer;
+            box-shadow: 3px 5px 9px darkblue;
+        }
+
+
+        .hello {
+            animation: boy 2s linear;
+            transition: all 2s ease-in-out;
+
+        }
+
+        @keyframes boy {
+            0% {
+                transform: translateX(300px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .hello1 {
+            animation: boy1 2s linear;
+            transition: all 2s ease-in-out;
+        }
+
+        @keyframes boy1 {
+            0% {
+                transform: translateX(-300px);
+
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateX(0);
+
+                opacity: 1;
+            }
+        }
+
+        footer {
+            background: linear-gradient(to right, #0b2c5f, #6a003a);
+            color: white;
+            padding: 40px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark px-4">
+        <div class="boy"><img src="https://www.saylaniwelfareuk.com/saylani_full_logo.png" alt=""></div>
+        <div class="ms-auto">
+            <ul class="navbar-nav flex-row gap-3">
+                <li><a href="home.html" target="_self">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="our teams.html">Teams</a></li>
+                <li><a href="gallery.html" target="_self">Gallery</a></li>
+                <li><a href="event-timeline.html">Schedule</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="abc">
+        <h1 class="text-primary"><b>Gallery</b></h1>
+        <p>explore amazing moment from our events and composition</p>
+    </div>
+    <div class="main">
+        <button>All</button><button>Events</button><button>Teams</button><button>Moment</button>
+    </div>
+    <div class="container">
+        <div class="row mt-5 hello">
+            <div class="col-3"><img src="video/code-1839406_1280.jpg" alt="hh" id="h"></div>
+            <div class="col-3"><img src="video/code-1839406_1280.jpg" alt="hh" id="h"></div>
+            <div class="col-3"><img src="video/code-1839406_1280.jpg" alt="hh" id="h"></div>
+            <div class="col-3"><img src="video/code-1839406_1280.jpg" alt="hh" id="h"></div>
+        </div>
+        <div class="row mb-5 mt-5 hello1">
+            <div class="col-3"><img src="video/code-1839406_1280.jpg" alt="hh" id="h"></div>
+            <div class="col-3"><img src="video/code-1839406_1280.jpg" alt="hh" id="h"></div>
+            <div class="col-3"><img src="video/code-1839406_1280.jpg" alt="hh" id="h"></div>
+            <div class="col-3"><img src="video/code-1839406_1280.jpg" alt="hh" id="h"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h6>About Competition</h6>
+                    <p>Frontend competition using HTML, CSS, Bootstrap.</p>
+                </div>
+                <div class="col-md-4">
+                    <h6>Quick Links</h6>
+                    <p>Home | Teams | Gallery | Schedule</p>
+                </div>
+                <div class="col-md-4">
+                    <h6>Contact</h6>
+                    <p>Email: competition@saylani.edu</p>
+                </div>
+            </div>
+            <hr>
+            <p class="text-center mb-0">© 2025 Saylani Web Competition</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>
+</body>
