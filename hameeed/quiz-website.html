@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuizZone — Sawal Jawab</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --yellow: #FFD600;
+    --orange: #FF6B2B;
+    --pink: #FF3CAC;
+    --teal: #00C9A7;
+    --blue: #2979FF;
+    --purple: #7B2FFF;
+    --dark: #0D0D0D;
+    --card: #1A1A2E;
+    --text: #F5F5F5;
+    --muted: #999;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Baloo 2', cursive;
+    background: var(--dark);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated BG */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 600px 400px at 10% 20%, rgba(123,47,255,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 500px 350px at 90% 80%, rgba(255,60,172,0.15) 0%, transparent 70%),
+      radial-gradient(ellipse 400px 300px at 60% 30%, rgba(41,121,255,0.12) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+    animation: bgShift 8s ease-in-out infinite alternate;
+  }
+  @keyframes bgShift {
+    0% { opacity: 1; }
+    100% { opacity: 0.7; transform: scale(1.05); }
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2rem;
+    background: rgba(13,13,13,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 2px solid var(--yellow);
+  }
+  .logo {
+    font-size: 1.8rem; font-weight: 800;
+    background: linear-gradient(90deg, var(--yellow), var(--orange), var(--pink));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: -1px;
+  }
+  .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none; font-size: 0.95rem; font-weight: 600;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--yellow); }
+  .nav-cta {
+    background: var(--yellow); color: var(--dark);
+    border: none; padding: 0.5rem 1.4rem; border-radius: 999px;
+    font-weight: 800; font-size: 0.9rem; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .nav-cta:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,214,0,0.4); }
+
+  /* HERO */
+  .hero {
+    position: relative; z-index: 1;
+    padding: 6rem 2rem 4rem;
+    text-align: center;
+    max-width: 900px; margin: 0 auto;
+  }
+  .hero-tag {
+    display: inline-block;
+    background: rgba(255,214,0,0.15);
+    border: 1px solid var(--yellow);
+    color: var(--yellow);
+    padding: 0.3rem 1rem; border-radius: 999px;
+    font-size: 0.85rem; font-weight: 600;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 800; line-height: 1.1;
+    margin-bottom: 1rem;
+    animation: fadeUp 0.7s ease both 0.1s;
+  }
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--yellow), var(--orange), var(--pink));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    font-size: 1.15rem; color: var(--muted); line-height: 1.7;
+    max-width: 600px; margin: 0 auto 2.5rem;
+    animation: fadeUp 0.8s ease both 0.2s;
+  }
+  .hero-btns {
+    display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    animation: fadeUp 0.9s ease both 0.3s;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--yellow), var(--orange));
+    color: var(--dark); border: none;
+    padding: 0.85rem 2rem; border-radius: 999px;
+    font-weight: 800; font-size: 1rem; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.2s;
+  }
+  .btn-primary:hover { transform: scale(1.05); box-shadow: 0 8px 30px rgba(255,107,43,0.5); }
+  .btn-secondary {
+    background: transparent; color: var(--text);
+    border: 2px solid rgba(255,255,255,0.2);
+    padding: 0.85rem 2rem; border-radius: 999px;
+    font-weight: 700; font-size: 1rem; cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--teal); background: rgba(0,201,167,0.08); }
+
+  /* STATS */
+  .stats-bar {
+    position: relative; z-index: 1;
+    display: flex; justify-content: center; gap: 0; flex-wrap: wrap;
+    max-width: 700px; margin: 0 auto 5rem;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px; overflow: hidden;
+    background: rgba(255,255,255,0.03);
+    animation: fadeUp 1s ease both 0.4s;
+  }
+  .stat {
+    flex: 1; min-width: 120px; padding: 1.5rem 1rem; text-align: center;
+    border-right: 1px solid rgba(255,255,255,0.08);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 2rem; font-weight: 800; }
+  .stat-num.y { color: var(--yellow); }
+  .stat-num.o { color: var(--orange); }
+  .stat-num.t { color: var(--teal); }
+  .stat-lbl { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+
+  /* CATEGORIES */
+  .section { position: relative; z-index: 1; padding: 0 2rem 5rem; max-width: 1100px; margin: 0 auto; }
+  .section-head { text-align: center; margin-bottom: 3rem; }
+  .section-head h2 { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; }
+  .section-head p { color: var(--muted); }
+  .accent { color: var(--yellow); }
+
+  .categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  .cat-card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    border: 1px solid rgba(255,255,255,0.07);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .cat-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .cat-card:hover { transform: translateY(-6px); }
+  .cat-card:hover::before { opacity: 1; }
+
+  .cat-card.c1 { border-top: 3px solid var(--yellow); }
+  .cat-card.c1:hover { box-shadow: 0 12px 40px rgba(255,214,0,0.2); }
+  .cat-card.c1::before { background: radial-gradient(circle at 50% 0%, rgba(255,214,0,0.08), transparent 70%); }
+
+  .cat-card.c2 { border-top: 3px solid var(--orange); }
+  .cat-card.c2:hover { box-shadow: 0 12px 40px rgba(255,107,43,0.2); }
+  .cat-card.c2::before { background: radial-gradient(circle at 50% 0%, rgba(255,107,43,0.08), transparent 70%); }
+
+  .cat-card.c3 { border-top: 3px solid var(--pink); }
+  .cat-card.c3:hover { box-shadow: 0 12px 40px rgba(255,60,172,0.2); }
+  .cat-card.c3::before { background: radial-gradient(circle at 50% 0%, rgba(255,60,172,0.08), transparent 70%); }
+
+  .cat-card.c4 { border-top: 3px solid var(--teal); }
+  .cat-card.c4:hover { box-shadow: 0 12px 40px rgba(0,201,167,0.2); }
+  .cat-card.c4::before { background: radial-gradient(circle at 50% 0%, rgba(0,201,167,0.08), transparent 70%); }
+
+  .cat-card.c5 { border-top: 3px solid var(--blue); }
+  .cat-card.c5:hover { box-shadow: 0 12px 40px rgba(41,121,255,0.2); }
+  .cat-card.c5::before { background: radial-gradient(circle at 50% 0%, rgba(41,121,255,0.08), transparent 70%); }
+
+  .cat-card.c6 { border-top: 3px solid var(--purple); }
+  .cat-card.c6:hover { box-shadow: 0 12px 40px rgba(123,47,255,0.2); }
+  .cat-card.c6::before { background: radial-gradient(circle at 50% 0%, rgba(123,47,255,0.08), transparent 70%); }
+
+  .cat-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+  .cat-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .cat-count { font-size: 0.8rem; color: var(--muted); }
+
+  /* QUIZ SECTION */
+  .quiz-section {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 0 auto 5rem; padding: 0 2rem;
+  }
+  .quiz-card {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px; overflow: hidden;
+  }
+  .quiz-header {
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    padding: 1.5rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .quiz-header h3 { font-size: 1.2rem; font-weight: 800; }
+  .timer-pill {
+    background: rgba(0,0,0,0.3); border-radius: 999px;
+    padding: 0.3rem 1rem; font-size: 0.9rem; font-weight: 700;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .timer-dot { width: 8px; height: 8px; background: var(--yellow); border-radius: 50%; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+  .quiz-body { padding: 2rem; }
+  .q-progress { display: flex; gap: 6px; margin-bottom: 1.5rem; }
+  .q-dot { flex: 1; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; }
+  .q-dot.done { background: var(--yellow); }
+  .q-dot.current { background: var(--orange); }
+
+  .question { font-size: 1.2rem; font-weight: 600; line-height: 1.5; margin-bottom: 1.5rem; }
+  .options-grid { display: flex; flex-direction: column; gap: 10px; }
+  .opt {
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 14px; padding: 1rem 1.25rem;
+    cursor: pointer; font-size: 0.95rem;
+    display: flex; align-items: center; gap: 12px;
+    transition: all 0.2s;
+  }
+  .opt:hover { background: rgba(255,255,255,0.08); border-color: var(--yellow); }
+  .opt.selected { background: rgba(255,214,0,0.12); border-color: var(--yellow); color: var(--yellow); }
+  .opt.correct { background: rgba(0,201,167,0.15); border-color: var(--teal); color: var(--teal); }
+  .opt.wrong { background: rgba(255,60,172,0.12); border-color: var(--pink); color: var(--pink); }
+  .opt-label {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.8rem; flex-shrink: 0;
+  }
+  .quiz-footer { padding: 0 2rem 2rem; display: flex; gap: 10px; justify-content: flex-end; }
+  .btn-quiz { padding: 0.7rem 1.8rem; border-radius: 999px; font-weight: 700; font-size: 0.95rem; cursor: pointer; border: none; }
+  .btn-skip { background: rgba(255,255,255,0.07); color: var(--muted); }
+  .btn-submit { background: linear-gradient(135deg, var(--yellow), var(--orange)); color: var(--dark); }
+  .btn-submit:disabled { opacity: 0.4; cursor: default; }
+
+  /* HOW IT WORKS */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+  }
+  .step {
+    text-align: center; padding: 2rem 1rem;
+    position: relative;
+  }
+  .step-num {
+    width: 56px; height: 56px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; font-weight: 800;
+    margin: 0 auto 1rem;
+  }
+  .step-num.s1 { background: rgba(255,214,0,0.15); color: var(--yellow); }
+  .step-num.s2 { background: rgba(255,107,43,0.15); color: var(--orange); }
+  .step-num.s3 { background: rgba(0,201,167,0.15); color: var(--teal); }
+  .step-num.s4 { background: rgba(255,60,172,0.15); color: var(--pink); }
+  .step h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .step p { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+
+  /* LEADERBOARD */
+  .leaderboard {
+    background: var(--card); border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.07);
+    overflow: hidden; max-width: 600px; margin: 0 auto;
+  }
+  .lb-head {
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, rgba(255,214,0,0.1), rgba(255,107,43,0.1));
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    font-weight: 800; font-size: 1.1rem;
+  }
+  .lb-row {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: background 0.15s;
+  }
+  .lb-row:last-child { border-bottom: none; }
+  .lb-row:hover { background: rgba(255,255,255,0.03); }
+  .lb-rank { font-size: 1.1rem; font-weight: 800; width: 30px; }
+  .lb-rank.r1 { color: var(--yellow); }
+  .lb-rank.r2 { color: #C0C0C0; }
+  .lb-rank.r3 { color: #CD7F32; }
+  .lb-avatar {
+    width: 40px; height: 40px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; font-weight: 800; flex-shrink: 0;
+  }
+  .lb-info { flex: 1; }
+  .lb-name { font-weight: 700; font-size: 0.95rem; }
+  .lb-sub { font-size: 0.78rem; color: var(--muted); }
+  .lb-score { font-weight: 800; color: var(--yellow); font-size: 1rem; }
+
+  /* CTA BANNER */
+  .cta-banner {
+    position: relative; z-index: 1;
+    margin: 0 2rem 4rem; border-radius: 24px;
+    background: linear-gradient(135deg, var(--purple) 0%, var(--pink) 50%, var(--orange) 100%);
+    padding: 3rem 2rem; text-align: center;
+    overflow: hidden;
+  }
+  .cta-banner::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .cta-banner h2 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
+  .cta-banner p { opacity: 0.85; margin-bottom: 1.5rem; }
+  .cta-banner .btn-primary { background: white; color: var(--dark); }
+
+  /* FOOTER */
+  footer {
+    position: relative; z-index: 1;
+    text-align: center; padding: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    color: var(--muted); font-size: 0.85rem;
+  }
+  footer span { color: var(--yellow); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 600px) {
+    nav { padding: 0.75rem 1rem; }
+    .nav-links { display: none; }
+    .hero { padding: 4rem 1rem 2rem; }
+    .section { padding: 0 1rem 3rem; }
+    .quiz-section { padding: 0 1rem; }
+    .cta-banner { margin: 0 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">QuizZone</div>
+  <ul class="nav-links">
+    <li><a href="#categories">Categories</a></li>
+    <li><a href="#how">Tarika</a></li>
+    <li><a href="#leaderboard">Top Players</a></li>
+  </ul>
+  <button class="nav-cta">Shuru Karen</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">Pakistan ka #1 Quiz Platform</div>
+  <h1>Sawal Jawab ka<br><span>Naya Andaaz</span></h1>
+  <p>Hazaron sawalo ke saath apni knowledge test karein, doston se compete karein, aur rozana naye challenges enjoy karein.</p>
+  <div class="hero-btns">
+    <button class="btn-primary" onclick="document.getElementById('quiz-demo').scrollIntoView({behavior:'smooth'})">Quiz Khelein</button>
+    <button class="btn-secondary">Zyada Janein</button>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar reveal">
+  <div class="stat"><div class="stat-num y">50K+</div><div class="stat-lbl">Active Players</div></div>
+  <div class="stat"><div class="stat-num o">10K+</div><div class="stat-lbl">Sawalo ka Khazana</div></div>
+  <div class="stat"><div class="stat-num t">500+</div><div class="stat-lbl">Daily Challenges</div></div>
+</div>
+
+<!-- CATEGORIES -->
+<section class="section" id="categories">
+  <div class="section-head reveal">
+    <h2>Quiz <span class="accent">Categories</span></h2>
+    <p>Apni pasand ki category chunein aur shuru ho jayein</p>
+  </div>
+  <div class="categories reveal">
+    <div class="cat-card c1" onclick="alert('General Knowledge Quiz shuru!')">
+      <span class="cat-icon">🧠</span>
+      <div class="cat-title">General Knowledge</div>
+      <div class="cat-count">2,400+ sawaal</div>
+    </div>
+    <div class="cat-card c2" onclick="alert('Science Quiz shuru!')">
+      <span class="cat-icon">🔬</span>
+      <div class="cat-title">Science & Tech</div>
+      <div class="cat-count">1,800+ sawaal</div>
+    </div>
+    <div class="cat-card c3" onclick="alert('History Quiz shuru!')">
+      <span class="cat-icon">🏛️</span>
+      <div class="cat-title">Tarikh</div>
+      <div class="cat-count">1,200+ sawaal</div>
+    </div>
+    <div class="cat-card c4" onclick="alert('Sports Quiz shuru!')">
+      <span class="cat-icon">⚽</span>
+      <div class="cat-title">Khelkud</div>
+      <div class="cat-count">900+ sawaal</div>
+    </div>
+    <div class="cat-card c5" onclick="alert('Pakistan Quiz shuru!')">
+      <span class="cat-icon">🇵🇰</span>
+      <div class="cat-title">Pakistan</div>
+      <div class="cat-count">600+ sawaal</div>
+    </div>
+    <div class="cat-card c6" onclick="alert('Math Quiz shuru!')">
+      <span class="cat-icon">🔢</span>
+      <div class="cat-title">Riyazi</div>
+      <div class="cat-count">750+ sawaal</div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE QUIZ DEMO -->
+<section class="quiz-section" id="quiz-demo">
+  <div class="section-head reveal">
+    <h2>Live <span class="accent">Quiz</span> Khelein</h2>
+    <p>Ek sample quiz try karein</p>
+  </div>
+  <div class="quiz-card reveal">
+    <div class="quiz-header">
+      <h3>General Knowledge</h3>
+      <div class="timer-pill">
+        <div class="timer-dot"></div>
+        <span id="timer-display">20s</span>
+      </div>
+    </div>
+    <div class="quiz-body">
+      <div class="q-progress" id="q-progress"></div>
+      <div class="question" id="q-text"></div>
+      <div class="options-grid" id="q-opts"></div>
+    </div>
+    <div class="quiz-footer">
+      <button class="btn-quiz btn-skip" onclick="nextQuestion()">Chhor Dein</button>
+      <button class="btn-quiz btn-submit" id="btn-submit" onclick="submitAnswer()" disabled>Jawab Den</button>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how">
+  <div class="section-head reveal">
+    <h2>Kaise Kaam Karta <span class="accent">Hai?</span></h2>
+    <p>Sirf 4 aasaan qadmon mein shuru ho jayein</p>
+  </div>
+  <div class="steps reveal">
+    <div class="step">
+      <div class="step-num s1">1</div>
+      <h3>Category Chunein</h3>
+      <p>Apni pasandida category select karein — Science, Sports, Pakistan ya kuch aur.</p>
+    </div>
+    <div class="step">
+      <div class="step-num s2">2</div>
+      <h3>Quiz Shuru Karein</h3>
+      <p>Timer ke saath sawalo ke jawab dein. Jitna tez, utna zyada score!</p>
+    </div>
+    <div class="step">
+      <div class="step-num s3">3</div>
+      <h3>Score Haasil Karein</h3>
+      <p>Sahi jawab pe points milte hain. Bonus milta hai jab time bacha ho.</p>
+    </div>
+    <div class="step">
+      <div class="step-num s4">4</div>
+      <h3>Leaderboard Jeetein</h3>
+      <p>Top players mein shamil hon aur apne doston ko challenge karein.</p>
+    </div>
+  </div>
+</section>
+
+<!-- LEADERBOARD -->
+<section class="section" id="leaderboard">
+  <div class="section-head reveal">
+    <h2>Top <span class="accent">Players</span></h2>
+    <p>Aaj ke best performers</p>
+  </div>
+  <div class="leaderboard reveal">
+    <div class="lb-head">Aaj ki Ranking</div>
+    <div class="lb-row">
+      <div class="lb-rank r1">🥇</div>
+      <div class="lb-avatar" style="background:rgba(255,214,0,0.15);color:var(--yellow);">AK</div>
+      <div class="lb-info"><div class="lb-name">Ahmed Khan</div><div class="lb-sub">Lahore • 42 quizzes</div></div>
+      <div class="lb-score">9,850</div>
+    </div>
+    <div class="lb-row">
+      <div class="lb-rank r2">🥈</div>
+      <div class="lb-avatar" style="background:rgba(255,107,43,0.15);color:var(--orange);">SF</div>
+      <div class="lb-info"><div class="lb-name">Sara Fatima</div><div class="lb-sub">Karachi • 38 quizzes</div></div>
+      <div class="lb-score">8,720</div>
+    </div>
+    <div class="lb-row">
+      <div class="lb-rank r3">🥉</div>
+      <div class="lb-avatar" style="background:rgba(255,60,172,0.15);color:var(--pink);">ZA</div>
+      <div class="lb-info"><div class="lb-name">Zain Ali</div><div class="lb-sub">Islamabad • 35 quizzes</div></div>
+      <div class="lb-score">7,990</div>
+    </div>
+    <div class="lb-row">
+      <div class="lb-rank" style="color:var(--muted);">4</div>
+      <div class="lb-avatar" style="background:rgba(0,201,167,0.15);color:var(--teal);">MR</div>
+      <div class="lb-info"><div class="lb-name">Maria Raza</div><div class="lb-sub">Peshawar • 30 quizzes</div></div>
+      <div class="lb-score">7,340</div>
+    </div>
+    <div class="lb-row">
+      <div class="lb-rank" style="color:var(--muted);">5</div>
+      <div class="lb-avatar" style="background:rgba(41,121,255,0.15);color:var(--blue);">BH</div>
+      <div class="lb-info"><div class="lb-name">Bilal Hassan</div><div class="lb-sub">Sukkur • 28 quizzes</div></div>
+      <div class="lb-score">6,800</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<div class="cta-banner reveal">
+  <h2>Abhi Shuru Karen!</h2>
+  <p>Aaj hi join karein aur Pakistan ke best quiz players se compete karein</p>
+  <button class="btn-primary" style="font-size:1rem;padding:0.85rem 2.5rem;">Free Mein Join Karen</button>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>Made with <span>♥</span> QuizZone Pakistan &mdash; Sawal Jawab ka Naya Andaaz</p>
+</footer>
+
+<script>
+const quizData = [
+  { q: "Pakistan ki raajadhani kaunsi hai?", opts: ["Lahore","Karachi","Islamabad","Rawalpindi"], ans: 2 },
+  { q: "Insaan ke jism mein kitni haddiyaan hoti hain?", opts: ["196","206","216","226"], ans: 1 },
+  { q: "Cricket World Cup 1992 kisne jeeta?", opts: ["India","Australia","Pakistan","West Indies"], ans: 2 },
+  { q: "Pani ka chemical formula kya hai?", opts: ["CO2","H2O","NaCl","O2"], ans: 1 },
+  { q: "Pakistan ka qoumi phool kaunsa hai?", opts: ["Gulab","Chameli","Lotus","Tulip"], ans: 3 },
+];
+
+let current = 0, score = 0, selectedOpt = null, timerVal = 20, timerInterval;
+
+function renderProgress() {
+  const p = document.getElementById('q-progress');
+  p.innerHTML = quizData.map((_, i) =>
+    `<div class="q-dot ${i < current ? 'done' : i === current ? 'current' : ''}"></div>`
+  ).join('');
+}
+
+function renderQuestion() {
+  if (current >= quizData.length) { showFinal(); return; }
+  const q = quizData[current];
+  document.getElementById('q-text').textContent = q.q;
+  const labels = ['A','B','C','D'];
+  document.getElementById('q-opts').innerHTML = q.opts.map((o, i) =>
+    `<div class="opt" id="opt${i}" onclick="selectOpt(${i})">
+      <div class="opt-label">${labels[i]}</div>${o}
+    </div>`
+  ).join('');
+  document.getElementById('btn-submit').disabled = true;
+  selectedOpt = null;
+  renderProgress();
+  startTimer();
+}
+
+function selectOpt(i) {
+  selectedOpt = i;
+  document.querySelectorAll('.opt').forEach((el, j) => {
+    el.className = 'opt' + (j === i ? ' selected' : '');
+  });
+  document.getElementById('btn-submit').disabled = false;
+}
+
+function submitAnswer() {
+  clearInterval(timerInterval);
+  const q = quizData[current];
+  document.querySelectorAll('.opt').forEach((el, i) => {
+    if (i === q.ans) el.className = 'opt correct';
+    else if (i === selectedOpt) el.className = 'opt wrong';
+    el.onclick = null;
+  });
+  if (selectedOpt === q.ans) score++;
+  document.getElementById('btn-submit').disabled = true;
+  setTimeout(() => { current++; renderQuestion(); }, 1200);
+}
+
+function nextQuestion() {
+  clearInterval(timerInterval);
+  current++;
+  renderQuestion();
+}
+
+function startTimer() {
+  timerVal = 20;
+  document.getElementById('timer-display').textContent = timerVal + 's';
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timerVal--;
+    document.getElementById('timer-display').textContent = timerVal + 's';
+    if (timerVal <= 0) { clearInterval(timerInterval); nextQuestion(); }
+  }, 1000);
+}
+
+function showFinal() {
+  clearInterval(timerInterval);
+  const pct = Math.round((score / quizData.length) * 100);
+  document.querySelector('.quiz-card').innerHTML = `
+    <div style="padding:3rem 2rem;text-align:center;">
+      <div style="font-size:4rem;margin-bottom:1rem;">${pct>=80?'🏆':pct>=50?'👍':'💪'}</div>
+      <div style="font-size:3rem;font-weight:800;background:linear-gradient(135deg,#FFD600,#FF6B2B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">${pct}%</div>
+      <div style="color:#999;margin:0.5rem 0 1.5rem;">${score} / ${quizData.length} sahi jawab</div>
+      <p style="font-size:1.1rem;margin-bottom:2rem;">${pct>=80?'Shaabaash! Kamaal kar diya!':pct>=50?'Acha! Thodi aur practice karein.':'Koshish karte raho, app zaroor jeeto ge!'}</p>
+      <button class="btn-primary" onclick="current=0;score=0;renderQuestion();" style="padding:0.8rem 2rem;border:none;border-radius:999px;font-weight:800;font-size:1rem;background:linear-gradient(135deg,#FFD600,#FF6B2B);color:#0D0D0D;cursor:pointer;">Dobara Khelein</button>
+    </div>
+  `;
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.15 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+renderQuestion();
+</script>
+</body>
+</html>
