@@ -1,0 +1,7 @@
+ https://yaseen-black-gold.netlify.app/
+ https://yaseen-digital-clock.netlify.app/
+ https://yaseen-votechecker.netlify.app/
+ https://yaseen-student-managment.netlify.app/
+ https://yaseenpirzada-calculator-app.netlify.app/
+ https://yaseen-menu.netlify.app/
+ https://yaseen-counter-react.netlify.app
