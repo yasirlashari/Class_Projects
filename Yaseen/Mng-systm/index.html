@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Student Management System</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <h1>STUDENT MANAGEMENT SYSTEM</h1>
+  <input id="name" placeholder="Student Name">
+  <input id="age" type="number" placeholder="Student Age">
+  <button class="add-btn" onclick="saveStudent()">Save Student</button>
+  <ul id="list"></ul>
+</div>
+<script>
+let editItem = null;
+function saveStudent() {
+  let name = document.getElementById("name").value;
+  let age = document.getElementById("age").value;
+  if(name === "" || age === "") {
+    alert("Fill both fields");
+    return;
+  }
+  if(editItem === null) {
+    let li = document.createElement("li");
+    li.innerHTML = `
+      <span>${name} - Age: ${age}</span>
+      <div>
+        <button class="edit-btn" onclick="editStudent(this)">Edit</button>
+        <button class="delete-btn" onclick="deleteStudent(this)">Delete</button>
+      </div>
+    `;
+    document.getElementById("list").appendChild(li);
+    alert("Student added successfully");
+  } else {
+    editItem.querySelector("span").textContent = `${name} - Age: ${age}`;
+    alert("Student updated successfully");
+    editItem = null;
+  }
+  document.getElementById("name").value = "";
+  document.getElementById("age").value = "";
+}
+function deleteStudent(btn) {
+
+  btn.parentElement.parentElement.remove();
+  alert("Student deleted successfully");
+}
+
+function editStudent(btn) {
+
+  editItem = btn.parentElement.parentElement;
+
+  let text = editItem.querySelector("span").textContent;
+  let parts = text.split(" - Age: ");
+
+  document.getElementById("name").value = parts[0];
+  document.getElementById("age").value = parts[1];
+}
+
+</script>
