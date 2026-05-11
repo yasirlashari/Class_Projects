@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IRONFORGE — Industrial Materials</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #0a0a08;
+    --charcoal: #141410;
+    --steel: #1e1e19;
+    --iron: #2a2a24;
+    --rust: #c94a1f;
+    --rust-light: #e8622f;
+    --gold: #d4a62a;
+    --silver: #8a8a7e;
+    --light: #e8e8dc;
+    --white: #f5f5ed;
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-body: 'Barlow', sans-serif;
+    --font-cond: 'Barlow Condensed', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    background: var(--rust);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width 0.2s, height 0.2s, background 0.2s;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(201,74,31,0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.12s ease-out, width 0.3s, height 0.3s;
+  }
+  body:has(a:hover) .cursor, body:has(button:hover) .cursor { width: 20px; height: 20px; background: var(--rust-light); }
+  body:has(a:hover) .cursor-ring, body:has(button:hover) .cursor-ring { width: 56px; height: 56px; }
+
+  /* NOISE TEXTURE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9997;
+    opacity: 0.6;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 60px;
+    background: linear-gradient(to bottom, rgba(10,10,8,0.95), transparent);
+  }
+  .nav-logo {
+    font-family: var(--font-display);
+    font-size: 28px;
+    letter-spacing: 4px;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--rust); }
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+  .nav-links a {
+    font-family: var(--font-cond);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--silver);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--rust); }
+  .nav-cta {
+    font-family: var(--font-cond);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: var(--rust);
+    color: var(--white);
+    border: none;
+    padding: 12px 28px;
+    cursor: none;
+    transition: background 0.2s;
+  }
+  .nav-cta:hover { background: var(--rust-light); }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: none; border: none; background: none; }
+  .hamburger span { display: block; width: 28px; height: 2px; background: var(--white); transition: all 0.3s; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 140px 60px 80px;
+    position: relative;
+    z-index: 2;
+  }
+  .hero-tag {
+    font-family: var(--font-cond);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hero-tag::before {
+    content: '';
+    display: block;
+    width: 32px; height: 1px;
+    background: var(--rust);
+  }
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(72px, 8vw, 120px);
+    line-height: 0.9;
+    letter-spacing: 2px;
+    margin-bottom: 32px;
+  }
+  .hero-title .outline {
+    -webkit-text-stroke: 1px rgba(232,232,220,0.3);
+    color: transparent;
+  }
+  .hero-desc {
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--silver);
+    max-width: 420px;
+    margin-bottom: 48px;
+  }
+  .hero-actions { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .btn-primary {
+    font-family: var(--font-cond);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: var(--rust);
+    color: var(--white);
+    border: none;
+    padding: 18px 40px;
+    cursor: none;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--rust-light); transform: translateY(-2px); }
+  .btn-outline {
+    font-family: var(--font-cond);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--silver);
+    border: 1px solid rgba(138,138,126,0.3);
+    padding: 17px 40px;
+    cursor: none;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+  .btn-outline:hover { border-color: var(--rust); color: var(--rust); }
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    margin-top: 64px;
+    padding-top: 40px;
+    border-top: 1px solid rgba(138,138,126,0.15);
+  }
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 42px;
+    color: var(--white);
+    line-height: 1;
+  }
+  .stat-num span { color: var(--rust); }
+  .stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--silver);
+    margin-top: 4px;
+  }
+  .hero-right {
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-visual {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(135deg, rgba(201,74,31,0.08) 0%, transparent 50%),
+      repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.02) 40px, rgba(255,255,255,0.02) 41px),
+      repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.02) 40px, rgba(255,255,255,0.02) 41px);
+  }
+  .hero-visual::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, var(--black) 0%, transparent 40%);
+  }
+  .hero-material-display {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+  }
+  .material-ring {
+    position: relative;
+    width: 420px; height: 420px;
+  }
+  .ring-outer {
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(201,74,31,0.2);
+    border-radius: 50%;
+    animation: spin 20s linear infinite;
+  }
+  .ring-middle {
+    position: absolute;
+    inset: 40px;
+    border: 1px solid rgba(138,138,126,0.15);
+    border-radius: 50%;
+    animation: spin 15s linear infinite reverse;
+  }
+  .ring-inner {
+    position: absolute;
+    inset: 90px;
+    border: 2px solid rgba(201,74,31,0.3);
+    border-radius: 50%;
+    border-top-color: var(--rust);
+    animation: spin 8s linear infinite;
+  }
+  .ring-dot {
+    position: absolute;
+    width: 8px; height: 8px;
+    background: var(--rust);
+    border-radius: 50%;
+    top: -4px; left: 50%;
+    transform: translateX(-50%);
+  }
+  .ring-center {
+    position: absolute;
+    inset: 120px;
+    background: var(--steel);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(201,74,31,0.3);
+  }
+  .ring-center-text {
+    font-family: var(--font-display);
+    font-size: 48px;
+    color: var(--rust);
+    line-height: 1;
+  }
+  .ring-center-sub {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--silver);
+    margin-top: 4px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* MARQUEE TICKER */
+  .ticker {
+    background: var(--rust);
+    padding: 14px 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .ticker-track {
+    display: inline-flex;
+    gap: 0;
+    animation: ticker 20s linear infinite;
+  }
+  .ticker-item {
+    font-family: var(--font-cond);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 0 32px;
+    color: rgba(255,255,255,0.9);
+  }
+  .ticker-item::before { content: '◆ '; opacity: 0.6; }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* SECTION COMMONS */
+  section { padding: 120px 60px; }
+  .section-tag {
+    font-family: var(--font-cond);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-tag::before {
+    content: '';
+    display: block;
+    width: 24px; height: 1px;
+    background: var(--rust);
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 5vw, 72px);
+    line-height: 0.95;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+  .section-desc {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--silver);
+    max-width: 500px;
+  }
+
+  /* PRODUCTS SECTION */
+  .products { background: var(--charcoal); }
+  .products-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 64px;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+  .product-card {
+    background: var(--steel);
+    padding: 40px 36px;
+    position: relative;
+    overflow: hidden;
+    cursor: none;
+    transition: all 0.4s;
+    border-bottom: 2px solid transparent;
+  }
+  .product-card:hover { background: var(--iron); border-bottom-color: var(--rust); transform: translateY(-4px); }
+  .product-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(201,74,31,0.3), transparent);
+  }
+  .product-num {
+    font-family: var(--font-display);
+    font-size: 72px;
+    color: rgba(138,138,126,0.08);
+    position: absolute;
+    top: 20px; right: 24px;
+    line-height: 1;
+    pointer-events: none;
+  }
+  .product-icon {
+    width: 52px; height: 52px;
+    background: rgba(201,74,31,0.1);
+    border: 1px solid rgba(201,74,31,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 28px;
+    font-size: 22px;
+  }
+  .product-name {
+    font-family: var(--font-display);
+    font-size: 28px;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    color: var(--white);
+  }
+  .product-desc {
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--silver);
+    margin-bottom: 28px;
+  }
+  .product-specs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 32px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(138,138,126,0.1);
+  }
+  .spec-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .spec-key { color: rgba(138,138,126,0.6); }
+  .spec-val { color: var(--light); }
+  .product-link {
+    font-family: var(--font-cond);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--rust);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: gap 0.2s;
+  }
+  .product-link:hover { gap: 14px; }
+  .product-card.featured { grid-column: span 1; background: var(--iron); }
+  .product-card.featured .product-name { font-size: 34px; color: var(--rust-light); }
+  .featured-badge {
+    display: inline-block;
+    font-family: var(--font-cond);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: var(--rust);
+    color: var(--white);
+    padding: 4px 12px;
+    margin-bottom: 20px;
+  }
+
+  /* FEATURES */
+  .features { background: var(--black); }
+  .features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    margin-top: 80px;
+  }
+  .features-visual {
+    position: relative;
+    height: 500px;
+  }
+  .feat-panel {
+    position: absolute;
+    background: var(--steel);
+    border: 1px solid rgba(138,138,126,0.1);
+    padding: 24px 28px;
+  }
+  .feat-panel:nth-child(1) { top: 0; left: 0; right: 80px; }
+  .feat-panel:nth-child(2) { top: 120px; right: 0; left: 80px; background: var(--iron); border-color: rgba(201,74,31,0.2); }
+  .feat-panel:nth-child(3) { top: 260px; left: 0; right: 120px; }
+  .feat-panel:nth-child(4) { bottom: 0; left: 60px; right: 0; background: rgba(201,74,31,0.05); border-color: rgba(201,74,31,0.3); }
+  .feat-panel-label {
+    font-family: var(--font-cond);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 8px;
+  }
+  .feat-panel-val {
+    font-family: var(--font-display);
+    font-size: 36px;
+    color: var(--white);
+    line-height: 1;
+  }
+  .feat-panel-sub { font-size: 12px; color: var(--silver); margin-top: 4px; }
+  .features-list { display: flex; flex-direction: column; gap: 32px; }
+  .feat-item { display: flex; gap: 24px; }
+  .feat-icon {
+    width: 48px; height: 48px;
+    background: rgba(201,74,31,0.08);
+    border: 1px solid rgba(201,74,31,0.15);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--rust);
+    margin-top: 2px;
+  }
+  .feat-title {
+    font-family: var(--font-cond);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+  .feat-desc { font-size: 14px; font-weight: 300; line-height: 1.7; color: var(--silver); }
+
+  /* PROCESS */
+  .process { background: var(--charcoal); }
+  .process-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin-top: 72px;
+    position: relative;
+  }
+  .process-steps::before {
+    content: '';
+    position: absolute;
+    top: 32px;
+    left: calc(12.5%);
+    right: calc(12.5%);
+    height: 1px;
+    background: linear-gradient(to right, var(--rust), rgba(201,74,31,0.2));
+  }
+  .process-step { padding: 0 32px 0 0; position: relative; }
+  .step-num-wrap {
+    width: 64px; height: 64px;
+    background: var(--black);
+    border: 1px solid rgba(201,74,31,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 28px;
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s;
+  }
+  .process-step:hover .step-num-wrap { background: var(--rust); border-color: var(--rust); }
+  .step-num {
+    font-family: var(--font-display);
+    font-size: 28px;
+    color: var(--rust);
+    line-height: 1;
+    transition: color 0.3s;
+  }
+  .process-step:hover .step-num { color: var(--white); }
+  .step-title {
+    font-family: var(--font-cond);
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--white);
+    margin-bottom: 12px;
+  }
+  .step-desc { font-size: 13px; font-weight: 300; line-height: 1.7; color: var(--silver); }
+
+  /* TESTIMONIALS */
+  .testimonials { background: var(--black); }
+  .testi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2px;
+    margin-top: 64px;
+  }
+  .testi-card {
+    background: var(--steel);
+    padding: 40px 36px;
+    position: relative;
+  }
+  .testi-quote {
+    font-family: var(--font-display);
+    font-size: 64px;
+    color: var(--rust);
+    line-height: 0.6;
+    margin-bottom: 20px;
+    opacity: 0.4;
+  }
+  .testi-text {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--light);
+    margin-bottom: 32px;
+    font-style: italic;
+  }
+  .testi-author { display: flex; gap: 16px; align-items: center; }
+  .author-avatar {
+    width: 44px; height: 44px;
+    background: rgba(201,74,31,0.2);
+    border: 1px solid rgba(201,74,31,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-cond);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--rust);
+  }
+  .author-name {
+    font-family: var(--font-cond);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--white);
+  }
+  .author-role { font-size: 11px; color: var(--silver); margin-top: 2px; }
+
+  /* CTA SECTION */
+  .cta-section {
+    background: var(--rust);
+    padding: 100px 60px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-section::before {
+    content: 'IRONFORGE';
+    position: absolute;
+    font-family: var(--font-display);
+    font-size: 200px;
+    color: rgba(255,255,255,0.05);
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    letter-spacing: 10px;
+    pointer-events: none;
+  }
+  .cta-title {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 5vw, 72px);
+    line-height: 0.95;
+    color: var(--white);
+  }
+  .cta-sub {
+    font-size: 16px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.75);
+    margin-top: 12px;
+    line-height: 1.6;
+  }
+  .btn-dark {
+    font-family: var(--font-cond);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: var(--black);
+    color: var(--white);
+    border: none;
+    padding: 20px 48px;
+    cursor: none;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+  .btn-dark:hover { background: var(--charcoal); transform: translateY(-2px); }
+
+  /* FOOTER */
+  footer {
+    background: var(--black);
+    padding: 80px 60px 40px;
+    border-top: 1px solid rgba(138,138,126,0.1);
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 60px;
+  }
+  .footer-brand { }
+  .footer-logo {
+    font-family: var(--font-display);
+    font-size: 32px;
+    letter-spacing: 4px;
+    margin-bottom: 16px;
+    color: var(--white);
+  }
+  .footer-logo span { color: var(--rust); }
+  .footer-tagline { font-size: 14px; font-weight: 300; color: var(--silver); line-height: 1.7; max-width: 280px; }
+  .footer-col-title {
+    font-family: var(--font-cond);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 20px;
+  }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .footer-links a {
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--silver);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--white); }
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 32px;
+    border-top: 1px solid rgba(138,138,126,0.1);
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .footer-copy { font-size: 12px; color: rgba(138,138,126,0.5); letter-spacing: 1px; }
+  .footer-socials { display: flex; gap: 20px; }
+  .social-link {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(138,138,126,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--silver);
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .social-link:hover { border-color: var(--rust); color: var(--rust); }
+
+  /* SCROLL ANIMATIONS */
+  .reveal { opacity: 0; transform: translateY(40px); transition: all 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-left { opacity: 0; transform: translateX(-40px); transition: all 0.7s ease; }
+  .reveal-left.visible { opacity: 1; transform: translateX(0); }
+  .reveal-right { opacity: 0; transform: translateX(40px); transition: all 0.7s ease; }
+  .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+  /* RESPONSIVE */
+  @media (max-width: 1024px) {
+    nav { padding: 20px 32px; }
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .hero { grid-template-columns: 1fr; }
+    .hero-left { padding: 120px 32px 60px; }
+    .hero-right { display: none; }
+    section { padding: 80px 32px; }
+    .product-grid { grid-template-columns: 1fr 1fr; }
+    .features-grid { grid-template-columns: 1fr; }
+    .features-visual { display: none; }
+    .process-steps { grid-template-columns: 1fr 1fr; gap: 48px; }
+    .process-steps::before { display: none; }
+    .testi-grid { grid-template-columns: 1fr; }
+    .cta-section { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+  }
+  @media (max-width: 640px) {
+    .nav-logo { font-size: 22px; }
+    .hero-title { font-size: 56px; }
+    .hero-stats { flex-direction: column; gap: 24px; }
+    .hero-actions { flex-direction: column; }
+    .product-grid { grid-template-columns: 1fr; }
+    .process-steps { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .cta-section { padding: 60px 32px; }
+    .footer-bottom { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* MOBILE NAV */
+  .mobile-menu {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: 280px;
+    background: var(--charcoal);
+    z-index: 200;
+    padding: 80px 40px;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.77,0,0.175,1);
+    border-left: 1px solid rgba(201,74,31,0.2);
+  }
+  .mobile-menu.open { transform: translateX(0); }
+  .mobile-nav-links { list-style: none; display: flex; flex-direction: column; gap: 32px; }
+  .mobile-nav-links a {
+    font-family: var(--font-display);
+    font-size: 36px;
+    letter-spacing: 2px;
+    color: var(--white);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .mobile-nav-links a:hover { color: var(--rust); }
+  .menu-close {
+    position: absolute;
+    top: 28px; right: 28px;
+    background: none;
+    border: none;
+    color: var(--silver);
+    font-size: 24px;
+    cursor: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">IRON<span>FORGE</span></a>
+  <ul class="nav-links">
+    <li><a href="#products">Materials</a></li>
+    <li><a href="#features">Why Us</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="nav-cta" onclick="document.querySelector('#contact').scrollIntoView({behavior:'smooth'})">Get Quote</button>
+  <button class="hamburger" id="menuBtn" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="menu-close" id="menuClose">✕</button>
+  <ul class="mobile-nav-links">
+    <li><a href="#products" onclick="closeMobileMenu()">Materials</a></li>
+    <li><a href="#features" onclick="closeMobileMenu()">Why Us</a></li>
+    <li><a href="#process" onclick="closeMobileMenu()">Process</a></li>
+    <li><a href="#contact" onclick="closeMobileMenu()">Contact</a></li>
+  </ul>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">Est. 1987 — Industrial Excellence</div>
+    <h1 class="hero-title">
+      BUILT<br>
+      <span class="outline">FOR THE</span><br>
+      FORGE
+    </h1>
+    <p class="hero-desc">Premium industrial materials engineered for extreme environments. Steel, titanium, alloys and composite solutions for manufacturing, construction, and aerospace.</p>
+    <div class="hero-actions">
+      <a href="#products" class="btn-primary">Explore Materials →</a>
+      <a href="#process" class="btn-outline">Our Process</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">40<span>+</span></div>
+        <div class="stat-label">Years Active</div>
+      </div>
+      <div>
+        <div class="stat-num">850<span>+</span></div>
+        <div class="stat-label">Products</div>
+      </div>
+      <div>
+        <div class="stat-num">98<span>%</span></div>
+        <div class="stat-label">Purity Grade</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-visual"></div>
+    <div class="hero-material-display">
+      <div class="material-ring">
+        <div class="ring-outer"><div class="ring-dot"></div></div>
+        <div class="ring-middle"></div>
+        <div class="ring-inner"></div>
+        <div class="ring-center">
+          <div class="ring-center-text">Fe</div>
+          <div class="ring-center-sub">Iron • Grade A</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track" id="ticker">
+    <span class="ticker-item">Carbon Steel</span>
+    <span class="ticker-item">Titanium Grade 5</span>
+    <span class="ticker-item">Aluminum 7075</span>
+    <span class="ticker-item">Stainless 316L</span>
+    <span class="ticker-item">Inconel 718</span>
+    <span class="ticker-item">Copper Alloy</span>
+    <span class="ticker-item">Tool Steel D2</span>
+    <span class="ticker-item">Hastelloy C-276</span>
+    <span class="ticker-item">Nickel Alloy</span>
+    <span class="ticker-item">Tungsten Carbide</span>
+    <span class="ticker-item">Carbon Steel</span>
+    <span class="ticker-item">Titanium Grade 5</span>
+    <span class="ticker-item">Aluminum 7075</span>
+    <span class="ticker-item">Stainless 316L</span>
+    <span class="ticker-item">Inconel 718</span>
+    <span class="ticker-item">Copper Alloy</span>
+    <span class="ticker-item">Tool Steel D2</span>
+    <span class="ticker-item">Hastelloy C-276</span>
+    <span class="ticker-item">Nickel Alloy</span>
+    <span class="ticker-item">Tungsten Carbide</span>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<section class="products" id="products">
+  <div class="products-header">
+    <div>
+      <div class="section-tag reveal">Product Range</div>
+      <h2 class="section-title reveal">MATERIAL<br>SOLUTIONS</h2>
+    </div>
+    <p class="section-desc reveal">ISO-certified materials supplied globally. Each product tested under extreme conditions for maximum performance.</p>
+  </div>
+  <div class="product-grid">
+    <div class="product-card reveal" style="transition-delay:0.1s">
+      <div class="product-num">01</div>
+      <div class="product-icon">⚙</div>
+      <div class="product-name">Carbon Steel</div>
+      <p class="product-desc">High-strength structural steel with exceptional weldability. Ideal for heavy equipment and construction.</p>
+      <div class="product-specs">
+        <div class="spec-row"><span class="spec-key">Tensile Str.</span><span class="spec-val">540 MPa</span></div>
+        <div class="spec-row"><span class="spec-key">Hardness</span><span class="spec-val">170 HB</span></div>
+        <div class="spec-row"><span class="spec-key">Grade</span><span class="spec-val">ASTM A36</span></div>
+      </div>
+      <a href="#contact" class="product-link">Request Sample →</a>
+    </div>
+    <div class="product-card featured reveal" style="transition-delay:0.2s">
+      <div class="product-num">02</div>
+      <div class="featured-badge">Best Seller</div>
+      <div class="product-icon">◈</div>
+      <div class="product-name">Titanium Alloy</div>
+      <p class="product-desc">Aerospace-grade Ti-6Al-4V with superior strength-to-weight ratio. Biocompatible and corrosion resistant.</p>
+      <div class="product-specs">
+        <div class="spec-row"><span class="spec-key">Tensile Str.</span><span class="spec-val">1,100 MPa</span></div>
+        <div class="spec-row"><span class="spec-key">Density</span><span class="spec-val">4.43 g/cm³</span></div>
+        <div class="spec-row"><span class="spec-key">Grade</span><span class="spec-val">Ti-6Al-4V</span></div>
+      </div>
+      <a href="#contact" class="product-link">Request Sample →</a>
+    </div>
+    <div class="product-card reveal" style="transition-delay:0.3s">
+      <div class="product-num">03</div>
+      <div class="product-icon">✦</div>
+      <div class="product-name">Stainless 316L</div>
+      <p class="product-desc">Marine-grade austenitic stainless steel. Maximum corrosion resistance in chloride environments.</p>
+      <div class="product-specs">
+        <div class="spec-row"><span class="spec-key">Tensile Str.</span><span class="spec-val">485 MPa</span></div>
+        <div class="spec-row"><span class="spec-key">Cr Content</span><span class="spec-val">16–18%</span></div>
+        <div class="spec-row"><span class="spec-key">Grade</span><span class="spec-val">AISI 316L</span></div>
+      </div>
+      <a href="#contact" class="product-link">Request Sample →</a>
+    </div>
+    <div class="product-card reveal" style="transition-delay:0.4s">
+      <div class="product-num">04</div>
+      <div class="product-icon">◐</div>
+      <div class="product-name">Aluminum 7075</div>
+      <p class="product-desc">Aircraft-grade alloy with zinc as primary alloying element. Exceptional fatigue resistance.</p>
+      <div class="product-specs">
+        <div class="spec-row"><span class="spec-key">Tensile Str.</span><span class="spec-val">572 MPa</span></div>
+        <div class="spec-row"><span class="spec-key">Density</span><span class="spec-val">2.81 g/cm³</span></div>
+        <div class="spec-row"><span class="spec-key">Temper</span><span class="spec-val">T6511</span></div>
+      </div>
+      <a href="#contact" class="product-link">Request Sample →</a>
+    </div>
+    <div class="product-card reveal" style="transition-delay:0.5s">
+      <div class="product-num">05</div>
+      <div class="product-icon">▣</div>
+      <div class="product-name">Inconel 718</div>
+      <p class="product-desc">Nickel-chromium superalloy for extreme temperatures. Used in gas turbines and rocket engines.</p>
+      <div class="product-specs">
+        <div class="spec-row"><span class="spec-key">Max Temp.</span><span class="spec-val">700°C</span></div>
+        <div class="spec-row"><span class="spec-key">Tensile Str.</span><span class="spec-val">1,379 MPa</span></div>
+        <div class="spec-row"><span class="spec-key">Grade</span><span class="spec-val">AMS 5663</span></div>
+      </div>
+      <a href="#contact" class="product-link">Request Sample →</a>
+    </div>
+    <div class="product-card reveal" style="transition-delay:0.6s">
+      <div class="product-num">06</div>
+      <div class="product-icon">⬡</div>
+      <div class="product-name">Tool Steel D2</div>
+      <p class="product-desc">High-carbon, high-chromium cold work tool steel. Exceptional wear resistance for tooling applications.</p>
+      <div class="product-specs">
+        <div class="spec-row"><span class="spec-key">Hardness</span><span class="spec-val">60–62 HRC</span></div>
+        <div class="spec-row"><span class="spec-key">Cr Content</span><span class="spec-val">11.5–13%</span></div>
+        <div class="spec-row"><span class="spec-key">Grade</span><span class="spec-val">DIN 1.2379</span></div>
+      </div>
+      <a href="#contact" class="product-link">Request Sample →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="section-tag reveal">Why Ironforge</div>
+  <h2 class="section-title reveal">FORGED IN<br>PRECISION</h2>
+  <div class="features-grid">
+    <div class="features-visual reveal-left">
+      <div class="feat-panel">
+        <div class="feat-panel-label">Tensile Testing</div>
+        <div class="feat-panel-val">1,400<span style="font-size:20px;color:var(--silver)"> MPa</span></div>
+        <div class="feat-panel-sub">Maximum rated capacity</div>
+      </div>
+      <div class="feat-panel">
+        <div class="feat-panel-label">Purity Grade</div>
+        <div class="feat-panel-val">99.8<span style="font-size:20px;color:var(--rust)">%</span></div>
+        <div class="feat-panel-sub">ISO 9001 certified</div>
+      </div>
+      <div class="feat-panel">
+        <div class="feat-panel-label">Delivery Time</div>
+        <div class="feat-panel-val">48<span style="font-size:20px;color:var(--silver)"> hrs</span></div>
+        <div class="feat-panel-sub">Express global shipping</div>
+      </div>
+      <div class="feat-panel">
+        <div class="feat-panel-label">Temperature Range</div>
+        <div class="feat-panel-val">-270°<span style="font-size:20px;color:var(--rust)">C</span></div>
+        <div class="feat-panel-sub">Cryogenic rated stock</div>
+      </div>
+    </div>
+    <div class="features-list reveal-right">
+      <div class="feat-item">
+        <div class="feat-icon">⚡</div>
+        <div>
+          <div class="feat-title">Certified Quality</div>
+          <p class="feat-desc">Every batch undergoes rigorous third-party testing. ISO 9001, AS9100D, and NADCAP certifications maintained across all product lines.</p>
+        </div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon">⊞</div>
+        <div>
+          <div class="feat-title">Custom Alloys</div>
+          <p class="feat-desc">Our metallurgists design custom compositions to your exact specifications. From prototype to full production runs in weeks, not months.</p>
+        </div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon">◉</div>
+        <div>
+          <div class="feat-title">Global Supply Chain</div>
+          <p class="feat-desc">Stocked warehouses in 14 countries. Just-in-time delivery with traceability from source ore to finished product documentation.</p>
+        </div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon">▲</div>
+        <div>
+          <div class="feat-title">Technical Support</div>
+          <p class="feat-desc">Dedicated material engineers available 24/7. On-site assistance, failure analysis, and full application engineering support.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process" id="process">
+  <div class="section-tag reveal">How It Works</div>
+  <h2 class="section-title reveal">THE IRONFORGE<br>PROCESS</h2>
+  <div class="process-steps">
+    <div class="process-step reveal" style="transition-delay:0.1s">
+      <div class="step-num-wrap"><div class="step-num">01</div></div>
+      <div class="step-title">Specification</div>
+      <p class="step-desc">Define your requirements — mechanical properties, environment, tolerances. Our engineers help you identify the optimal material.</p>
+    </div>
+    <div class="process-step reveal" style="transition-delay:0.2s">
+      <div class="step-num-wrap"><div class="step-num">02</div></div>
+      <div class="step-title">Sourcing & QC</div>
+      <p class="step-desc">Raw materials sourced from certified mills. Full chemical and mechanical testing conducted before acceptance.</p>
+    </div>
+    <div class="process-step reveal" style="transition-delay:0.3s">
+      <div class="step-num-wrap"><div class="step-num">03</div></div>
+      <div class="step-title">Processing</div>
+      <p class="step-desc">Heat treatment, machining, and surface finishing to your exact dimensions. CNC precision to ±0.001".</p>
+    </div>
+    <div class="process-step reveal" style="transition-delay:0.4s">
+      <div class="step-num-wrap"><div class="step-num">04</div></div>
+      <div class="step-title">Delivery</div>
+      <p class="step-desc">Packed with full mill certificates and traceability docs. Tracked delivery with dedicated account manager.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="section-tag reveal">Client Voices</div>
+  <h2 class="section-title reveal">INDUSTRY<br>TRUST</h2>
+  <div class="testi-grid">
+    <div class="testi-card reveal" style="transition-delay:0.1s">
+      <div class="testi-quote">"</div>
+      <p class="testi-text">Ironforge supplied titanium billets for our turbine blades. Dimensional accuracy and material purity exceeded our aerospace specs. Zero rejections in 3 years of supply.</p>
+      <div class="testi-author">
+        <div class="author-avatar">RK</div>
+        <div>
+          <div class="author-name">R. Karimov</div>
+          <div class="author-role">Chief Metallurgist — AeroTech Industries</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card reveal" style="transition-delay:0.2s">
+      <div class="testi-quote">"</div>
+      <p class="testi-text">We switched to Ironforge for our offshore platform steelwork. The 316L stainless they supply in saline conditions has outperformed every previous supplier by a significant margin.</p>
+      <div class="testi-author">
+        <div class="author-avatar">SH</div>
+        <div>
+          <div class="author-name">S. Hassan</div>
+          <div class="author-role">Procurement Dir. — Gulf Marine Corp</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card reveal" style="transition-delay:0.3s">
+      <div class="testi-quote">"</div>
+      <p class="testi-text">Custom Inconel alloy delivered in 6 weeks for our rocket engine components. The support team guided us through the entire material qualification process. Outstanding.</p>
+      <div class="testi-author">
+        <div class="author-avatar">LP</div>
+        <div>
+          <div class="author-name">L. Petrova</div>
+          <div class="author-role">Lead Engineer — Orbital Systems Ltd</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section" id="contact">
+  <div>
+    <h2 class="cta-title reveal">READY TO<br>BUILD SOMETHING<br>EXTRAORDINARY?</h2>
+    <p class="cta-sub reveal">Talk to our materials engineers. Get a custom quote within 24 hours.</p>
+  </div>
+  <a href="mailto:quote@ironforge.com" class="btn-dark reveal">Get Your Quote →</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="footer-logo">IRON<span>FORGE</span></div>
+      <p class="footer-tagline">Industrial materials engineered for precision and performance. Supplying the world's most demanding industries since 1987.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Materials</div>
+      <ul class="footer-links">
+        <li><a href="#">Carbon Steel</a></li>
+        <li><a href="#">Titanium Alloys</a></li>
+        <li><a href="#">Stainless Steel</a></li>
+        <li><a href="#">Aluminum</a></li>
+        <li><a href="#">Superalloys</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Services</div>
+      <ul class="footer-links">
+        <li><a href="#">Custom Alloys</a></li>
+        <li><a href="#">Heat Treatment</a></li>
+        <li><a href="#">Machining</a></li>
+        <li><a href="#">Testing & QC</a></li>
+        <li><a href="#">Consultancy</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Company</div>
+      <ul class="footer-links">
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Certifications</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">News</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2025 Ironforge Materials Ltd. All rights reserved. ISO 9001:2015 Certified.</div>
+    <div class="footer-socials">
+      <a href="#" class="social-link" aria-label="LinkedIn">in</a>
+      <a href="#" class="social-link" aria-label="Twitter">𝕏</a>
+      <a href="#" class="social-link" aria-label="YouTube">▶</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // CURSOR
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animCursor() {
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+    rx += (mx - rx) * 0.18;
+    ry += (my - ry) * 0.18;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+
+  // SCROLL REVEAL
+  const reveals = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+  reveals.forEach(el => obs.observe(el));
+
+  // MOBILE MENU
+  const menuBtn = document.getElementById('menuBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const menuClose = document.getElementById('menuClose');
+  menuBtn.addEventListener('click', () => mobileMenu.classList.add('open'));
+  menuClose.addEventListener('click', closeMobileMenu);
+  function closeMobileMenu() { mobileMenu.classList.remove('open'); }
+
+  // NAV SCROLL EFFECT
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 80) {
+      nav.style.background = 'rgba(10,10,8,0.97)';
+      nav.style.backdropFilter = 'blur(12px)';
+    } else {
+      nav.style.background = 'linear-gradient(to bottom, rgba(10,10,8,0.95), transparent)';
+      nav.style.backdropFilter = 'none';
+    }
+  });
+
+  // COUNTER ANIMATION
+  function animateCounter(el, target, suffix = '') {
+    let start = 0;
+    const duration = 1500;
+    const step = timestamp => {
+      if (!start) start = timestamp;
+      const prog = Math.min((timestamp - start) / duration, 1);
+      const val = Math.floor(prog * target);
+      el.querySelector('.stat-num').innerHTML = val + '<span>' + suffix + '</span>';
+      if (prog < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+  const statsObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        animateCounter(document.querySelector('.hero-stats > div:nth-child(1)'), 40, '+');
+        animateCounter(document.querySelector('.hero-stats > div:nth-child(2)'), 850, '+');
+        animateCounter(document.querySelector('.hero-stats > div:nth-child(3)'), 98, '%');
+        statsObs.disconnect();
+      }
+    });
+  }, { threshold: 0.5 });
+  const heroStats = document.querySelector('.hero-stats');
+  if (heroStats) statsObs.observe(heroStats);
+
+  // PRODUCT CARD HOVER MATERIAL ELEMENT
+  document.querySelectorAll('.product-card').forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      const icon = card.querySelector('.product-icon');
+      icon.style.background = 'rgba(201,74,31,0.2)';
+      icon.style.borderColor = 'rgba(201,74,31,0.5)';
+    });
+    card.addEventListener('mouseleave', () => {
+      const icon = card.querySelector('.product-icon');
+      icon.style.background = 'rgba(201,74,31,0.1)';
+      icon.style.borderColor = 'rgba(201,74,31,0.2)';
+    });
+  });
+</script>
+</body>
+</html>
