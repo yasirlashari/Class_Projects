@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ProctorX — Online Exam System</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- ══ CHEAT BLOCK OVERLAY ══ -->
+  <div id="cheatBlockOverlay" class="cheat-block-overlay hidden">
+    <div class="cheat-block-box">
+      <div class="cheat-alarm-ring">
+        <div class="cheat-alarm-pulse"></div>
+        <div class="cheat-alarm-pulse delay2"></div>
+        <div class="cheat-alarm-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="36" height="36">
+            <path d="M18.364 5.636a9 9 0 010 12.728M5.636 5.636a9 9 0 000 12.728"/>
+            <path d="M15.536 8.464a5 5 0 010 7.072M8.464 8.464a5 5 0 000 7.072"/>
+            <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+          </svg>
+        </div>
+      </div>
+      <div class="cheat-block-label">EXAM LOCKED</div>
+      <p id="cheatMsg">You switched away from the exam a second time. The exam is now locked.</p>
+      <div class="cheat-badge" id="cheatBadge">2nd Violation — Exam Blocked</div>
+      <div class="alarm-status-bar">
+        <span class="alarm-dot-anim"></span>
+        <span id="alarmStatusText">Alarm is active — examiner must unlock</span>
+      </div>
+      <div class="examiner-unlock-section">
+        <p class="unlock-heading">Examiner — Enter PIN to unlock</p>
+        <div class="pin-row">
+          <input type="password" id="examinerPinInput" class="pin-input" placeholder="Examiner PIN" maxlength="6"/>
+          <button id="examinerUnlockBtn" class="btn-unlock">Unlock</button>
+        </div>
+        <div id="pinError" class="pin-error hidden">Incorrect PIN. Please try again.</div>
+        <div class="student-wait-note">Student must wait for the examiner.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ WARNING OVERLAY ══ -->
+  <div id="warningOverlay" class="warning-overlay hidden">
+    <div class="warning-box">
+      <div class="warning-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28">
+          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </div>
+      <h2 id="warningTitle">Tab Switch Detected</h2>
+      <p id="warningMessage">You left the exam window. This is your 1st warning.</p>
+      <div class="warning-count-badge" id="warningBadge">Warning 1 of 2 — Last Chance</div>
+      <button id="warningDismiss" class="btn-warning-dismiss">I Understand — Return to Exam</button>
+    </div>
+  </div>
+
+  <!-- ══ HOME SCREEN ══ -->
+  <div id="homeScreen" class="screen active">
+    <div class="home-bg"><div class="home-grid"></div><div class="home-glow"></div></div>
+    <div class="home-container">
+      <div class="home-chip">
+        <span class="home-chip-dot"></span>
+        PROCTORX
+      </div>
+      <h1 class="home-title">Secure Online<br/><span>Examination</span></h1>
+      <p class="home-sub">Trusted · Monitored · Professional</p>
+      <div class="role-cards">
+        <div class="role-card" id="roleExaminer">
+          <div class="role-card-inner">
+            <div class="role-icon-wrap purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="26" height="26">
+                <path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/>
+                <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>
+              </svg>
+            </div>
+            <div class="role-text">
+              <h3>Examiner Panel</h3>
+              <p>Configure exam, add questions, set timer and security PIN</p>
+            </div>
+          </div>
+          <button class="btn-role btn-examiner">Enter as Examiner →</button>
+        </div>
+        <div class="role-card role-card-student" id="roleStudent">
+          <div class="role-card-inner">
+            <div class="role-icon-wrap cyan">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="26" height="26">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+              </svg>
+            </div>
+            <div class="role-text">
+              <h3>Student Exam</h3>
+              <p>Take the exam in secure fullscreen mode with live monitoring</p>
+            </div>
+          </div>
+          <button class="btn-role btn-student">Begin Exam →</button>
+        </div>
+      </div>
+      <div class="home-footer-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        Tab switch · Window switch · Fullscreen exit are all monitored
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ EXAMINER PANEL ══ -->
+  <div id="examinerScreen" class="screen">
+    <div class="examiner-layout">
+      <aside class="examiner-sidebar">
+        <div class="ex-brand">
+          <span class="brand-dot"></span> PROCTORX
+        </div>
+        <nav class="ex-nav">
+          <button class="ex-nav-btn active" data-tab="settings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            Exam Settings
+          </button>
+          <button class="ex-nav-btn" data-tab="questions">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            Questions
+          </button>
+          <button class="ex-nav-btn" data-tab="preview">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Launch Exam
+          </button>
+        </nav>
+        <button id="backToHomeBtn" class="btn-back-home">← Back to Home</button>
+      </aside>
+
+      <div class="examiner-main">
+
+        <!-- TAB: SETTINGS -->
+        <div class="ex-tab active" id="tab-settings">
+          <div class="ex-tab-header">
+            <h2>Exam Settings</h2>
+            <p>Configure title, duration, pass mark, and security PIN</p>
+          </div>
+          <div class="settings-grid">
+            <div class="setting-group">
+              <label class="setting-label">Exam Title</label>
+              <input type="text" id="examTitle" class="setting-input" placeholder="e.g. Chapter 3 Science Test" value="Computer Science Fundamentals"/>
+            </div>
+            <div class="setting-group">
+              <label class="setting-label">Duration (minutes)</label>
+              <input type="number" id="examDuration" class="setting-input" value="30" min="1" max="180"/>
+            </div>
+            <div class="setting-group">
+              <label class="setting-label">Pass Percentage (%)</label>
+              <input type="number" id="examPass" class="setting-input" value="60" min="1" max="100"/>
+            </div>
+            <div class="setting-group">
+              <label class="setting-label">Examiner Unlock PIN</label>
+              <input type="text" id="examPin" class="setting-input" placeholder="4–6 digit PIN" value="1234" maxlength="6"/>
+              <small class="setting-hint">Used to unblock a student who violates twice. Keep confidential.</small>
+            </div>
+            <div class="setting-group full-width">
+              <label class="setting-label">Instructions for Students</label>
+              <textarea id="examInstructions" class="setting-textarea" rows="3">Do not switch tabs. Do not switch windows. Stay in fullscreen. Answer all questions within the time limit. Any violation will trigger an alarm.</textarea>
+            </div>
+          </div>
+          <button class="btn-save-settings" id="saveSettingsBtn">Save Settings →</button>
+          <div id="settingsSaved" class="settings-saved-msg hidden">Settings saved successfully.</div>
+        </div>
+
+        <!-- TAB: QUESTIONS -->
+        <div class="ex-tab" id="tab-questions">
+          <div class="ex-tab-header">
+            <h2>Manage Questions</h2>
+            <p>Add multiple choice questions with 4 options and correct answer</p>
+          </div>
+          <div class="add-q-card">
+            <h3>Add New Question</h3>
+            <div class="add-q-form">
+              <div class="setting-group full-width">
+                <label class="setting-label">Question Text</label>
+                <textarea id="newQText" class="setting-textarea" rows="2" placeholder="Type your question here..."></textarea>
+              </div>
+              <div class="opts-grid">
+                <div class="setting-group">
+                  <label class="setting-label">Option A</label>
+                  <input type="text" id="optA" class="setting-input" placeholder="Option A"/>
+                </div>
+                <div class="setting-group">
+                  <label class="setting-label">Option B</label>
+                  <input type="text" id="optB" class="setting-input" placeholder="Option B"/>
+                </div>
+                <div class="setting-group">
+                  <label class="setting-label">Option C</label>
+                  <input type="text" id="optC" class="setting-input" placeholder="Option C"/>
+                </div>
+                <div class="setting-group">
+                  <label class="setting-label">Option D</label>
+                  <input type="text" id="optD" class="setting-input" placeholder="Option D"/>
+                </div>
+              </div>
+              <div class="add-q-bottom">
+                <div class="setting-group">
+                  <label class="setting-label">Correct Answer</label>
+                  <select id="correctAns" class="setting-input">
+                    <option value="0">A</option>
+                    <option value="1">B</option>
+                    <option value="2">C</option>
+                    <option value="3">D</option>
+                  </select>
+                </div>
+                <button id="addQBtn" class="btn-add-q">Add Question</button>
+              </div>
+            </div>
+          </div>
+          <div class="q-list-wrap">
+            <div class="q-list-header">
+              <h3 id="qListCount">0 questions</h3>
+              <button id="clearAllQBtn" class="btn-clear">Clear All</button>
+            </div>
+            <div class="q-list" id="questionsList"></div>
+          </div>
+        </div>
+
+        <!-- TAB: PREVIEW / LAUNCH -->
+        <div class="ex-tab" id="tab-preview">
+          <div class="ex-tab-header">
+            <h2>Launch Exam</h2>
+            <p>Review configuration and launch for students</p>
+          </div>
+          <div class="preview-summary">
+            <div class="ps-card"><div class="ps-val" id="pvTitle">—</div><div class="ps-lbl">Title</div></div>
+            <div class="ps-card"><div class="ps-val" id="pvDuration">—</div><div class="ps-lbl">Duration</div></div>
+            <div class="ps-card"><div class="ps-val" id="pvQCount">—</div><div class="ps-lbl">Questions</div></div>
+            <div class="ps-card"><div class="ps-val" id="pvPass">—</div><div class="ps-lbl">Pass Mark</div></div>
+            <div class="ps-card"><div class="ps-val" id="pvPin">—</div><div class="ps-lbl">PIN</div></div>
+          </div>
+          <div id="previewWarning" class="preview-warning hidden">Add at least 1 question before launching.</div>
+          <button id="launchExamBtn" class="btn-launch">Launch Exam for Students →</button>
+          <div class="preview-q-list" id="previewQList"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STUDENT START SCREEN ══ -->
+  <div id="startScreen" class="screen">
+    <div class="home-bg"><div class="home-grid"></div><div class="home-glow"></div></div>
+    <div class="start-container">
+      <div class="home-chip"><span class="home-chip-dot"></span>PROCTORX</div>
+      <h1 class="start-title" id="startTitleEl">Computer Science<br/><span>Fundamentals</span></h1>
+      <p class="start-subtitle">Secure · Monitored · Proctored Examination</p>
+      <div class="info-cards">
+        <div class="info-card">
+          <div class="info-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <span class="info-label">Questions</span>
+          <span class="info-value" id="infoQCount">10</span>
+        </div>
+        <div class="info-card">
+          <div class="info-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <span class="info-label">Duration</span>
+          <span class="info-value" id="infoDuration">30 Min</span>
+        </div>
+        <div class="info-card">
+          <div class="info-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <span class="info-label">Pass Mark</span>
+          <span class="info-value" id="infoPass">60%</span>
+        </div>
+        <div class="info-card">
+          <div class="info-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          </div>
+          <span class="info-label">Mode</span>
+          <span class="info-value">Fullscreen</span>
+        </div>
+      </div>
+      <div class="instructions-box">
+        <h3>Instructions</h3>
+        <div id="instructionsContent"></div>
+      </div>
+      <button id="startBtn" class="btn-start">
+        Begin Exam
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+      <p class="start-note">By clicking Begin you agree to be monitored. Tab, window and fullscreen violations trigger alarm and examiner unlock.</p>
+      <button id="backToHomeFromStart" class="btn-text-back">← Back to Home</button>
+    </div>
+  </div>
+
+  <!-- ══ EXAM SCREEN ══ -->
+  <div id="examScreen" class="screen">
+    <header class="exam-header">
+      <div class="exam-brand"><span class="brand-dot"></span>PROCTORX</div>
+      <div class="header-center">
+        <div class="timer-wrap">
+          <span class="timer-label">TIME REMAINING</span>
+          <div id="timerDisplay" class="timer-display">30:00</div>
+          <div class="timer-bar-wrap"><div id="timerBar" class="timer-bar"></div></div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="violation-counter">
+          <span class="violation-label">VIOLATIONS</span>
+          <div class="violation-pips">
+            <span class="pip" id="pip1"></span>
+            <span class="pip" id="pip2"></span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="exam-body">
+      <aside class="question-palette">
+        <div class="palette-title">Questions</div>
+        <div class="palette-grid" id="paletteGrid"></div>
+        <div class="palette-legend">
+          <span class="legend-item"><span class="legend-dot answered"></span>Answered</span>
+          <span class="legend-item"><span class="legend-dot current"></span>Current</span>
+          <span class="legend-item"><span class="legend-dot unanswered"></span>Pending</span>
+        </div>
+        <button id="submitBtn" class="btn-submit">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Submit Exam
+        </button>
+      </aside>
+
+      <main class="question-area">
+        <div class="progress-row">
+          <span id="questionCounter" class="question-counter">Question 1 of 10</span>
+          <div class="progress-bar-wrap"><div id="progressBar" class="progress-bar-fill"></div></div>
+          <span id="progressPercent" class="progress-percent">0%</span>
+        </div>
+        <div class="question-card">
+          <div class="q-number-badge" id="qBadge">Q1</div>
+          <div class="question-text" id="questionText">Loading...</div>
+          <div class="options-grid" id="optionsGrid"></div>
+        </div>
+        <div class="nav-row">
+          <button id="prevBtn" class="btn-nav btn-prev" disabled>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Previous
+          </button>
+          <div id="navDots"></div>
+          <button id="nextBtn" class="btn-nav btn-next">
+            Next
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ══ RESULT SCREEN ══ -->
+  <div id="resultScreen" class="screen">
+    <div class="result-bg"></div>
+    <div class="result-container">
+      <div id="resultIcon" class="result-icon">🏆</div>
+      <div class="result-brand">EXAM COMPLETE</div>
+      <h2 id="resultStatus" class="result-status pass">PASS</h2>
+      <div id="resultScore" class="result-score">80%</div>
+      <div class="result-stats">
+        <div class="stat-card"><div class="stat-num" id="statTotal">10</div><div class="stat-label">Total</div></div>
+        <div class="stat-card correct-card"><div class="stat-num" id="statCorrect">8</div><div class="stat-label">Correct</div></div>
+        <div class="stat-card wrong-card"><div class="stat-num" id="statWrong">2</div><div class="stat-label">Wrong</div></div>
+        <div class="stat-card skip-card"><div class="stat-num" id="statSkipped">0</div><div class="stat-label">Skipped</div></div>
+      </div>
+      <div class="violations-summary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span id="vsText">0 violations detected</span>
+      </div>
+      <div class="review-section">
+        <h3 class="review-title">Answer Review</h3>
+        <div id="reviewList" class="review-list"></div>
+      </div>
+      <div class="result-btns">
+        <button id="retakeBtn" class="btn-retake">Retake Exam</button>
+        <button id="backHomeFromResult" class="btn-retake btn-retake-home">← Home</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

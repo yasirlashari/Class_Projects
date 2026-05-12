@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color Palette Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f4f4f4;color:#1a1a1a;min-height:100vh;}
+
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* LEFT */
+.left{width:320px;min-width:280px;background:#fff;border-right:1px solid #e8e8e8;display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;}
+
+.left-top{padding:20px 20px 16px;border-bottom:1px solid #f0f0f0;}
+.title{font-size:15px;font-weight:600;color:#1a1a1a;margin-bottom:2px;}
+.subtitle{font-size:11px;color:#aaa;letter-spacing:.04em;}
+
+.btn-gen{
+  margin:16px 20px;
+  cursor:pointer;background:#1a1a1a;color:#fff;border:none;border-radius:8px;
+  padding:12px;font-size:13px;font-weight:500;font-family:'Inter',sans-serif;
+  transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-gen:hover{background:#333;transform:translateY(-1px)}
+.btn-gen:active{transform:scale(.97)}
+.btn-gen .ico{display:inline-block;}
+.btn-gen.spin .ico{animation:spinOnce .5s ease forwards}
+@keyframes spinOnce{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+.theme-name{
+  margin:0 20px 16px;
+  font-size:11px;color:#aaa;text-align:center;
+  padding:7px;background:#f8f8f8;border-radius:6px;
+  border:1px solid #f0f0f0;
+}
+.theme-name b{color:#1a1a1a;font-weight:500;}
+
+/* SLOTS */
+.slots{flex:1;overflow-y:auto;padding:0 20px 20px;}
+.group-title{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#bbb;margin:16px 0 8px;font-weight:500;}
+
+.slot{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 10px;border-radius:8px;
+  border:1px solid #f0f0f0;background:#fafafa;
+  margin-bottom:6px;cursor:pointer;transition:all .15s;
+}
+.slot:hover{border-color:#ccc;background:#f5f5f5;}
+.slot.active{border-color:#1a1a1a;background:#f5f5f5;}
+.swatch{width:34px;height:34px;border-radius:6px;border:1px solid rgba(0,0,0,.06);flex-shrink:0;transition:transform .2s;}
+.slot:hover .swatch{transform:scale(1.1)}
+.info{flex:1;}
+.role{font-size:11px;color:#888;margin-bottom:1px;}
+.hexval{font-family:monospace;font-size:13px;font-weight:500;color:#1a1a1a;}
+.copy-btn{
+  cursor:pointer;background:none;border:1px solid #e8e8e8;border-radius:5px;
+  padding:4px 8px;font-size:10px;color:#999;font-family:'Inter',sans-serif;
+  transition:all .15s;flex-shrink:0;
+}
+.copy-btn:hover{background:#f0f0f0;color:#444;border-color:#ccc;}
+
+/* PICKER */
+.picker-box{padding:14px 20px;border-top:1px solid #f0f0f0;display:none;}
+.picker-box.open{display:block;}
+.picker-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#aaa;margin-bottom:10px;}
+.picker-row{display:flex;gap:8px;align-items:center;}
+input[type=color]{width:40px;height:40px;border-radius:6px;border:1px solid #e8e8e8;cursor:pointer;padding:2px;}
+.hex-in{flex:1;border:1px solid #e8e8e8;border-radius:6px;padding:9px 10px;font-family:monospace;font-size:13px;outline:none;transition:border-color .15s;}
+.hex-in:focus{border-color:#1a1a1a;}
+.apply-btn{cursor:pointer;background:#1a1a1a;color:#fff;border:none;border-radius:6px;padding:9px 14px;font-size:12px;font-weight:500;font-family:'Inter',sans-serif;}
+.apply-btn:hover{background:#333;}
+
+/* RIGHT */
+.right{flex:1;overflow-y:auto;background:#f4f4f4;padding:28px;}
+.section-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#aaa;margin-bottom:14px;font-weight:500;}
+
+/* STRIP */
+.strip-wrap{background:#fff;border-radius:10px;padding:16px;margin-bottom:20px;border:1px solid #e8e8e8;}
+.strip{display:flex;gap:5px;height:40px;}
+.strip-cell{flex:1;border-radius:5px;cursor:pointer;transition:transform .2s;position:relative;display:flex;align-items:center;justify-content:center;}
+.strip-cell:hover{transform:scaleY(1.18);}
+.strip-hex{font-size:9px;font-family:monospace;color:#fff;opacity:0;transition:opacity .2s;font-weight:600;background:rgba(0,0,0,.2);padding:2px 5px;border-radius:3px;pointer-events:none;}
+.strip-cell:hover .strip-hex{opacity:1;}
+
+/* MOCK BROWSER */
+.browser{border-radius:10px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.1);margin-bottom:20px;border:1px solid rgba(0,0,0,.06);}
+.browser-bar{background:#e8e8e8;padding:9px 12px;display:flex;align-items:center;gap:7px;}
+.dot{width:9px;height:9px;border-radius:50%;background:#d0d0d0;}
+.url{flex:1;background:#fff;border-radius:4px;padding:4px 10px;font-size:10px;color:#aaa;font-family:monospace;margin-left:6px;}
+
+/* WEBSITE PREVIEW */
+.site{min-height:420px;}
+.pv-nav{display:flex;align-items:center;padding:0 28px;height:54px;justify-content:space-between;transition:background .35s;}
+.pv-logo{font-size:15px;font-weight:600;letter-spacing:-.02em;}
+.pv-links{display:flex;gap:20px;}
+.pv-link{font-size:12px;opacity:.65;}
+.pv-cta{font-size:11px;font-weight:500;padding:7px 16px;border-radius:20px;border:none;cursor:pointer;font-family:'Inter',sans-serif;}
+.pv-hero{padding:52px 28px 44px;transition:background .35s;}
+.pv-tag{font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.5;margin-bottom:12px;}
+.pv-h1{font-size:36px;font-weight:600;line-height:1.15;letter-spacing:-.02em;margin-bottom:14px;}
+.pv-p{font-size:13px;line-height:1.7;opacity:.55;max-width:420px;margin-bottom:24px;}
+.pv-btns{display:flex;gap:8px;}
+.pv-btn{padding:10px 20px;border-radius:6px;font-size:12px;font-weight:500;border:none;cursor:pointer;font-family:'Inter',sans-serif;}
+.pv-ghost{padding:10px 20px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:transparent;font-family:'Inter',sans-serif;}
+.pv-cards{padding:28px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;transition:background .35s;}
+.pv-card{border-radius:8px;padding:18px;border:1px solid rgba(0,0,0,.06);transition:background .35s,border-color .35s;}
+.card-icon{width:28px;height:28px;border-radius:7px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.card-title{font-size:13px;font-weight:600;margin-bottom:4px;}
+.card-text{font-size:11px;line-height:1.6;opacity:.5;}
+.pv-footer{padding:16px 28px;font-size:11px;opacity:.35;border-top:1px solid rgba(0,0,0,.06);display:flex;justify-content:space-between;transition:background .35s,color .35s;}
+
+/* CSS BOX */
+.css-box{background:#1a1a1a;border-radius:10px;padding:16px 18px;font-family:monospace;font-size:11px;line-height:1.9;color:#ccc;position:relative;}
+.css-copy{position:absolute;top:12px;right:12px;cursor:pointer;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:5px;padding:4px 10px;font-size:10px;color:#aaa;font-family:'Inter',sans-serif;transition:all .15s;}
+.css-copy:hover{background:rgba(255,255,255,.16);color:#fff;}
+.cv{color:#7ec8e3;}.vl{color:#e8c97a;}.cm{color:#555;font-size:10px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:#1a1a1a;color:#fff;border-radius:7px;padding:9px 16px;font-size:12px;z-index:999;transform:translateY(8px);opacity:0;transition:all .22s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- LEFT -->
+  <div class="left">
+    <div class="left-top">
+      <div class="title">Color Palette Generator</div>
+      <div class="subtitle">Website ke liye colors chunein</div>
+    </div>
+
+    <button class="btn-gen" id="gen-btn" onclick="generate()">
+      <span class="ico">↻</span> Generate New Palette
+    </button>
+
+    <div class="theme-name" id="theme-name">Theme: <b>—</b></div>
+
+    <div class="slots">
+      <div class="group-title">Layout</div>
+      <div class="slot" id="slot-bg" onclick="openPicker('bg')">
+        <div class="swatch" id="sw-bg"></div>
+        <div class="info"><div class="role">Background</div><div class="hexval" id="hx-bg">—</div></div>
+        <button class="copy-btn" onclick="event.stopPropagation();cp('bg')">Copy</button>
+      </div>
+      <div class="slot" id="slot-surface" onclick="openPicker('surface')">
+        <div class="swatch" id="sw-surface"></div>
+        <div class="info"><div class="role">Surface / Cards</div><div class="hexval" id="hx-surface">—</div></div>
+        <button class="copy-btn" onclick="event.stopPropagation();cp('surface')">Copy</button>
+      </div>
+
+      <div class="group-title">Navbar</div>
+      <div class="slot" id="slot-nav" onclick="openPicker('nav')">
+        <div class="swatch" id="sw-nav"></div>
+        <div class="info"><div class="role">Navbar Background</div><div class="hexval" id="hx-nav">—</div></div>
+        <button class="copy-btn" onclick="event.stopPropagation();cp('nav')">Copy</button>
+      </div>
+      <div class="slot" id="slot-navtext" onclick="openPicker('navtext')">
+        <div class="swatch" id="sw-navtext"></div>
+        <div class="info"><div class="role">Navbar Text</div><div class="hexval" id="hx-navtext">—</div></div>
+        <button class="copy-btn" onclick="event.stopPropagation();cp('navtext')">Copy</button>
+      </div>
+
+      <div class="group-title">Text</div>
+      <div class="slot" id="slot-text" onclick="openPicker('text')">
+        <div class="swatch" id="sw-text"></div>
+        <div class="info"><div class="role">Primary Text</div><div class="hexval" id="hx-text">—</div></div>
+        <button class="copy-btn" onclick="event.stopPropagation();cp('text')">Copy</button>
+      </div>
+      <div class="slot" id="slot-muted" onclick="openPicker('muted')">
+        <div class="swatch" id="sw-muted"></div>
+        <div class="info"><div class="role">Muted Text</div><div class="hexval" id="hx-muted">—</div></div>
+        <button class="copy-btn" onclick="event.stopPropagation();cp('muted')">Copy</button>
+      </div>
+
+      <div class="group-title">Buttons</div>
+      <div class="slot" id="slot-primary" onclick="openPicker('primary')">
+        <div class="swatch" id="sw-primary"></div>
+        <div class="info"><div class="role">Primary Button</div><div class="hexval" id="hx-primary">—</div></div>
+        <button class="copy-btn" onclick="event.stopPropagation();cp('primary')">Copy</button>
+      </div>
+      <div class="slot" id="slot-btntext" onclick="openPicker('btntext')">
+        <div class="swatch" id="sw-btntext"></div>
+        <div class="info"><div class="role">Button Text</div><div class="hexval" id="hx-btntext">—</div></div>
+        <button class="copy-btn" onclick="event.stopPropagation();cp('btntext')">Copy</button>
+      </div>
+      <div class="slot" id="slot-accent" onclick="openPicker('accent')">
+        <div class="swatch" id="sw-accent"></div>
+        <div class="info"><div class="role">Accent</div><div class="hexval" id="hx-accent">—</div></div>
+        <button class="copy-btn" onclick="event.stopPropagation();cp('accent')">Copy</button>
+      </div>
+
+      <div class="group-title">Border</div>
+      <div class="slot" id="slot-border" onclick="openPicker('border')">
+        <div class="swatch" id="sw-border"></div>
+        <div class="info"><div class="role">Border / Divider</div><div class="hexval" id="hx-border">—</div></div>
+        <button class="copy-btn" onclick="event.stopPropagation();cp('border')">Copy</button>
+      </div>
+    </div>
+
+    <div class="picker-box" id="picker-box">
+      <div class="picker-label" id="picker-label">Edit color</div>
+      <div class="picker-row">
+        <input type="color" id="cpicker" oninput="onPick(this.value)">
+        <input type="text" class="hex-in" id="hexin" placeholder="#rrggbb" oninput="onHexIn(this.value)">
+        <button class="apply-btn" onclick="applyColor()">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right">
+    <div class="section-label">Color Strip</div>
+    <div class="strip-wrap">
+      <div class="strip" id="strip"></div>
+    </div>
+
+    <div class="section-label">Website Preview</div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <div class="url">https://meri-website.com</div>
+      </div>
+      <div class="site" id="site">
+        <div class="pv-nav" id="pv-nav">
+          <div class="pv-logo" id="pv-logo">MySite</div>
+          <div class="pv-links">
+            <span class="pv-link" id="pvl1">Home</span>
+            <span class="pv-link" id="pvl2">About</span>
+            <span class="pv-link" id="pvl3">Contact</span>
+          </div>
+          <button class="pv-cta" id="pv-cta">Get Started</button>
+        </div>
+        <div class="pv-hero" id="pv-hero">
+          <div class="pv-tag" id="pv-tag">✦ Welcome</div>
+          <div class="pv-h1" id="pv-h1">Build something<br>great today</div>
+          <div class="pv-p" id="pv-p">Yeh aapki website ka main section hai. Yahan apna message likho aur customers ko attract karo.</div>
+          <div class="pv-btns">
+            <button class="pv-btn" id="pv-btn">Start Now</button>
+            <button class="pv-ghost" id="pv-ghost">Learn More →</button>
+          </div>
+        </div>
+        <div class="pv-cards" id="pv-cards">
+          <div class="pv-card" id="pvc1"><div class="card-icon" id="pvi1">⚡</div><div class="card-title" id="pvct1">Fast</div><div class="card-text" id="pvcx1">Lightning fast performance for your users.</div></div>
+          <div class="pv-card" id="pvc2"><div class="card-icon" id="pvi2">🎨</div><div class="card-title" id="pvct2">Beautiful</div><div class="card-text" id="pvcx2">Stunning design that stands out always.</div></div>
+          <div class="pv-card" id="pvc3"><div class="card-icon" id="pvi3">🔒</div><div class="card-title" id="pvct3">Secure</div><div class="card-text" id="pvcx3">Enterprise-grade security built in.</div></div>
+        </div>
+        <div class="pv-footer" id="pv-footer"><span>© 2025 MySite</span><span>Privacy · Terms</span></div>
+      </div>
+    </div>
+
+    <div class="section-label">CSS Variables</div>
+    <div class="css-box">
+      <button class="css-copy" onclick="copyCss()">Copy</button>
+      <div id="css-out"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const slots = ['bg','surface','nav','navtext','text','muted','primary','btntext','accent','border'];
+let C = {}, activeSlot = null;
+
+// Shuffle queue - ensures no repeats until all themes are shown
+let shuffleQueue = [];
+let lastUsedName = '';
+
+function buildShuffledQueue() {
+  // Fisher-Yates shuffle
+  const arr = themes.map((_, i) => i);
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  // Make sure first item isn't same as last used
+  if (arr[0] === themes.findIndex(t => t.name === lastUsedName)) {
+    arr.push(arr.shift());
+  }
+  return arr;
+}
+
+const themes = [
+  // --- LIGHT THEMES ---
+  { name:'Clean Light',        bg:'#ffffff', surface:'#f8f6f2', nav:'#ffffff', navtext:'#1a1a1a', text:'#1a1a1a', muted:'#888888', primary:'#2563eb', btntext:'#ffffff', accent:'#f59e0b', border:'#e8e4dc' },
+  { name:'Warm Earth',         bg:'#fdf6ee', surface:'#faf0e4', nav:'#3d2314', navtext:'#f5e6d0', text:'#2d1a0e', muted:'#8a6a54', primary:'#c17a3c', btntext:'#fff8f0', accent:'#e85d26', border:'#e8d5bc' },
+  { name:'Cool Ocean',         bg:'#f0f4f8', surface:'#e8edf3', nav:'#1e2d3d', navtext:'#cdd9e5', text:'#1e2d3d', muted:'#6b8299', primary:'#0ea5e9', btntext:'#ffffff', accent:'#06b6d4', border:'#c8d6e0' },
+  { name:'Bold Purple',        bg:'#ffffff', surface:'#f4f0ff', nav:'#1a0533', navtext:'#ffffff', text:'#1a0533', muted:'#6b5f7a', primary:'#7c3aed', btntext:'#ffffff', accent:'#f43f5e', border:'#e4d9ff' },
+  { name:'Soft Pastel',        bg:'#fef9ff', surface:'#f9f0fb', nav:'#f3e8ff', navtext:'#5b3d6e', text:'#3d2850', muted:'#9d7ab5', primary:'#c084fc', btntext:'#3d2850', accent:'#fb7185', border:'#e9d5f5' },
+  { name:'Forest Green',       bg:'#f2faf4', surface:'#e6f5ea', nav:'#1a3a25', navtext:'#d4f0dc', text:'#1a3a25', muted:'#5a8a68', primary:'#16a34a', btntext:'#ffffff', accent:'#f59e0b', border:'#c0e4cc' },
+  { name:'Rose Gold',          bg:'#fff8f8', surface:'#fdf0f0', nav:'#4a1c2c', navtext:'#fde8ee', text:'#3a1020', muted:'#a06070', primary:'#e11d48', btntext:'#ffffff', accent:'#f97316', border:'#f5c8d0' },
+  { name:'Deep Navy',          bg:'#f0f2ff', surface:'#e4e8ff', nav:'#0a0e3a', navtext:'#c8d0ff', text:'#0a0e3a', muted:'#5a6080', primary:'#4f46e5', btntext:'#ffffff', accent:'#22d3ee', border:'#c0c8f0' },
+  { name:'Sunset Orange',      bg:'#fff7f0', surface:'#ffede0', nav:'#3a1800', navtext:'#ffe4cc', text:'#3a1800', muted:'#8a5a40', primary:'#ea580c', btntext:'#ffffff', accent:'#eab308', border:'#f5d0b0' },
+  { name:'Teal Mint',          bg:'#f0fdf9', surface:'#e0faf3', nav:'#0f3830', navtext:'#ccfce8', text:'#0f3830', muted:'#4a8070', primary:'#0d9488', btntext:'#ffffff', accent:'#84cc16', border:'#b0e8d8' },
+  { name:'Sky Blue',           bg:'#f0f8ff', surface:'#e0f0ff', nav:'#003366', navtext:'#cce5ff', text:'#003366', muted:'#5588aa', primary:'#0066cc', btntext:'#ffffff', accent:'#ff6b35', border:'#b8d8f0' },
+  { name:'Slate Modern',       bg:'#f8f9fa', surface:'#f1f3f5', nav:'#212529', navtext:'#dee2e6', text:'#212529', muted:'#6c757d', primary:'#0d6efd', btntext:'#ffffff', accent:'#20c997', border:'#dee2e6' },
+  { name:'Ivory Classic',      bg:'#fffff0', surface:'#fafae8', nav:'#2c2c1a', navtext:'#f5f5d0', text:'#2c2c1a', muted:'#8a8a60', primary:'#8b7355', btntext:'#fffff0', accent:'#c8a84b', border:'#e0ddc0' },
+  { name:'Peach Blossom',      bg:'#fff5f0', surface:'#ffeee8', nav:'#5c2018', navtext:'#ffd8cc', text:'#3c1810', muted:'#b08070', primary:'#e05030', btntext:'#ffffff', accent:'#f0a030', border:'#f8d0c0' },
+  { name:'Lavender Dream',     bg:'#f8f5ff', surface:'#f0eaff', nav:'#2d1b5e', navtext:'#e8d8ff', text:'#2d1b5e', muted:'#8070a8', primary:'#9b59b6', btntext:'#ffffff', accent:'#e91e8c', border:'#ddd0f5' },
+  { name:'Sage Mist',          bg:'#f5f8f5', surface:'#edf2ec', nav:'#2a3d2a', navtext:'#d8ead8', text:'#2a3d2a', muted:'#70906a', primary:'#4a7c59', btntext:'#ffffff', accent:'#e8a030', border:'#c8dcc8' },
+  { name:'Arctic White',       bg:'#f8fbff', surface:'#eef4ff', nav:'#0d1f3c', navtext:'#d0e4ff', text:'#0d1f3c', muted:'#5070a0', primary:'#1565c0', btntext:'#ffffff', accent:'#00bcd4', border:'#c0d8f0' },
+  { name:'Cream Caramel',      bg:'#fdf8f0', surface:'#f8f0e0', nav:'#4a3020', navtext:'#f0e0c8', text:'#3a2010', muted:'#9a7858', primary:'#b8762a', btntext:'#fdf8f0', accent:'#e87830', border:'#e8d8b8' },
+  { name:'Dusty Rose',         bg:'#fdf4f4', surface:'#f8ece8', nav:'#5a2830', navtext:'#f8d8d8', text:'#3a1820', muted:'#b08080', primary:'#c04060', btntext:'#ffffff', accent:'#e8804a', border:'#f0c8c8' },
+  { name:'Citrus Fresh',       bg:'#fffff5', surface:'#fafae8', nav:'#2c3800', navtext:'#e8f0a0', text:'#1e2800', muted:'#7a8a40', primary:'#7cb800', btntext:'#1e2800', accent:'#ff8c00', border:'#d8e8a0' },
+  { name:'Blush Nude',         bg:'#fdf8f5', surface:'#f8f0ea', nav:'#4a3028', navtext:'#f0e0d8', text:'#3c2820', muted:'#a08878', primary:'#c87060', btntext:'#ffffff', accent:'#e8b090', border:'#eed8cc' },
+  { name:'Aqua Spring',        bg:'#f0fffd', surface:'#e0faf5', nav:'#0a3030', navtext:'#c0f0e8', text:'#0a3030', muted:'#408888', primary:'#00a896', btntext:'#ffffff', accent:'#f6ae2d', border:'#a0e0d8' },
+  { name:'Coral Reef',         bg:'#fff8f5', surface:'#ffede8', nav:'#5c1a0a', navtext:'#ffd8cc', text:'#3c1208', muted:'#b86050', primary:'#ff5722', btntext:'#ffffff', accent:'#ffc107', border:'#f8c8b8' },
+  { name:'Lemon Zest',         bg:'#fffdf0', surface:'#fff8dc', nav:'#4a4000', navtext:'#fff0a0', text:'#3a3000', muted:'#9a9030', primary:'#d4b000', btntext:'#3a3000', accent:'#ff6b35', border:'#ede8a0' },
+  { name:'Nordic Frost',       bg:'#f5f8fa', surface:'#edf2f5', nav:'#1a2a38', navtext:'#d0dce8', text:'#1a2a38', muted:'#6080a0', primary:'#2a6496', btntext:'#ffffff', accent:'#e74c3c', border:'#c8d8e8' },
+
+  // --- DARK THEMES ---
+  { name:'Midnight Dark',      bg:'#0f0f13', surface:'#1a1a24', nav:'#13131e', navtext:'#e8e4dc', text:'#e8e4dc', muted:'#666677', primary:'#6366f1', btntext:'#ffffff', accent:'#f59e0b', border:'#2a2a3a' },
+  { name:'Charcoal Gold',      bg:'#1c1c1e', surface:'#2c2c2e', nav:'#111113', navtext:'#f5e6c8', text:'#f5e6c8', muted:'#888870', primary:'#d4a017', btntext:'#1c1c1e', accent:'#e85d26', border:'#3a3a3c' },
+  { name:'Monochrome',         bg:'#fafafa', surface:'#f0f0f0', nav:'#111111', navtext:'#ffffff', text:'#111111', muted:'#777777', primary:'#333333', btntext:'#ffffff', accent:'#555555', border:'#dddddd' },
+  { name:'Obsidian',           bg:'#0a0a0a', surface:'#151515', nav:'#080808', navtext:'#e0e0e0', text:'#e0e0e0', muted:'#555555', primary:'#00ff88', btntext:'#0a0a0a', accent:'#ff3366', border:'#222222' },
+  { name:'Deep Crimson',       bg:'#120008', surface:'#1e0010', nav:'#0a0005', navtext:'#ffd0e0', text:'#ffd0e0', muted:'#884466', primary:'#ff2d55', btntext:'#ffffff', accent:'#ff9f0a', border:'#3a0020' },
+  { name:'Dark Ocean',         bg:'#050d1a', surface:'#0a1828', nav:'#030a14', navtext:'#b0d0f0', text:'#b0d0f0', muted:'#3a6080', primary:'#0a84ff', btntext:'#ffffff', accent:'#30d158', border:'#0f2535' },
+  { name:'Neon Night',         bg:'#080b14', surface:'#10152a', nav:'#060810', navtext:'#e0e8ff', text:'#e0e8ff', muted:'#404870', primary:'#7b2fff', btntext:'#ffffff', accent:'#00f5a0', border:'#1a2040' },
+  { name:'Dark Forest',        bg:'#080f09', surface:'#101a12', nav:'#060c07', navtext:'#a0d8a8', text:'#a0d8a8', muted:'#3a6040', primary:'#22c55e', btntext:'#080f09', accent:'#f59e0b', border:'#162018' },
+  { name:'Ember Dark',         bg:'#110806', surface:'#1e100c', nav:'#0e0604', navtext:'#ffd0b8', text:'#ffd0b8', muted:'#7a4030', primary:'#ff6b35', btntext:'#110806', accent:'#ffc107', border:'#301510' },
+  { name:'Violet Noir',        bg:'#0c0814', surface:'#14101f', nav:'#08050f', navtext:'#d8c8f8', text:'#d8c8f8', muted:'#5a4880', primary:'#a855f7', btntext:'#ffffff', accent:'#f43f5e', border:'#201838' },
+  { name:'Slate Dark',         bg:'#0f1117', surface:'#171c26', nav:'#0c0e14', navtext:'#c8d4e8', text:'#c8d4e8', muted:'#4a5568', primary:'#3b82f6', btntext:'#ffffff', accent:'#10b981', border:'#1e2535' },
+  { name:'Onyx Silver',        bg:'#111111', surface:'#1e1e1e', nav:'#0a0a0a', navtext:'#d0d0d0', text:'#d0d0d0', muted:'#606060', primary:'#a0a0a0', btntext:'#111111', accent:'#e0e0e0', border:'#2a2a2a' },
+  { name:'Dark Amber',         bg:'#0e0c06', surface:'#1a1710', nav:'#0a0804', navtext:'#f0d890', text:'#f0d890', muted:'#7a6830', primary:'#f59e0b', btntext:'#0e0c06', accent:'#ef4444', border:'#2a2410' },
+  { name:'Cyberpunk',          bg:'#0a0510', surface:'#150c20', nav:'#080410', navtext:'#00ffcc', text:'#e0d8ff', muted:'#5a3888', primary:'#ff00aa', btntext:'#0a0510', accent:'#00ffcc', border:'#2a1040' },
+  { name:'Aurora Dark',        bg:'#060d14', surface:'#0c1820', nav:'#040a10', navtext:'#80f0d0', text:'#c8f0e8', muted:'#306050', primary:'#00d4a0', btntext:'#060d14', accent:'#ff6b9d', border:'#102830' },
+  { name:'Dusk Purple',        bg:'#12101e', surface:'#1c1830', nav:'#0e0c18', navtext:'#c8c0e8', text:'#c8c0e8', muted:'#5850a0', primary:'#8b7edd', btntext:'#12101e', accent:'#ff9f68', border:'#28204a' },
+  { name:'Dark Teal',          bg:'#051414', surface:'#0a2020', nav:'#030e0e', navtext:'#80d8d0', text:'#a0e8e0', muted:'#305858', primary:'#14b8a6', btntext:'#051414', accent:'#f59e0b', border:'#0f2828' },
+  { name:'Coffee Dark',        bg:'#0e0a06', surface:'#1a140e', nav:'#0a0804', navtext:'#d8c0a0', text:'#d8c0a0', muted:'#7a6048', primary:'#c8974a', btntext:'#0e0a06', accent:'#e07030', border:'#281e14' },
+
+  // --- SPECIAL / UNIQUE THEMES ---
+  { name:'Glassmorphic',       bg:'#e8f0fe', surface:'#d8e8ff', nav:'#1a3060', navtext:'#c8deff', text:'#1a3060', muted:'#5070b0', primary:'#4285f4', btntext:'#ffffff', accent:'#ea4335', border:'#b8d0f8' },
+  { name:'Retro Terminal',     bg:'#0d1117', surface:'#161b22', nav:'#090d12', navtext:'#00ff41', text:'#00ff41', muted:'#007a20', primary:'#00cc33', btntext:'#0d1117', accent:'#ffcc00', border:'#1a3020' },
+  { name:'Candy Pop',          bg:'#fff0f8', surface:'#ffe0f4', nav:'#ff1493', navtext:'#ffffff', text:'#880044', muted:'#cc80aa', primary:'#ff69b4', btntext:'#ffffff', accent:'#00d4ff', border:'#ffb8e8' },
+  { name:'Mango Tango',        bg:'#fffaf0', surface:'#fff3dc', nav:'#7a3800', navtext:'#ffe8b0', text:'#4a2000', muted:'#c08040', primary:'#ff8c00', btntext:'#ffffff', accent:'#e8005a', border:'#f8d890' },
+  { name:'Neptune Blue',       bg:'#f0f8ff', surface:'#dff0ff', nav:'#003060', navtext:'#a0d8ff', text:'#002050', muted:'#4080c0', primary:'#0050c8', btntext:'#ffffff', accent:'#00e5ff', border:'#a0c8f0' },
+  { name:'Sakura Pink',        bg:'#fff8fb', surface:'#ffe8f4', nav:'#5c1a3a', navtext:'#ffc8e8', text:'#3c0a28', muted:'#b87090', primary:'#db2777', btntext:'#ffffff', accent:'#f59e0b', border:'#f8d0e8' },
+  { name:'Golden Hour',        bg:'#fdf8e8', surface:'#f8f0c8', nav:'#5a3800', navtext:'#fce08a', text:'#3a2000', muted:'#9a7820', primary:'#e8a800', btntext:'#3a2000', accent:'#e84800', border:'#e8d880' },
+  { name:'Electric Lime',      bg:'#f5ffe0', surface:'#eaffc0', nav:'#1a3000', navtext:'#c8ff60', text:'#182800', muted:'#607840', primary:'#86e000', btntext:'#182800', accent:'#ff4500', border:'#c8f080' },
+  { name:'Smoky Quartz',       bg:'#f5f0ec', surface:'#ede5e0', nav:'#3a2d28', navtext:'#ede0d8', text:'#2a1e18', muted:'#9a8078', primary:'#8b6558', btntext:'#ffffff', accent:'#c09060', border:'#d8ccc8' },
+  { name:'Velvet Noir',        bg:'#12080e', surface:'#1e1018', nav:'#0c0608', navtext:'#e8c8d8', text:'#e8c8d8', muted:'#806070', primary:'#cc3366', btntext:'#ffffff', accent:'#ff9944', border:'#3a1828' },
+];
+
+function generate() {
+  if (shuffleQueue.length === 0) shuffleQueue = buildShuffledQueue();
+  const idx = shuffleQueue.shift();
+  lastUsedName = themes[idx].name;
+  C = {...themes[idx]};
+  document.getElementById('theme-name').innerHTML = 'Theme: <b>' + themes[idx].name + '</b> <span style="font-size:10px;color:#bbb">(' + (themes.length - shuffleQueue.length) + '/' + themes.length + ')</span>';
+  const btn = document.getElementById('gen-btn');
+  btn.classList.add('spin');
+  setTimeout(() => btn.classList.remove('spin'), 520);
+  renderAll();
+}
+
+function renderAll() {
+  slots.forEach(s => {
+    const sw = document.getElementById('sw-'+s);
+    const hx = document.getElementById('hx-'+s);
+    if(sw) sw.style.background = C[s];
+    if(hx) hx.textContent = C[s].toUpperCase();
+  });
+  updatePreview(); updateStrip(); updateCss();
+}
+
+function updatePreview() {
+  const c = C;
+  document.getElementById('site').style.background = c.bg;
+  const nav = document.getElementById('pv-nav');
+  nav.style.background = c.nav; nav.style.borderBottom = '1px solid '+c.border;
+  ['pv-logo','pvl1','pvl2','pvl3'].forEach(id => document.getElementById(id).style.color = c.navtext);
+  const cta = document.getElementById('pv-cta');
+  cta.style.background = c.primary; cta.style.color = c.btntext;
+  document.getElementById('pv-hero').style.background = c.bg;
+  document.getElementById('pv-tag').style.color = c.accent;
+  document.getElementById('pv-h1').style.color = c.text;
+  document.getElementById('pv-p').style.color = c.muted;
+  const pb = document.getElementById('pv-btn');
+  pb.style.background = c.primary; pb.style.color = c.btntext;
+  const gh = document.getElementById('pv-ghost');
+  gh.style.color = c.primary; gh.style.border = '1.5px solid '+c.primary;
+  document.getElementById('pv-cards').style.background = c.surface;
+  [1,2,3].forEach(i => {
+    document.getElementById('pvc'+i).style.background = c.bg;
+    document.getElementById('pvc'+i).style.borderColor = c.border;
+    document.getElementById('pvct'+i).style.color = c.text;
+    document.getElementById('pvcx'+i).style.color = c.muted;
+    document.getElementById('pvi'+i).style.background = c.accent+'22';
+  });
+  const ft = document.getElementById('pv-footer');
+  ft.style.background = c.nav; ft.style.color = c.navtext; ft.style.borderTopColor = c.border;
+}
+
+function updateStrip() {
+  const keys = ['bg','nav','primary','accent','text','surface','muted','border'];
+  document.getElementById('strip').innerHTML = keys.map(k => `
+    <div class="strip-cell" style="background:${C[k]}" onclick="toast_show('${C[k].toUpperCase()} copied!')||navigator.clipboard.writeText('${C[k]}')">
+      <span class="strip-hex">${C[k].toUpperCase()}</span>
+    </div>`).join('');
+}
+
+function updateCss() {
+  const map = {bg:'background',surface:'surface',nav:'nav-bg',navtext:'nav-text',text:'text-primary',muted:'text-muted',primary:'primary',btntext:'btn-text',accent:'accent',border:'border'};
+  let h = '<span class="cm">/* Color Palette */</span>\n:root {\n';
+  slots.forEach(s => { h += `  <span class="cv">--${map[s]}</span>: <span class="vl">${C[s].toUpperCase()}</span>;\n`; });
+  h += '}';
+  document.getElementById('css-out').innerHTML = h;
+}
+
+function openPicker(slot) {
+  document.querySelectorAll('.slot').forEach(s => s.classList.remove('active'));
+  document.getElementById('slot-'+slot).classList.add('active');
+  activeSlot = slot;
+  document.getElementById('picker-box').classList.add('open');
+  const role = document.getElementById('slot-'+slot).querySelector('.role').textContent;
+  document.getElementById('picker-label').textContent = 'Edit: ' + role;
+  document.getElementById('cpicker').value = C[slot];
+  document.getElementById('hexin').value = C[slot].toUpperCase();
+}
+
+function onPick(v) { document.getElementById('hexin').value = v.toUpperCase(); }
+function onHexIn(v) { if(/^#[0-9a-fA-F]{6}$/.test(v)) document.getElementById('cpicker').value = v; }
+
+function applyColor() {
+  if(!activeSlot) return;
+  C[activeSlot] = document.getElementById('cpicker').value;
+  renderAll(); toast_show('Color apply ho gaya!');
+}
+
+function cp(slot) { navigator.clipboard.writeText(C[slot].toUpperCase()).then(() => toast_show(C[slot].toUpperCase()+' copied!')); }
+function copyCss() {
+  const t = slots.map(s=>`--color-${s}: ${C[s].toUpperCase()};`).join('\n  ');
+  navigator.clipboard.writeText(`:root {\n  ${t}\n}`).then(() => toast_show('CSS copy ho gayi!'));
+}
+function toast_show(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(window._t); window._t = setTimeout(() => t.classList.remove('show'), 1800);
+  return true;
+}
+
+generate();
+</script>
+</body>
+</html>
