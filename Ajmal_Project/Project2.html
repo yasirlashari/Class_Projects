@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STRIDE — Premium Footwear</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+        }
+      }
+    }
+  </script>
+  <style>
+    ::selection { background: #f43f5e; color: #fff; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0a0a0a; color: #e5e5e5; }
+    .glass-nav { background: rgba(10,10,10,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .glass-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); backdrop-filter: blur(8px); }
+    .glass-card:hover { border-color: rgba(244,63,94,0.3); box-shadow: 0 20px 40px -12px rgba(244,63,94,0.1); }
+    .glow-rose { box-shadow: 0 0 60px rgba(244,63,94,0.15), 0 0 120px rgba(244,63,94,0.05); }
+    .text-gradient { background: linear-gradient(135deg, #f43f5e, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .btn-primary { background: linear-gradient(135deg, #f43f5e, #e11d48); box-shadow: 0 10px 25px -5px rgba(244,63,94,0.35); transition: all 0.3s; }
+    .btn-primary:hover { box-shadow: 0 15px 35px -5px rgba(244,63,94,0.5); transform: translateY(-2px); }
+    .btn-outline { border: 1px solid rgba(255,255,255,0.15); transition: all 0.3s; }
+    .btn-outline:hover { border-color: #f43f5e; background: rgba(244,63,94,0.08); }
+    .img-editable { position: relative; cursor: default; }
+    .img-editable .edit-overlay { display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; align-items: center; justify-content: center; flex-direction: column; gap: 8px; border-radius: inherit; cursor: pointer; }
+    .admin-mode .img-editable .edit-overlay { display: flex; }
+    .admin-mode .img-editable { cursor: pointer; outline: 2px dashed rgba(244,63,94,0.4); outline-offset: 4px; }
+    .admin-badge { display: none; }
+    .admin-mode .admin-badge { display: inline-flex; }
+    .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.7s, transform 0.7s; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+    .star { color: #f43f5e; }
+    .size-btn { transition: all 0.2s; }
+    .size-btn:hover, .size-btn.active { background: #f43f5e; color: #fff; border-color: #f43f5e; }
+    .toast { animation: slideIn 0.4s ease, fadeOut 0.4s ease 2.6s forwards; }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+    @keyframes float { 0%,100% { transform: translateY(0px) rotate(-12deg); } 50% { transform: translateY(-20px) rotate(-12deg); } }
+    .hero-shoe { animation: float 4s ease-in-out infinite; }
+    .marquee { animation: marquee 25s linear infinite; }
+    @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    input[type="file"] { display: none; }
+    .cart-count { animation: pop 0.3s ease; }
+    @keyframes pop { 0% { transform: scale(0.5); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0a0a0a; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #555; }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="fixed top-24 right-6 z-[999] flex flex-col gap-3"></div>
+
+  <!-- File Input -->
+  <input type="file" id="fileInput" accept="image/*">
+
+  <!-- Navigation -->
+  <nav class="glass-nav fixed top-0 left-0 right-0 z-[100] h-20">
+    <div class="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div id="logoArea" class="flex items-center gap-3 cursor-pointer select-none" title="Triple-click for admin">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-orange-400 flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M2 13c0-3.5 2.5-6.5 6-7.5C10.5 4 13 2 16 2c3 0 5 2 6 5 1 3 .5 6-1 8s-4 4-7 5c-3 1-6.5.5-9-1S2 16 2 13z"/></svg>
+          </div>
+          <span class="text-xl font-bold tracking-tight text-white">STRIDE</span>
+          <span class="admin-badge ml-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest bg-rose-500/20 text-rose-400 rounded-full border border-rose-500/30">Admin</span>
+        </div>
+      </div>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#home" class="text-sm font-medium text-neutral-400 hover:text-white transition-colors">Home</a>
+        <a href="#categories" class="text-sm font-medium text-neutral-400 hover:text-white transition-colors">Categories</a>
+        <a href="#products" class="text-sm font-medium text-neutral-400 hover:text-white transition-colors">Products</a>
+        <a href="#arrivals" class="text-sm font-medium text-neutral-400 hover:text-white transition-colors">New Arrivals</a>
+        <a href="#reviews" class="text-sm font-medium text-neutral-400 hover:text-white transition-colors">Reviews</a>
+      </div>
+      <div class="flex items-center gap-4">
+        <button id="searchBtn" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:border-rose-500/50 transition-colors">
+          <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        </button>
+        <button id="cartBtn" class="relative w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:border-rose-500/50 transition-colors">
+          <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span id="cartCount" class="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center cart-count hidden">0</span>
+        </button>
+        <button id="mobileMenuBtn" class="md:hidden w-10 h-10 rounded-full border border-white/10 flex items-center justify-center">
+          <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="fixed inset-0 z-[99] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center gap-8 hidden">
+    <a href="#home" class="text-2xl font-semibold text-white mobile-link">Home</a>
+    <a href="#categories" class="text-2xl font-semibold text-white mobile-link">Categories</a>
+    <a href="#products" class="text-2xl font-semibold text-white mobile-link">Products</a>
+    <a href="#arrivals" class="text-2xl font-semibold text-white mobile-link">New Arrivals</a>
+    <a href="#reviews" class="text-2xl font-semibold text-white mobile-link">Reviews</a>
+  </div>
+
+  <!-- Search Modal -->
+  <div id="searchModal" class="fixed inset-0 z-[200] bg-black/90 backdrop-blur-xl hidden items-center justify-center">
+    <div class="w-full max-w-2xl px-6">
+      <div class="flex items-center gap-4 border-b border-white/10 pb-4">
+        <svg class="w-6 h-6 text-rose-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="searchInput" type="text" placeholder="Search for shoes, brands, styles..." class="w-full bg-transparent text-2xl font-light text-white placeholder:text-neutral-600 outline-none">
+        <button id="closeSearch" class="text-neutral-500 hover:text-white text-sm font-medium">ESC</button>
+      </div>
+      <div id="searchResults" class="mt-8 space-y-4"></div>
+    </div>
+  </div>
+
+  <!-- Cart Drawer -->
+  <div id="cartDrawer" class="fixed inset-0 z-[150] hidden">
+    <div class="absolute inset-0 bg-black/60" id="cartOverlay"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-neutral-950 border-l border-white/5 p-8 overflow-y-auto transform transition-transform duration-300">
+      <div class="flex items-center justify-between mb-8">
+        <h3 class="text-xl font-semibold text-white">Your Cart</h3>
+        <button id="closeCart" class="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center hover:border-rose-500/50">
+          <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="cartItems" class="space-y-4"></div>
+      <div id="cartEmpty" class="text-center py-16">
+        <svg class="w-16 h-16 mx-auto text-neutral-700 mb-4" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <p class="text-neutral-500 font-medium">Your cart is empty</p>
+      </div>
+      <div id="cartFooter" class="hidden mt-8 pt-6 border-t border-white/10">
+        <div class="flex justify-between mb-4">
+          <span class="text-neutral-400">Subtotal</span>
+          <span id="cartTotal" class="text-white font-semibold text-lg">$0</span>
+        </div>
+        <button class="btn-primary w-full py-4 rounded-2xl text-white font-semibold text-sm tracking-wide">Checkout</button>
+        <p class="text-center text-neutral-600 text-xs mt-3">Free shipping on orders over $100</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO SECTION -->
+  <section id="home" class="relative min-h-screen flex items-center overflow-hidden pt-20">
+    <div class="absolute inset-0">
+      <img data-img-id="hero-bg" src="https://picsum.photos/seed/darkshoe2024/1920/1080.jpg" alt="" class="img-editable w-full h-full object-cover opacity-20">
+      <div class="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent"></div>
+      <div class="edit-overlay rounded-none"><svg class="w-8 h-8 text-rose-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316z"/><path d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z"/></svg><span class="text-xs text-rose-300 font-medium">Change Image</span></div>
+    </div>
+    <div class="relative max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
+      <div class="fade-in">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 mb-8">
+          <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+          <span class="text-xs font-medium text-neutral-400 uppercase tracking-wider">New Collection 2024</span>
+        </div>
+        <h1 class="text-5xl lg:text-7xl font-bold tracking-tight leading-[1.05] mb-6">
+          Step Into<br><span class="text-gradient">Your Style</span>
+        </h1>
+        <p class="text-lg text-neutral-400 leading-relaxed max-w-lg mb-10">
+          Discover premium footwear crafted for comfort and designed for those who refuse to blend in. Every step tells your story.
+        </p>
+        <div class="flex flex-wrap gap-4">
+          <a href="#products" class="btn-primary px-8 py-4 rounded-2xl text-white font-semibold text-sm tracking-wide inline-flex items-center gap-2">
+            Shop Now
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+          </a>
+          <a href="#categories" class="btn-outline px-8 py-4 rounded-2xl text-white font-semibold text-sm tracking-wide">
+            Explore
+          </a>
+        </div>
+        <div class="flex items-center gap-8 mt-12">
+          <div><span class="text-2xl font-bold text-white">500+</span><p class="text-xs text-neutral-500 mt-1">Shoe Models</p></div>
+          <div class="w-px h-10 bg-white/10"></div>
+          <div><span class="text-2xl font-bold text-white">50K+</span><p class="text-xs text-neutral-500 mt-1">Happy Customers</p></div>
+          <div class="w-px h-10 bg-white/10"></div>
+          <div><span class="text-2xl font-bold text-white">4.9</span><p class="text-xs text-neutral-500 mt-1">Average Rating</p></div>
+        </div>
+      </div>
+      <div class="hidden lg:flex justify-center fade-in">
+        <div class="relative">
+          <div class="absolute inset-0 bg-rose-500/10 rounded-full blur-[100px]"></div>
+          <img data-img-id="hero-shoe" src="/image2/decstop.jpg" alt="Featured Shoe" class="img-editable relative w-[480px] h-[480px] object-cover rounded-[3rem] hero-shoe glow-rose">
+          <div class="edit-overlay rounded-[3rem]"><svg class="w-8 h-8 text-rose-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316z"/><path d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z"/></svg><span class="text-xs text-rose-300 font-medium">Change Image</span></div>
+          <div class="absolute -bottom-4 -left-4 glass-card rounded-2xl p-4 flex items-center gap-3">
+            <div class="w-12 h-12 rounded-xl bg-rose-500/20 flex items-center justify-center">
+              <svg class="w-6 h-6 text-rose-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+            </div>
+            <div><p class="text-white font-semibold text-sm">Top Rated</p><p class="text-neutral-500 text-xs">4.9 out of 5 stars</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Brand Marquee -->
+  <section class="py-12 border-y border-white/5 overflow-hidden">
+    <div class="flex whitespace-nowrap marquee">
+      <span class="mx-12 text-2xl font-bold text-neutral-800 tracking-wider">NIKE</span>
+      <span class="mx-12 text-2xl font-bold text-neutral-800 tracking-wider">ADIDAS</span>
+      <span class="mx-12 text-2xl font-bold text-neutral-800 tracking-wider">NEW BALANCE</span>
+      <span class="mx-12 text-2xl font-bold text-neutral-800 tracking-wider">PUMA</span>
+      <span class="mx-12 text-2xl font-bold text-neutral-800 tracking-wider">REEBOK</span>
+      <span class="mx-12 text-2xl font-bold text-neutral-800 tracking-wider">CONVERSE</span>
+      <span class="mx-12 text-2xl font-bold text-neutral-800 tracking-wider">VANS</span>
+      <span class="mx-12 text-2xl font-bold text-neutral-800 tracking-wider">JORDAN</span>
+      <span class="mx-12 text-2xl font-bold text-neutral-800 tracking-wider">NIKE</span>
+      <span class="mx-12 text-2xl font-bold text-neutral-800 tracking-wider">ADIDAS</span>
+      <span class="mx-12 text-2xl font-bold text-neutral-800 tracking-wider">NEW BALANCE</span>
+      <span class="mx-12 text-2xl font-bold text-neutral-800 tracking-wider">PUMA</span>
+      <span class="mx-12 text-2xl font-bold text-neutral-800 tracking-wider">REEBOK</span>
+      <span class="mx-12 text-2xl font-bold text-neutral-800 tracking-wider">CONVERSE</span>
+      <span class="mx-12 text-2xl font-bold text-neutral-800 tracking-wider">VANS</span>
+      <span class="mx-12 text-2xl font-bold text-neutral-800 tracking-wider">JORDAN</span>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section id="categories" class="py-24">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-16 fade-in">
+        <span class="text-xs font-medium text-rose-400 uppercase tracking-widest">Browse By</span>
+        <h2 class="text-4xl lg:text-5xl font-bold tracking-tight text-white mt-3">Categories</h2>
+        <p class="text-neutral-500 mt-4 max-w-xl mx-auto">Find the perfect pair for every occasion, every mood, every moment.</p>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="group glass-card rounded-3xl overflow-hidden fade-in cursor-pointer">
+          <div class="relative h-56 overflow-hidden">
+            <img data-img-id="cat-running" src="/image2/running men.avif" alt="Running" class="img-editable w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+            <div class="edit-overlay rounded-none"><svg class="w-6 h-6 text-rose-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316z"/><path d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z"/></svg><span class="text-[10px] text-rose-300 font-medium">Change</span></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+          </div>
+          <div class="p-6"><h3 class="text-lg font-semibold text-white">Running</h3><p class="text-sm text-neutral-500 mt-1">24 Products</p></div>
+        </div>
+        <div class="group glass-card rounded-3xl overflow-hidden fade-in cursor-pointer">
+          <div class="relative h-56 overflow-hidden">
+            <img data-img-id="cat-casual" src="/image2/casual.webp" alt="Casual" class="img-editable w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+            <div class="edit-overlay rounded-none"><svg class="w-6 h-6 text-rose-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316z"/><path d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z"/></svg><span class="text-[10px] text-rose-300 font-medium">Change</span></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+          </div>
+          <div class="p-6"><h3 class="text-lg font-semibold text-white">Casual</h3><p class="text-sm text-neutral-500 mt-1">36 Products</p></div>
+        </div>
+        <div class="group glass-card rounded-3xl overflow-hidden fade-in cursor-pointer">
+          <div class="relative h-56 overflow-hidden">
+            <img data-img-id="cat-sport" src="/image2/nike.avif" alt="Sport" class="img-editable w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+            <div class="edit-overlay rounded-none"><svg class="w-6 h-6 text-rose-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316z"/><path d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z"/></svg><span class="text-[10px] text-rose-300 font-medium">Change</span></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+          </div>
+          <div class="p-6"><h3 class="text-lg font-semibold text-white">Sports</h3><p class="text-sm text-neutral-500 mt-1">18 Products</p></div>
+        </div>
+        <div class="group glass-card rounded-3xl overflow-hidden fade-in cursor-pointer">
+          <div class="relative h-56 overflow-hidden">
+            <img data-img-id="cat-formal" src="/image2/formal.webp" alt="Formal" class="img-editable w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+            <div class="edit-overlay rounded-none"><svg class="w-6 h-6 text-rose-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316z"/><path d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z"/></svg><span class="text-[10px] text-rose-300 font-medium">Change</span></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+          </div>
+          <div class="p-6"><h3 class="text-lg font-semibold text-white">Formal</h3><p class="text-sm text-neutral-500 mt-1">12 Products</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section id="products" class="py-24 bg-gradient-to-b from-transparent via-rose-500/[0.02] to-transparent">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 fade-in">
+        <div>
+          <span class="text-xs font-medium text-rose-400 uppercase tracking-widest">Our Collection</span>
+          <h2 class="text-4xl lg:text-5xl font-bold tracking-tight text-white mt-3">Popular Shoes</h2>
+        </div>
+        <div class="flex gap-2 flex-wrap" id="filterBtns">
+          <button class="filter-btn active px-5 py-2.5 rounded-xl text-sm font-medium transition-all" data-filter="all">All</button>
+          <button class="filter-btn px-5 py-2.5 rounded-xl text-sm font-medium transition-all" data-filter="running">Running</button>
+          <button class="filter-btn px-5 py-2.5 rounded-xl text-sm font-medium transition-all" data-filter="casual">Casual</button>
+          <button class="filter-btn px-5 py-2.5 rounded-xl text-sm font-medium transition-all" data-filter="sport">Sports</button>
+        </div>
+      </div>
+      <div id="productGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Products injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- OFFER BANNER -->
+  <section class="py-24">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="relative rounded-[2.5rem] overflow-hidden fade-in">
+        <img data-img-id="offer-bg" src="https://picsum.photos/seed/shoebanner77/1400/500.jpg" alt="" class="img-editable w-full h-[500px] object-cover">
+        <div class="edit-overlay rounded-none"><svg class="w-8 h-8 text-rose-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316z"/><path d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z"/></svg><span class="text-xs text-rose-300 font-medium">Change Image</span></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent"></div>
+        <div class="absolute inset-0 flex items-center">\
+          <div class="px-12 lg:px-20 max-w-xl">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-rose-500 text-white text-xs font-bold uppercase tracking-wider mb-6">Limited Time</span>
+            <h2 class="text-4xl lg:text-5xl font-bold text-white tracking-tight leading-tight mb-4">Summer Sale<br><span class="text-gradient">Up to 50% Off</span></h2>
+            <p class="text-neutral-400 mb-8 leading-relaxed">Don't miss our biggest sale of the year. Premium styles at unbeatable prices.</p>
+            <div class="flex gap-6 mb-8">
+              <div class="text-center"><div id="days" class="text-3xl font-bold text-white">07</div><div class="text-xs text-neutral-500 mt-1">Days</div></div>
+              <div class="text-3xl font-bold text-neutral-600">:</div>
+              <div class="text-center"><div id="hours" class="text-3xl font-bold text-white">14</div><div class="text-xs text-neutral-500 mt-1">Hours</div></div>
+              <div class="text-3xl font-bold text-neutral-600">:</div>
+              <div class="text-center"><div id="minutes" class="text-3xl font-bold text-white">32</div><div class="text-xs text-neutral-500 mt-1">Mins</div></div>
+              <div class="text-3xl font-bold text-neutral-600">:</div>
+              <div class="text-center"><div id="seconds" class="text-3xl font-bold text-white">58</div><div class="text-xs text-neutral-500 mt-1">Secs</div></div>
+            </div>
+            <a href="#products" class="btn-primary px-8 py-4 rounded-2xl text-white font-semibold text-sm tracking-wide inline-flex items-center gap-2">
+              Shop the Sale
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEW ARRIVALS -->
+  <section id="arrivals" class="py-24">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-16 fade-in">
+        <span class="text-xs font-medium text-rose-400 uppercase tracking-widest">Just Dropped</span>
+        <h2 class="text-4xl lg:text-5xl font-bold tracking-tight text-white mt-3">New Arrivals</h2>
+      </div>
+      <div id="arrivalGrid" class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="py-24 border-y border-white/5">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="glass-card rounded-2xl p-8 text-center fade-in">
+          <div class="w-14 h-14 rounded-2xl bg-rose-500/10 flex items-center justify-center mx-auto mb-5">
+            <svg class="w-7 h-7 text-rose-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/></svg>
+          </div>
+          <h3 class="text-white font-semibold mb-2">Free Shipping</h3>
+          <p class="text-sm text-neutral-500 leading-relaxed">Free delivery on all orders above $100. Fast & reliable.</p>
+        </div>
+        <div class="glass-card rounded-2xl p-8 text-center fade-in">
+          <div class="w-14 h-14 rounded-2xl bg-rose-500/10 flex items-center justify-center mx-auto mb-5">
+            <svg class="w-7 h-7 text-rose-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/></svg>
+          </div>
+          <h3 class="text-white font-semibold mb-2">Secure Payment</h3>
+          <p class="text-sm text-neutral-500 leading-relaxed">100% secure payment processing. Your data is safe with us.</p>
+        </div>
+        <div class="glass-card rounded-2xl p-8 text-center fade-in">
+          <div class="w-14 h-14 rounded-2xl bg-rose-500/10 flex items-center justify-center mx-auto mb-5">
+            <svg class="w-7 h-7 text-rose-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182"/></svg>
+          </div>
+          <h3 class="text-white font-semibold mb-2">Easy Returns</h3>
+          <p class="text-sm text-neutral-500 leading-relaxed">30-day hassle-free return policy. No questions asked.</p>
+        </div>
+        <div class="glass-card rounded-2xl p-8 text-center fade-in">
+          <div class="w-14 h-14 rounded-2xl bg-rose-500/10 flex items-center justify-center mx-auto mb-5">
+            <svg class="w-7 h-7 text-rose-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/></svg>
+          </div>
+          <h3 class="text-white font-semibold mb-2">24/7 Support</h3>
+          <p class="text-sm text-neutral-500 leading-relaxed">Round the clock customer support. We're here to help.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section id="reviews" class="py-24">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-16 fade-in">
+        <span class="text-xs font-medium text-rose-400 uppercase tracking-widest">Testimonials</span>
+        <h2 class="text-4xl lg:text-5xl font-bold tracking-tight text-white mt-3">What People Say</h2>
+      </div>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="glass-card rounded-3xl p-8 fade-in">
+          <div class="flex gap-1 mb-4">
+            <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+          </div>
+          <p class="text-neutral-300 leading-relaxed mb-6">“Loved the variety! From casual to formal, everything is available in one place.”</p>
+          <div class="flex items-center gap-3">
+            <img data-img-id="review-1" src="https://picsum.photos/seed/person1face/80/80.jpg" alt="" class="img-editable w-11 h-11 rounded-full object-cover">
+            <div class="edit-overlay rounded-full"><span class="text-[8px] text-rose-300">Change</span></div>
+            <div><p class="text-white text-sm font-semibold">Alex Johnson</p><p class="text-neutral-500 text-xs">Marathon Runner</p></div>
+          </div>
+        </div>
+        <div class="glass-card rounded-3xl p-8 fade-in">
+          <div class="flex gap-1 mb-4">
+            <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+          </div>
+          <p class="text-neutral-300 leading-relaxed mb-6">“Customer service is excellent. They helped me choose the right size—highly recommended!”</p>
+          <div class="flex items-center gap-3">
+            <img data-img-id="review-2" src="https://picsum.photos/seed/person2face/80/80.jpg" alt="" class="img-editable w-11 h-11 rounded-full object-cover">
+            <div class="edit-overlay rounded-full"><span class="text-[8px] text-rose-300">Change</span></div>
+            <div><p class="text-white text-sm font-semibold">Sarah Mitchell</p><p class="text-neutral-500 text-xs">Fashion Blogger</p></div>
+          </div>
+        </div>
+        <div class="glass-card rounded-3xl p-8 fade-in">
+          <div class="flex gap-1 mb-4">
+            <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="text-neutral-600">★</span>
+          </div>
+          <p class="text-neutral-300 leading-relaxed mb-6">“Affordable prices with stylish designs. I’ve already ordered my second pair!”</p>
+          <div class="flex items-center gap-3">
+            <img data-img-id="review-3" src="https://picsum.photos/seed/person3face/80/80.jpg" alt="" class="img-editable w-11 h-11 rounded-full object-cover">
+            <div class="edit-overlay rounded-full"><span class="text-[8px] text-rose-300">Change</span></div>
+            <div><p class="text-white text-sm font-semibold">David Park</p><p class="text-neutral-500 text-xs">Fitness Trainer</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="py-24">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="relative rounded-[2.5rem] overflow-hidden glass-card p-12 lg:p-20 text-center fade-in">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-rose-500/10 blur-[120px] rounded-full"></div>
+        <div class="relative">
+          <h2 class="text-3xl lg:text-5xl font-bold tracking-tight text-white mb-4">Stay in the Loop</h2>
+          <p class="text-neutral-400 max-w-lg mx-auto mb-10">Get exclusive deals, early access to new drops, and style tips delivered straight to your inbox.</p>
+          <form id="newsletterForm" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <input type="email" id="emailInput" placeholder="Enter your email" required class="flex-1 px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-neutral-600 outline-none focus:border-rose-500/50 transition-colors text-sm">
+            <button type="submit" class="btn-primary px-8 py-4 rounded-2xl text-white font-semibold text-sm tracking-wide whitespace-nowrap">Subscribe</button>
+          </form>
+          <p class="text-neutral-600 text-xs mt-4">No spam, unsubscribe anytime. We respect your privacy.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="pt-20 pb-8 border-t border-white/5">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+        <div>
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-orange-400 flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M2 13c0-3.5 2.5-6.5 6-7.5C10.5 4 13 2 16 2c3 0 5 2 6 5 1 3 .5 6-1 8s-4 4-7 5c-3 1-6.5.5-9-1S2 16 2 13z"/></svg>
+            </div>
+            <span class="text-xl font-bold text-white">STRIDE</span>
+          </div>
+          <p class="text-sm text-neutral-500 leading-relaxed mb-6">Premium footwear for those who dare to stand out. Crafting comfort since 2018.</p>
+          <div class="flex gap-3">
+            <a href="#" class="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center hover:border-rose-500/50 hover:bg-rose-500/5 transition-all">
+              <svg class="w-4 h-4 text-neutral-400" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center hover:border-rose-500/50 hover:bg-rose-500/5 transition-all">
+              <svg class="w-4 h-4 text-neutral-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center hover:border-rose-500/50 hover:bg-rose-500/5 transition-all">
+              <svg class="w-4 h-4 text-neutral-400" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-6">Shop</h4>
+          <ul class="space-y-3">
+            <li><a href="#" class="text-sm text-neutral-500 hover:text-rose-400 transition-colors">Men's Shoes</a></li>
+            <li><a href="#" class="text-sm text-neutral-500 hover:text-rose-400 transition-colors">Women's Shoes</a></li>
+            <li><a href="#" class="text-sm text-neutral-500 hover:text-rose-400 transition-colors">Kids' Shoes</a></li>
+            <li><a href="#" class="text-sm text-neutral-500 hover:text-rose-400 transition-colors">New Arrivals</a></li>
+            <li><a href="#" class="text-sm text-neutral-500 hover:text-rose-400 transition-colors">Sale</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-6">Company</h4>
+          <ul class="space-y-3">
+            <li><a href="#" class="text-sm text-neutral-500 hover:text-rose-400 transition-colors">About Us</a></li>
+            <li><a href="#" class="text-sm text-neutral-500 hover:text-rose-400 transition-colors">Careers</a></li>
+            <li><a href="#" class="text-sm text-neutral-500 hover:text-rose-400 transition-colors">Press</a></li>
+            <li><a href="#" class="text-sm text-neutral-500 hover:text-rose-400 transition-colors">Blog</a></li>
+            <li><a href="#" class="text-sm text-neutral-500 hover:text-rose-400 transition-colors">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-6">Support</h4>
+          <ul class="space-y-3">
+            <li><a href="#" class="text-sm text-neutral-500 hover:text-rose-400 transition-colors">Help Center</a></li>
+            <li><a href="#" class="text-sm text-neutral-500 hover:text-rose-400 transition-colors">Size Guide</a></li>
+            <li><a href="#" class="text-sm text-neutral-500 hover:text-rose-400 transition-colors">Shipping Info</a></li>
+            <li><a href="#" class="text-sm text-neutral-500 hover:text-rose-400 transition-colors">Returns</a></li>
+            <li><a href="#" class="text-sm text-neutral-500 hover:text-rose-400 transition-colors">Privacy Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p class="text-xs text-neutral-600">© 2024 STRIDE. All rights reserved.</p>
+        <div class="flex gap-6">
+          <a href="#" class="text-xs text-neutral-600 hover:text-neutral-400 transition-colors">Terms</a>
+          <a href="#" class="text-xs text-neutral-600 hover:text-neutral-400 transition-colors">Privacy</a>
+          <a href="#" class="text-xs text-neutral-600 hover:text-neutral-400 transition-colors">Cookies</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Product Quick View Modal -->
+  <div id="quickView" class="fixed inset-0 z-[200] hidden items-center justify-center p-6">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" id="qvOverlay"></div>
+    <div class="relative bg-neutral-950 border border-white/10 rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+      <button id="closeQV" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:border-rose-500/50 bg-neutral-950">
+        <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="grid md:grid-cols-2">
+        <div class="relative h-80 md:h-auto">
+          <img id="qvImage" src="" alt="" class="img-editable w-full h-full object-cover rounded-tl-3xl rounded-bl-none md:rounded-bl-3xl rounded-tr-3xl md:rounded-tr-none">
+          <div class="edit-overlay rounded-none"><span class="text-[10px] text-rose-300">Change</span></div>
+        </div>
+        <div class="p-8 flex flex-col justify-center">
+          <span id="qvCategory" class="text-xs font-medium text-rose-400 uppercase tracking-widest mb-2"></span>
+          <h3 id="qvName" class="text-2xl font-bold text-white mb-2"></h3>
+          <div class="flex items-center gap-3 mb-4">
+            <div class="flex gap-0.5"><span class="star text-sm">★</span><span class="star text-sm">★</span><span class="star text-sm">★</span><span class="star text-sm">★</span><span class="star text-sm">★</span></div>
+            <span class="text-xs text-neutral-500">(128 reviews)</span>
+          </div>
+          <div class="flex items-baseline gap-3 mb-6">
+            <span id="qvPrice" class="text-3xl font-bold text-white"></span>
+            <span id="qvOldPrice" class="text-lg text-neutral-600 line-through"></span>
+          </div>
+          <p class="text-sm text-neutral-400 leading-relaxed mb-6">Premium quality materials with advanced comfort technology. Designed for all-day wear with superior support and style.</p>
+          <div class="mb-6">
+            <p class="text-sm text-neutral-400 mb-3">Select Size</p>
+            <div class="flex flex-wrap gap-2" id="qvSizes">
+              <button class="size-btn px-4 py-2 rounded-xl border border-white/10 text-sm text-neutral-300">7</button>
+              <button class="size-btn px-4 py-2 rounded-xl border border-white/10 text-sm text-neutral-300">8</button>
+              <button class="size-btn active px-4 py-2 rounded-xl border border-white/10 text-sm text-neutral-300">9</button>
+              <button class="size-btn px-4 py-2 rounded-xl border border-white/10 text-sm text-neutral-300">10</button>
+              <button class="size-btn px-4 py-2 rounded-xl border border-white/10 text-sm text-neutral-300">11</button>
+              <button class="size-btn px-4 py-2 rounded-xl border border-white/10 text-sm text-neutral-300">12</button>
+            </div>
+          </div>
+          <button id="qvAddCart" class="btn-primary w-full py-4 rounded-2xl text-white font-semibold text-sm tracking-wide flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// ==================== DATA ====================
+const products = [
+  { id:1, name:"Air Cushion Running Shoes", category:"running", price:189, oldPrice:249, img:"image2/running 1.jpg", badge:"Best Seller" },
+  { id:2, name:"Basic casual shoes for men", category:"casual", price:129, oldPrice:null, img:"image2/casual2.webp", badge:null },
+  { id:3, name:"Grey Vortex", category:"sport", price:219, oldPrice:279, img:"image2/spot2.jpg", badge:"New" },
+  { id:4, name:" Nike Air Force 1 '07", category:"running", price:159, oldPrice:null, img:"image2/runing2.jpg", badge:null },
+  { id:5, name:"Black Camel Men's Super Comfort Sneaker", category:"casual", price:149, oldPrice:199, img:"image2/casual1.jpg", badge:"Sale" },
+  { id:6, name:"	Men's Evora Grey Sports Shoes", category:"sport", price:249, oldPrice:null, img:"image2/spot1.jpg", badge:"Premium" },
+];
+
+const arrivals = [
+  { id:7, name:"NightRunner 2.0", price:199, img:"image2/new1.jpg" },
+  { id:8, name:"FlexStride", price:169, img:"image2/new2.webp" },
+  { id:9, name:"Breeze Lite", price:139, img:"image2/new3.jpg" },
+  { id:10, name:"StormGrip Pro", price:229, img:"image2/new4.webp" },
+];
+
+let cart = [];
+let isAdmin = false;
+let currentEditImg = null;
+
+// ==================== ADMIN MODE ====================
+const logoArea = document.getElementById('logoArea');
+let clickCount = 0;
+let clickTimer = null;
+
+logoArea.addEventListener('click', () => {
+  clickCount++;
+  if (clickTimer) clearTimeout(clickTimer);
+  clickTimer = setTimeout(() => { clickCount = 0; }, 500);
+  if (clickCount >= 3) {
+    clickCount = 0;
+    isAdmin = !isAdmin;
+    document.body.classList.toggle('admin-mode', isAdmin);
+    showToast(isAdmin ? '🔓 Admin Mode ON — Click any image to edit' : '🔒 Admin Mode OFF', isAdmin ? 'rose' : 'neutral');
+  }
+});
+
+// ==================== IMAGE EDITING ====================
+const fileInput = document.getElementById('fileInput');
+
+document.addEventListener('click', (e) => {
+  if (!isAdmin) return;
+  const editable = e.target.closest('.img-editable');
+  if (!editable) return;
+  e.preventDefault();
+  e.stopPropagation();
+  const img = editable.querySelector('img') || editable;
+  currentEditImg = img;
+  fileInput.click();
+});
+
+fileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file || !currentEditImg) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const dataUrl = ev.target.result;
+    currentEditImg.src = dataUrl;
+    const imgId = currentEditImg.getAttribute('data-img-id');
+    if (imgId) {
+      const saved = JSON.parse(localStorage.getItem('stride_images') || '{}');
+      saved[imgId] = dataUrl;
+      localStorage.setItem('stride_images', JSON.stringify(saved));
+    }
+    showToast('✅ Image updated successfully', 'rose');
+    currentEditImg = null;
+  };
+  reader.readAsDataURL(file);
+  fileInput.value = '';
+});
+
+function loadSavedImages() {
+  const saved = JSON.parse(localStorage.getItem('stride_images') || '{}');
+  document.querySelectorAll('[data-img-id]').forEach(img => {
+    const id = img.getAttribute('data-img-id');
+    if (saved[id]) img.src = saved[id];
+  });
+}
+
+// ==================== TOAST ====================
+function showToast(msg, color = 'rose') {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  const bgColor = color === 'rose' ? 'bg-rose-500/20 border-rose-500/30 text-rose-300' : 'bg-white/10 border-white/10 text-neutral-300';
+  t.className = `toast px-6 py-3 rounded-2xl border backdrop-blur-xl text-sm font-medium ${bgColor}`;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ==================== RENDER PRODUCTS ====================
+function renderProducts(filter = 'all') {
+  const grid = document.getElementById('productGrid');
+  const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
+  grid.innerHTML = filtered.map(p => `
+    <div class="group glass-card rounded-3xl overflow-hidden fade-in visible" data-category="${p.category}">
+      <div class="relative h-72 overflow-hidden cursor-pointer" onclick="openQuickView(${p.id})">
+        <img data-img-id="prod-${p.id}" src="${p.img}" alt="${p.name}" class="img-editable w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+        <div class="edit-overlay rounded-none"><svg class="w-6 h-6 text-rose-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316z"/><path d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z"/></svg><span class="text-[10px] text-rose-300">Change</span></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        ${p.badge ? `<span class="absolute top-4 left-4 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${p.badge==='Sale'?'bg-rose-500 text-white':p.badge==='New'?'bg-emerald-500 text-white':'bg-white/10 backdrop-blur-sm text-white border border-white/20'}">${p.badge}</span>` : ''}
+        <div class="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
+          <button onclick="event.stopPropagation();addToCart(${p.id})" class="w-11 h-11 rounded-full bg-white text-black flex items-center justify-center hover:bg-rose-500 hover:text-white transition-colors shadow-lg">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="p-6">
+        <p class="text-xs text-neutral-500 uppercase tracking-wider mb-1">${p.category}</p>
+        <h3 class="text-lg font-semibold text-white mb-3">${p.name}</h3>
+        <div class="flex items-center justify-between">
+          <div class="flex items-baseline gap-2">
+            <span class="text-xl font-bold text-white">$${p.price}</span>
+            ${p.oldPrice ? `<span class="text-sm text-neutral-600 line-through">$${p.oldPrice}</span>` : ''}
+          </div>
+          <button onclick="addToCart(${p.id})" class="text-xs font-medium text-rose-400 hover:text-rose-300 transition-colors flex items-center gap-1">
+            Add to Cart
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  loadSavedImages();
+}
+
+function renderArrivals() {
+  const grid = document.getElementById('arrivalGrid');
+  grid.innerHTML = arrivals.map(p => `
+    <div class="group glass-card rounded-3xl overflow-hidden fade-in cursor-pointer" onclick="openQuickView(${p.id},'arrival')">
+      <div class="relative h-80 overflow-hidden">
+        <img data-img-id="arr-${p.id}" src="${p.img}" alt="${p.name}" class="img-editable w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+        <div class="edit-overlay rounded-none"><span class="text-[10px] text-rose-300">Change</span></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+        <span class="absolute top-4 left-4 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-white">New</span>
+      </div>
+      <div class="p-5">
+        <h3 class="text-base font-semibold text-white mb-1">${p.name}</h3>
+        <span class="text-lg font-bold text-white">$${p.price}</span>
+      </div>
+    </div>
+  `).join('');
+  loadSavedImages();
+}
+
+// ==================== FILTERS ====================
+document.getElementById('filterBtns').addEventListener('click', (e) => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProducts(btn.dataset.filter);
+});
+
+// Style filter buttons
+const style = document.createElement('style');
+style.textContent = `
+  .filter-btn { background: rgba(255,255,255,0.05); color: #a3a3a3; border: 1px solid rgba(255,255,255,0.08); }
+  .filter-btn:hover { color: #fff; border-color: rgba(255,255,255,0.15); }
+  .filter-btn.active { background: linear-gradient(135deg, #f43f5e, #e11d48); color: #fff; border-color: transparent; box-shadow: 0 8px 20px -4px rgba(244,63,94,0.3); }
+`;
+document.head.appendChild(style);
+
+// ==================== CART ====================
+function addToCart(id, type) {
+  const list = type === 'arrival' ? arrivals : products;
+  const product = list.find(p => p.id === id);
+  if (!product) return;
+  const existing = cart.find(c => c.id === id);
+  if (existing) { existing.qty++; }
+  else { cart.push({ ...product, qty: 1 }); }
+  updateCartUI();
+  showToast(`✓ ${product.name} added to cart`, 'rose');
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(c => c.id !== id);
+  updateCartUI();
+}
+
+function updateCartUI() {
+  const countEl = document.getElementById('cartCount');
+  const itemsEl = document.getElementById('cartItems');
+  const emptyEl = document.getElementById('cartEmpty');
+  const footerEl = document.getElementById('cartFooter');
+  const totalEl = document.getElementById('cartTotal');
+  const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+  const count = cart.reduce((s, c) => s + c.qty, 0);
+
+  if (count > 0) {
+    countEl.textContent = count;
+    countEl.classList.remove('hidden');
+    emptyEl.classList.add('hidden');
+    footerEl.classList.remove('hidden');
+  } else {
+    countEl.classList.add('hidden');
+    emptyEl.classList.remove('hidden');
+    footerEl.classList.add('hidden');
+  }
+  totalEl.textContent = `$${total}`;
+
+  itemsEl.innerHTML = cart.map(c => `
+    <div class="flex gap-4 p-3 rounded-2xl bg-white/[0.03] border border-white/5">
+      <img src="${c.img}" alt="${c.name}" class="w-20 h-20 rounded-xl object-cover">
+      <div class="flex-1 min-w-0">
+        <h4 class="text-sm font-semibold text-white truncate">${c.name}</h4>
+        <p class="text-sm text-rose-400 font-medium mt-1">$${c.price}</p>
+        <div class="flex items-center gap-3 mt-2">
+          <button onclick="changeQty(${c.id},-1)" class="w-7 h-7 rounded-lg border border-white/10 flex items-center justify-center text-neutral-400 hover:text-white hover:border-white/20 text-xs">−</button>
+          <span class="text-sm text-white font-medium">${c.qty}</span>
+          <button onclick="changeQty(${c.id},1)" class="w-7 h-7 rounded-lg border border-white/10 flex items-center justify-center text-neutral-400 hover:text-white hover:border-white/20 text-xs">+</button>
+        </div>
+      </div>
+      <button onclick="removeFromCart(${c.id})" class="self-start text-neutral-600 hover:text-rose-400 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+  `).join('');
+}
+
+function changeQty(id, delta) {
+  const item = cart.find(c => c.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) cart = cart.filter(c => c.id !== id);
+  updateCartUI();
+}
+
+// Cart drawer
+const cartBtn = document.getElementById('cartBtn');
+const cartDrawer = document.getElementById('cartDrawer');
+const closeCart = document.getElementById('closeCart');
+const cartOverlay = document.getElementById('cartOverlay');
+
+cartBtn.addEventListener('click', () => cartDrawer.classList.remove('hidden'));
+closeCart.addEventListener('click', () => cartDrawer.classList.add('hidden'));
+cartOverlay.addEventListener('click', () => cartDrawer.classList.add('hidden'));
+
+// ==================== QUICK VIEW ====================
+function openQuickView(id, type) {
+  if (isAdmin) return; // Don't open QV in admin mode
+  const list = type === 'arrival' ? arrivals : products;
+  const product = list.find(p => p.id === id);
+  if (!product) return;
+  document.getElementById('qvImage').src = product.img;
+  document.getElementById('qvImage').setAttribute('data-img-id', type === 'arrival' ? `arr-${id}` : `prod-${id}`);
+  document.getElementById('qvCategory').textContent = product.category || 'New Arrival';
+  document.getElementById('qvName').textContent = product.name;
+  document.getElementById('qvPrice').textContent = `$${product.price}`;
+  document.getElementById('qvOldPrice').textContent = product.oldPrice ? `$${product.oldPrice}` : '';
+  document.getElementById('qvAddCart').onclick = () => {
+    addToCart(id, type);
+    document.getElementById('quickView').classList.add('hidden');
+    document.getElementById('quickView').style.display = 'none';
+  };
+  const qv = document.getElementById('quickView');
+  qv.classList.remove('hidden');
+  qv.style.display = 'flex';
+}
+
+document.getElementById('closeQV').addEventListener('click', () => {
+  const qv = document.getElementById('quickView');
+  qv.classList.add('hidden');
+  qv.style.display = 'none';
+});
+document.getElementById('qvOverlay').addEventListener('click', () => {
+  const qv = document.getElementById('quickView');
+  qv.classList.add('hidden');
+  qv.style.display = 'none';
+});
+
+// Size buttons in QV
+document.getElementById('qvSizes').addEventListener('click', (e) => {
+  const btn = e.target.closest('.size-btn');
+  if (!btn) return;
+  document.querySelectorAll('#qvSizes .size-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+});
+
+// ==================== SEARCH ====================
+const searchBtn = document.getElementById('searchBtn');
+const searchModal = document.getElementById('searchModal');
+const closeSearch = document.getElementById('closeSearch');
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+
+searchBtn.addEventListener('click', () => {
+  searchModal.classList.remove('hidden');
+  searchModal.style.display = 'flex';
+  setTimeout(() => searchInput.focus(), 100);
+});
+closeSearch.addEventListener('click', () => {
+  searchModal.classList.add('hidden');
+  searchModal.style.display = 'none';
+  searchInput.value = '';
+  searchResults.innerHTML = '';
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    searchModal.classList.add('hidden');
+    searchModal.style.display = 'none';
+  }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    searchModal.classList.remove('hidden');
+    searchModal.style.display = 'flex';
+    setTimeout(() => searchInput.focus(), 100);
+  }
+});
+
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.toLowerCase().trim();
+  if (!q) { searchResults.innerHTML = ''; return; }
+  const all = [...products, ...arrivals];
+  const results = all.filter(p => p.name.toLowerCase().includes(q) || (p.category && p.category.toLowerCase().includes(q)));
+  if (results.length === 0) {
+    searchResults.innerHTML = '<p class="text-neutral-600 text-center py-8">No results found</p>';
+    return;
+  }
+  searchResults.innerHTML = results.map(p => `
+    <div class="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/5 cursor-pointer transition-colors" onclick="searchModal.classList.add('hidden');searchModal.style.display='none';openQuickView(${p.id},'${arrivals.includes(p)?'arrival':'product'}')">
+      <img src="${p.img}" alt="${p.name}" class="w-16 h-16 rounded-xl object-cover">
+      <div>
+        <p class="text-white font-medium">${p.name}</p>
+        <p class="text-sm text-rose-400">$${p.price}</p>
+      </div>
+    </div>
+  `).join('');
+});
+
+// ==================== MOBILE MENU ====================
+const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+const mobileMenu = document.getElementById('mobileMenu');
+mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+
+// ==================== NEWSLETTER ====================
+document.getElementById('newsletterForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const email = document.getElementById('emailInput').value;
+  showToast(`✓ Subscribed with ${email}`, 'rose');
+  document.getElementById('emailInput').value = '';
+});
+
+// ==================== COUNTDOWN ====================
+function updateCountdown() {
+  const end = new Date();
+  end.setDate(end.getDate() + 7);
+  end.setHours(23, 59, 59);
+  const now = new Date();
+  const diff = end - now;
+  const d = Math.floor(diff / (1000*60*60*24));
+  const h = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+  const m = Math.floor((diff % (1000*60*60)) / (1000*60));
+  const s = Math.floor((diff % (1000*60)) / 1000);
+  document.getElementById('days').textContent = String(d).padStart(2,'0');
+  document.getElementById('hours').textContent = String(h).padStart(2,'0');
+  document.getElementById('minutes').textContent = String(m).padStart(2,'0');
+  document.getElementById('seconds').textContent = String(s).padStart(2,'0');
+}
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+// ==================== SCROLL ANIMATIONS ====================
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+function observeFadeIns() {
+  document.querySelectorAll('.fade-in:not(.visible)').forEach(el => observer.observe(el));
+}
+
+// ==================== NAV SCROLL ====================
+let lastScroll = 0;
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('nav');
+  const scroll = window.scrollY;
+  if (scroll > 100) {
+    nav.style.transform = scroll > lastScroll ? 'translateY(-100%)' : 'translateY(0)';
+  } else {
+    nav.style.transform = 'translateY(0)';
+  }
+  lastScroll = scroll;
+});
+
+// ==================== INIT ====================
+renderProducts();
+renderArrivals();
+loadSavedImages();
+setTimeout(observeFadeIns, 100);
+</script>
+</body>
+</html>

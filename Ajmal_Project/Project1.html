@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAVORA — Fine Dining & Culinary Arts</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #09090b; color: #ffffff; overflow-x: hidden; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #09090b; }
+    ::-webkit-scrollbar-thumb { background: #f97316; border-radius: 3px; }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInLeft {
+      from { opacity: 0; transform: translateX(-30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeInRight {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(249,115,22,0.3); }
+      50% { box-shadow: 0 0 40px rgba(249,115,22,0.6); }
+    }
+    @keyframes spin-slow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    @keyframes marquee-scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
+    .animate-fade-left { animation: fadeInLeft 0.8s ease-out forwards; }
+    .animate-fade-right { animation: fadeInRight 0.8s ease-out forwards; }
+    .animate-scale-in { animation: scaleIn 0.6s ease-out forwards; }
+    .animate-float { animation: float 6s ease-in-out infinite; }
+    .animate-spin-slow { animation: spin-slow 20s linear infinite; }
+    .animate-marquee { animation: marquee-scroll 30s linear infinite; }
+
+    .delay-1 { animation-delay: 0.1s; opacity: 0; }
+    .delay-2 { animation-delay: 0.2s; opacity: 0; }
+    .delay-3 { animation-delay: 0.3s; opacity: 0; }
+    .delay-4 { animation-delay: 0.4s; opacity: 0; }
+    .delay-5 { animation-delay: 0.5s; opacity: 0; }
+    .delay-6 { animation-delay: 0.6s; opacity: 0; }
+    .delay-7 { animation-delay: 0.7s; opacity: 0; }
+
+    /* Glass Card */
+    .glass-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      transition: all 0.5s ease;
+    }
+    .glass-card:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(249,115,22,0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
+    }
+
+    /* Editable Image */
+    .editable-img-wrapper {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .editable-img-wrapper::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(249,115,22,0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      z-index: 2;
+    }
+    .editable-img-wrapper:hover::after {
+      background: rgba(0,0,0,0.5);
+    }
+    .editable-img-wrapper .edit-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      z-index: 3;
+      transition: transform 0.3s ease;
+      pointer-events: none;
+    }
+    .editable-img-wrapper:hover .edit-icon {
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .editable-img-wrapper .edit-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 4;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+    .editable-img-wrapper:hover .edit-badge {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .editable-img-wrapper img {
+      transition: all 0.5s ease;
+    }
+    .editable-img-wrapper:hover img {
+      transform: scale(1.05);
+    }
+
+    /* Hero gradient overlay */
+    .hero-gradient {
+      background: linear-gradient(to right, #09090b, rgba(9,9,11,0.85), rgba(9,9,11,0.4), transparent);
+    }
+    .hero-gradient-bottom {
+      background: linear-gradient(to top, #09090b, transparent);
+    }
+
+    /* Text gradient */
+    .text-gradient {
+      background: linear-gradient(to bottom, #fff, #fff, #a1a1aa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .text-gradient-orange {
+      background: linear-gradient(135deg, #f97316, #fb923c, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Button glow */
+    .btn-glow {
+      position: relative;
+      z-index: 1;
+    }
+    .btn-glow::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      background: linear-gradient(135deg, #f97316, #ea580c, #f97316);
+      border-radius: 9999px;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s;
+      filter: blur(12px);
+    }
+    .btn-glow:hover::before {
+      opacity: 0.6;
+    }
+
+    /* Divider */
+    .divider-glow {
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(249,115,22,0.3), transparent);
+    }
+
+    /* Category card overlay */
+    .category-overlay {
+      background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.3), transparent);
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 9999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.4s ease;
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Smooth scroll */
+    html { scroll-behavior: smooth; }
+
+    /* Mobile menu */
+    .mobile-menu {
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    }
+    .mobile-menu.open {
+      transform: translateX(0);
+    }
+
+    /* Counter animation */
+    .counter { display: inline-block; }
+
+    /* Menu item hover line */
+    .menu-line {
+      width: 0;
+      transition: width 0.4s ease;
+    }
+    .menu-item-card:hover .menu-line {
+      width: 40px;
+    }
+
+    /* Tab active */
+    .tab-btn.active {
+      color: #f97316;
+      border-color: #f97316;
+    }
+
+    /* Testimonial */
+    .testimonial-active { opacity: 1; transform: scale(1); }
+    .testimonial-inactive { opacity: 0; transform: scale(0.95); position: absolute; pointer-events: none; }
+  </style>
+</head>
+<body>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">
+    <div class="flex items-center gap-3 bg-zinc-900 border border-orange-500/30 rounded-2xl px-5 py-4 shadow-2xl">
+      <div class="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center">
+        <i data-lucide="check" class="w-4 h-4 text-orange-400"></i>
+      </div>
+      <p id="toast-msg" class="text-sm font-medium text-zinc-200">Image updated successfully!</p>
+    </div>
+  </div>
+
+  <!-- Hidden File Input -->
+  <input type="file" id="imageUploader" accept="image/*" class="hidden">
+
+  <!-- Navigation -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        <!-- Logo -->
+        <a href="#" class="flex items-center gap-2 group">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            <i data-lucide="flame" class="w-5 h-5 text-white"></i>
+          </div>
+          <span class="text-xl font-semibold tracking-tight">SAVORA</span>
+        </a>
+
+        <!-- Desktop Menu -->
+        <div class="hidden lg:flex items-center gap-8">
+          <a href="#home" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors duration-300">Home</a>
+          <a href="#menu" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors duration-300">Menu</a>
+          <a href="#about" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors duration-300">About</a>
+          <a href="#chefs" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors duration-300">Chefs</a>
+          <a href="#gallery" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors duration-300">Gallery</a>
+          <a href="#contact" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors duration-300">Contact</a>
+        </div>
+
+        <!-- Right side -->
+        <div class="hidden lg:flex items-center gap-4">
+          <button class="relative p-2 text-zinc-400 hover:text-white transition-colors">
+            <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+            <span class="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full text-[10px] font-bold flex items-center justify-center">2</span>
+          </button>
+          <a href="#reserve" class="btn-glow bg-white text-zinc-900 px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-zinc-100 transition-colors">
+            Reserve a Table
+          </a>
+        </div>
+
+        <!-- Mobile toggle -->
+        <button id="mobileToggle" class="lg:hidden p-2 text-zinc-400 hover:text-white">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="mobile-menu fixed inset-y-0 right-0 w-80 bg-zinc-950/95 backdrop-blur-xl z-50 border-l border-zinc-800 p-8">
+    <div class="flex justify-end mb-8">
+      <button id="mobileClose" class="p-2 text-zinc-400 hover:text-white">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+    </div>
+    <div class="flex flex-col gap-6">
+      <a href="#home" class="text-lg font-medium text-zinc-300 hover:text-orange-400 transition-colors mobile-link">Home</a>
+      <a href="#menu" class="text-lg font-medium text-zinc-300 hover:text-orange-400 transition-colors mobile-link">Menu</a>
+      <a href="#about" class="text-lg font-medium text-zinc-300 hover:text-orange-400 transition-colors mobile-link">About</a>
+      <a href="#chefs" class="text-lg font-medium text-zinc-300 hover:text-orange-400 transition-colors mobile-link">Chefs</a>
+      <a href="#gallery" class="text-lg font-medium text-zinc-300 hover:text-orange-400 transition-colors mobile-link">Gallery</a>
+      <a href="#contact" class="text-lg font-medium text-zinc-300 hover:text-orange-400 transition-colors mobile-link">Contact</a>
+      <div class="divider-glow my-4"></div>
+      <a href="#reserve" class="bg-orange-500 text-white text-center px-6 py-3 rounded-full font-semibold hover:bg-orange-600 transition-colors mobile-link">Reserve a Table</a>
+    </div>
+  </div>
+  <div id="mobileOverlay" class="fixed inset-0 bg-black/60 z-40 hidden"></div>
+
+  <!-- ==================== HERO ==================== -->
+  <section id="home" class="relative min-h-screen flex items-center overflow-hidden">
+    <!-- Background Image (Editable) -->
+    <div class="absolute inset-0 editable-img-wrapper" data-img-id="hero-bg" onclick="triggerUpload(this)">
+      <img src="/image/food-background-food-concept-with-various-tasty-fresh-ingredients-cooking-italian-food-ingredients-view-from-with-copy-space_1220-1491.jpg" alt="Hero Background" class="w-full h-full object-cover">
+      <div class="hero-gradient absolute inset-0 z-[1]"></div>
+      <div class="hero-gradient-bottom absolute inset-0 z-[1]"></div>
+      <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-3 py-1.5 flex items-center gap-1.5">
+        <i data-lucide="camera" class="w-3.5 h-3.5 text-white"></i>
+        <span class="text-xs font-semibold text-white">Change</span>
+      </div>
+    </div>
+
+    <!-- Decorative elements -->
+    <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-[120px] animate-float"></div>
+    <div class="absolute bottom-1/4 left-1/3 w-64 h-64 bg-orange-600/5 rounded-full blur-[100px] animate-float" style="animation-delay: -3s;"></div>
+
+    <!-- Content -->
+    <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-32 pb-20 w-full">
+      <div class="max-w-2xl">
+        <!-- Badge -->
+        <div class="animate-fade-up delay-1 inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-8">
+          <span class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
+          <span class="text-xs font-semibold uppercase tracking-wider text-orange-400">Michelin Star Restaurant</span>
+        </div>
+
+        <!-- Heading -->
+        <h1 class="animate-fade-up delay-2 text-5xl sm:text-6xl lg:text-7xl font-semibold leading-[1.08] tracking-tight mb-6">
+          <span class="text-gradient">Where Every</span><br>
+          <span class="text-gradient-orange">Dish Tells</span><br>
+          <span class="text-gradient">A Story</span>
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="animate-fade-up delay-3 text-base sm:text-lg font-light text-zinc-400 leading-relaxed mb-10 max-w-lg">
+          Experience culinary artistry at its finest. Our chefs craft extraordinary flavors using locally sourced, seasonal ingredients that celebrate the essence of gastronomy.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="animate-fade-up delay-4 flex flex-wrap items-center gap-4 mb-14">
+          <a href="#menu" class="btn-glow bg-white text-zinc-900 px-8 py-3.5 rounded-full text-sm font-semibold hover:bg-zinc-100 transition-all inline-flex items-center gap-2 group">
+            Explore Menu
+            <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+          </a>
+          <button onclick="document.getElementById('heroVideo').style.display='flex'" class="border border-zinc-700 text-white px-8 py-3.5 rounded-full text-sm font-semibold hover:bg-zinc-800/50 transition-all inline-flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center">
+              <i data-lucide="play" class="w-3.5 h-3.5 text-orange-400 fill-orange-400"></i>
+            </div>
+            Watch Story
+          </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="animate-fade-up delay-5 flex items-center gap-8 sm:gap-12">
+          <div>
+            <div class="text-3xl font-semibold tracking-tight"><span class="counter" data-target="15">0</span>+</div>
+            <div class="text-xs text-zinc-500 font-medium uppercase tracking-wider mt-1">Years of Excellence</div>
+          </div>
+          <div class="w-px h-12 bg-zinc-800"></div>
+          <div>
+            <div class="text-3xl font-semibold tracking-tight"><span class="counter" data-target="200">0</span>+</div>
+            <div class="text-xs text-zinc-500 font-medium uppercase tracking-wider mt-1">Signature Dishes</div>
+          </div>
+          <div class="w-px h-12 bg-zinc-800"></div>
+          <div>
+            <div class="text-3xl font-semibold tracking-tight"><span class="counter" data-target="50">0</span>K+</div>
+            <div class="text-xs text-zinc-500 font-medium uppercase tracking-wider mt-1">Happy Guests</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 animate-fade-up delay-7">
+      <span class="text-[10px] uppercase tracking-[0.2em] text-zinc-500">Scroll</span>
+      <div class="w-5 h-8 border border-zinc-700 rounded-full flex justify-center pt-1.5">
+        <div class="w-1 h-2 bg-orange-500 rounded-full animate-bounce"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Video Modal -->
+  <div id="heroVideo" class="fixed inset-0 z-[60] bg-black/90 backdrop-blur-xl items-center justify-center hidden" onclick="this.style.display='none'">
+    <div class="relative w-full max-w-4xl mx-6 aspect-video rounded-3xl overflow-hidden bg-zinc-900 flex items-center justify-center" onclick="event.stopPropagation()">
+      <div class="text-center">
+        <div class="w-20 h-20 rounded-full bg-orange-500/20 flex items-center justify-center mx-auto mb-4">
+          <i data-lucide="play" class="w-8 h-8 text-orange-400 fill-orange-400"></i>
+        </div>
+        <p class="text-zinc-400 text-sm">Video player placeholder</p>
+      </div>
+      <button onclick="document.getElementById('heroVideo').style.display='none'" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== MARQUEE ==================== -->
+  <section class="py-8 border-y border-zinc-800/50 overflow-hidden">
+    <div class="animate-marquee flex items-center gap-12 whitespace-nowrap">
+      <span class="text-zinc-600 text-sm font-semibold uppercase tracking-[0.3em] flex items-center gap-4"><i data-lucide="star" class="w-4 h-4 text-orange-500/50"></i> Italian Cuisine</span>
+      <span class="text-zinc-600 text-sm font-semibold uppercase tracking-[0.3em] flex items-center gap-4"><i data-lucide="star" class="w-4 h-4 text-orange-500/50"></i> Japanese Omakase</span>
+      <span class="text-zinc-600 text-sm font-semibold uppercase tracking-[0.3em] flex items-center gap-4"><i data-lucide="star" class="w-4 h-4 text-orange-500/50"></i> French Fine Dining</span>
+      <span class="text-zinc-600 text-sm font-semibold uppercase tracking-[0.3em] flex items-center gap-4"><i data-lucide="star" class="w-4 h-4 text-orange-500/50"></i> Mediterranean</span>
+      <span class="text-zinc-600 text-sm font-semibold uppercase tracking-[0.3em] flex items-center gap-4"><i data-lucide="star" class="w-4 h-4 text-orange-500/50"></i> Farm to Table</span>
+      <span class="text-zinc-600 text-sm font-semibold uppercase tracking-[0.3em] flex items-center gap-4"><i data-lucide="star" class="w-4 h-4 text-orange-500/50"></i> Wine Pairing</span>
+      <span class="text-zinc-600 text-sm font-semibold uppercase tracking-[0.3em] flex items-center gap-4"><i data-lucide="star" class="w-4 h-4 text-orange-500/50"></i> Italian Cuisine</span>
+      <span class="text-zinc-600 text-sm font-semibold uppercase tracking-[0.3em] flex items-center gap-4"><i data-lucide="star" class="w-4 h-4 text-orange-500/50"></i> Japanese Omakase</span>
+      <span class="text-zinc-600 text-sm font-semibold uppercase tracking-[0.3em] flex items-center gap-4"><i data-lucide="star" class="w-4 h-4 text-orange-500/50"></i> French Fine Dining</span>
+      <span class="text-zinc-600 text-sm font-semibold uppercase tracking-[0.3em] flex items-center gap-4"><i data-lucide="star" class="w-4 h-4 text-orange-500/50"></i> Mediterranean</span>
+      <span class="text-zinc-600 text-sm font-semibold uppercase tracking-[0.3em] flex items-center gap-4"><i data-lucide="star" class="w-4 h-4 text-orange-500/50"></i> Farm to Table</span>
+      <span class="text-zinc-600 text-sm font-semibold uppercase tracking-[0.3em] flex items-center gap-4"><i data-lucide="star" class="w-4 h-4 text-orange-500/50"></i> Wine Pairing</span>
+    </div>
+  </section>
+
+  <!-- ==================== CATEGORIES ==================== -->
+  <section class="py-24 relative">
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-orange-500/5 rounded-full blur-[150px]"></div>
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 relative">
+      <!-- Section header -->
+      <div class="text-center mb-16">
+        <div class="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
+          <span class="text-xs font-semibold uppercase tracking-wider text-orange-400">Culinary Collections</span>
+        </div>
+        <h2 class="text-4xl sm:text-5xl font-semibold tracking-tight text-gradient mb-4">Explore Categories</h2>
+        <p class="text-zinc-400 font-light max-w-lg mx-auto">From appetizers to desserts, each category is a journey through taste, texture, and tradition.</p>
+      </div>
+
+      <!-- Categories Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+        <!-- Category 1 -->
+        <div class="group relative rounded-3xl overflow-hidden aspect-[3/4] cursor-pointer">
+          <div class="editable-img-wrapper absolute inset-0" data-img-id="cat-1" onclick="event.stopPropagation(); triggerUpload(this)">
+            <img src="/image/4.jpg" alt="Starters" class="w-full h-full object-cover">
+            <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+              <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+              <span class="text-[10px] font-semibold text-white">Edit</span>
+            </div>
+          </div>
+          <div class="category-overlay absolute inset-0"></div>
+          <div class="absolute bottom-0 left-0 right-0 p-6 z-10">
+            <h3 class="text-xl font-semibold mb-1">Starters</h3>
+            <p class="text-zinc-400 text-sm">12 dishes</p>
+          </div>
+        </div>
+
+        <!-- Category 2 -->
+        <div class="group relative rounded-3xl overflow-hidden aspect-[3/4] cursor-pointer">
+          <div class="editable-img-wrapper absolute inset-0" data-img-id="cat-2" onclick="event.stopPropagation(); triggerUpload(this)">
+            <img src="/image/3.jpg" alt="Main Course" class="w-full h-full object-cover">
+            <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+              <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+              <span class="text-[10px] font-semibold text-white">Edit</span>
+            </div>
+          </div>
+          <div class="category-overlay absolute inset-0"></div>
+          <div class="absolute bottom-0 left-0 right-0 p-6 z-10">
+            <h3 class="text-xl font-semibold mb-1">Main Course</h3>
+            <p class="text-zinc-400 text-sm">18 dishes</p>
+          </div>
+        </div>
+
+        <!-- Category 3 -->
+        <div class="group relative rounded-3xl overflow-hidden aspect-[3/4] cursor-pointer">
+          <div class="editable-img-wrapper absolute inset-0" data-img-id="cat-3" onclick="event.stopPropagation(); triggerUpload(this)">
+            <img src="/image/simply-recipes-chocolate-delight-lead-4-0554cb752f6a4d20b8b1f4c85473a95f.jpg" alt="Desserts" class="w-full h-full object-cover">
+            <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+              <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+              <span class="text-[10px] font-semibold text-white">Edit</span>
+            </div>
+          </div>
+          <div class="category-overlay absolute inset-0"></div>
+          <div class="absolute bottom-0 left-0 right-0 p-6 z-10">
+            <h3 class="text-xl font-semibold mb-1">Desserts</h3>
+            <p class="text-zinc-400 text-sm">10 dishes</p>
+          </div>
+        </div>
+
+        <!-- Category 4 -->
+        <div class="group relative rounded-3xl overflow-hidden aspect-[3/4] cursor-pointer">
+          <div class="editable-img-wrapper absolute inset-0" data-img-id="cat-4" onclick="event.stopPropagation(); triggerUpload(this)">
+            <img src="image/dsc_0035.jpg" alt="Drinks" class="w-full h-full object-cover">
+            <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+              <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+              <span class="text-[10px] font-semibold text-white">Edit</span>
+            </div>
+          </div>
+          <div class="category-overlay absolute inset-0"></div>
+          <div class="absolute bottom-0 left-0 right-0 p-6 z-10">
+            <h3 class="text-xl font-semibold mb-1">Drinks</h3>
+            <p class="text-zinc-400 text-sm">24 options</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== MENU ==================== -->
+  <section id="menu" class="py-24 relative">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <!-- Section header -->
+      <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-16 gap-6">
+        <div>
+          <div class="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
+            <span class="text-xs font-semibold uppercase tracking-wider text-orange-400">Our Specialties</span>
+          </div>
+          <h2 class="text-4xl sm:text-5xl font-semibold tracking-tight text-gradient">Signature Menu</h2>
+        </div>
+        <!-- Tabs -->
+        <div class="flex items-center gap-2 bg-zinc-900 rounded-full p-1.5 border border-zinc-800">
+          <button class="tab-btn active text-sm font-medium px-5 py-2 rounded-full border border-transparent transition-all" onclick="switchTab(this, 'all')">All</button>
+          <button class="tab-btn text-sm font-medium px-5 py-2 rounded-full text-zinc-400 border border-transparent hover:text-white transition-all" onclick="switchTab(this, 'starter')">Starters</button>
+          <button class="tab-btn text-sm font-medium px-5 py-2 rounded-full text-zinc-400 border border-transparent hover:text-white transition-all" onclick="switchTab(this, 'main')">Mains</button>
+          <button class="tab-btn text-sm font-medium px-5 py-2 rounded-full text-zinc-400 border border-transparent hover:text-white transition-all" onclick="switchTab(this, 'dessert')">Desserts</button>
+        </div>
+      </div>
+
+      <!-- Menu Grid -->
+      <div id="menuGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Menu Item 1 -->
+        <div class="menu-item-card glass-card rounded-3xl overflow-hidden group" data-category="starter">
+          <div class="editable-img-wrapper aspect-[4/3]" data-img-id="menu-1" onclick="triggerUpload(this)">
+            <img src="/image/prawn-and-ginger-dumplings-102062-1.jpeg" alt="Truffle Arancini" class="w-full h-full object-cover">
+            <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+              <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+              <span class="text-[10px] font-semibold text-white">Edit</span>
+            </div>
+            <div class="absolute top-4 left-4 z-10">
+              <span class="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full">Bestseller</span>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-3">
+              <div>
+                <h3 class="text-lg font-semibold">Steamed Dumplings with Spring Rolls & Dipping Sauce</h3>
+                <div class="menu-line h-0.5 bg-orange-500 mt-2 rounded-full"></div>
+              </div>
+              <span class="text-orange-400 font-semibold text-lg">$10</span>
+            </div>
+            <p class="text-zinc-400 text-sm font-light leading-relaxed mb-4">Soft, juicy dumplings filled with seasoned meat or vegetables, steamed to perfection and served alongside crispy spring rolls. Paired with a tangy dipping sauce, this dish is a classic Asian-inspired comfort food with both soft and crunchy textures.</p>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1">
+                <i data-lucide="star" class="w-3.5 h-3.5 text-orange-400 fill-orange-400"></i>
+                <span class="text-xs text-zinc-400">4.9 (128)</span>
+              </div>
+              <button class="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center hover:bg-orange-500 transition-colors group/btn" onclick="addToCart('Truffle Arancini')">
+                <i data-lucide="plus" class="w-4 h-4 group-hover/btn:scale-110 transition-transform"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Menu Item 2 -->
+        <div class="menu-item-card glass-card rounded-3xl overflow-hidden group" data-category="main">
+          <div class="editable-img-wrapper aspect-[4/3]" data-img-id="menu-2" onclick="triggerUpload(this)">
+            <img src="/image/karahi.jpg" alt="Wagyu Steak" class="w-full h-full object-cover">
+            <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+              <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+              <span class="text-[10px] font-semibold text-white">Edit</span>
+            </div>
+            <div class="absolute top-4 left-4 z-10">
+              <span class="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">Chef's Pick</span>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-3">
+              <div>
+                <h3 class="text-lg font-semibold">White Karahi</h3>
+                <div class="menu-line h-0.5 bg-orange-500 mt-2 rounded-full"></div>
+              </div>
+              <span class="text-orange-400 font-semibold text-lg">$89</span>
+            </div>
+            <p class="text-zinc-400 text-sm font-light leading-relaxed mb-4">A creamy and mildly spiced variation of traditional karahi, made with tender chicken cooked in a rich blend of yogurt, cream, and aromatic spices. Unlike the classic tomato-based version, this dish has a smooth, white gravy flavored with garlic, ginger, green chilies, and a hint of black pepper.</p>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1">
+                <i data-lucide="star" class="w-3.5 h-3.5 text-orange-400 fill-orange-400"></i>
+                <span class="text-xs text-zinc-400">5.0 (256)</span>
+              </div>
+              <button class="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center hover:bg-orange-500 transition-colors group/btn" onclick="addToCart('Wagyu Ribeye A5')">
+                <i data-lucide="plus" class="w-4 h-4 group-hover/btn:scale-110 transition-transform"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Menu Item 3 -->
+        <div class="menu-item-card glass-card rounded-3xl overflow-hidden group" data-category="main">
+          <div class="editable-img-wrapper aspect-[4/3]" data-img-id="menu-3" onclick="triggerUpload(this)">
+            <img src="/image/chicken karahi.jpg" alt="Lobster Risotto" class="w-full h-full object-cover">
+            <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+              <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+              <span class="text-[10px] font-semibold text-white">Edit</span>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-3">
+              <div>
+                <h3 class="text-lg font-semibold">Chicken Karahi</h3>
+                <div class="menu-line h-0.5 bg-orange-500 mt-2 rounded-full"></div>
+              </div>
+              <span class="text-orange-400 font-semibold text-lg">$56</span>
+            </div>
+            <p class="text-zinc-400 text-sm font-light leading-relaxed mb-4">A classic Pakistani dish made with tender chicken cooked in a wok-like pan called a karahi. The chicken is simmered in a rich, spicy tomato-based gravy with fresh garlic, ginger, green chilies, and aromatic spices. Finished with coriander and a touch of butter or cream,</p>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1">
+                <i data-lucide="star" class="w-3.5 h-3.5 text-orange-400 fill-orange-400"></i>
+                <span class="text-xs text-zinc-400">4.8 (94)</span>
+              </div>
+              <button class="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center hover:bg-orange-500 transition-colors group/btn" onclick="addToCart('Lobster Risotto')">
+                <i data-lucide="plus" class="w-4 h-4 group-hover/btn:scale-110 transition-transform"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Menu Item 4 -->
+        <div class="menu-item-card glass-card rounded-3xl overflow-hidden group" data-category="starter">
+          <div class="editable-img-wrapper aspect-[4/3]" data-img-id="menu-4" onclick="triggerUpload(this)">
+            <img src="/image/6.jpg" alt="Tuna Tartare" class="w-full h-full object-cover">
+            <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+              <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+              <span class="text-[10px] font-semibold text-white">Edit</span>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-3">
+              <div>
+                <h3 class="text-lg font-semibold">Caramelized Pear & Blue Cheese Crostini</h3>
+                <div class="menu-line h-0.5 bg-orange-500 mt-2 rounded-full"></div>
+              </div>
+              <span class="text-orange-400 font-semibold text-lg">$28</span>
+            </div>
+            <p class="text-zinc-400 text-sm font-light leading-relaxed mb-4">Toasted artisan bread layered with fresh greens, creamy blue cheese, and sweet caramelized pears. Finished with crunchy walnuts and a drizzle of honey or glaze, this dish offers a perfect balance of sweet, tangy, and nutty flavors.</p>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1">
+                <i data-lucide="star" class="w-3.5 h-3.5 text-orange-400 fill-orange-400"></i>
+                <span class="text-xs text-zinc-400">4.7 (82)</span>
+              </div>
+              <button class="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center hover:bg-orange-500 transition-colors group/btn" onclick="addToCart('Tuna Tartare')">
+                <i data-lucide="plus" class="w-4 h-4 group-hover/btn:scale-110 transition-transform"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Menu Item 5 -->
+        <div class="menu-item-card glass-card rounded-3xl overflow-hidden group" data-category="dessert">
+          <div class="editable-img-wrapper aspect-[4/3]" data-img-id="menu-5" onclick="triggerUpload(this)">
+            <img src="/image/d1.webp" alt="Chocolate Fondant" class="w-full h-full object-cover">
+            <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+              <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+              <span class="text-[10px] font-semibold text-white">Edit</span>
+            </div>
+            <div class="absolute top-4 left-4 z-10">
+              <span class="bg-purple-500 text-white text-xs font-bold px-3 py-1 rounded-full">New</span>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-3">
+              <div>
+                <h3 class="text-lg font-semibold">Chocolate Cake</h3>
+                <div class="menu-line h-0.5 bg-orange-500 mt-2 rounded-full"></div>
+              </div>
+              <span class="text-orange-400 font-semibold text-lg">$5</span>
+            </div>
+            <p class="text-zinc-400 text-sm font-light leading-relaxed mb-4">A rich and indulgent dessert made with layers of soft, moist chocolate sponge filled and coated with smooth chocolate ganache or creamy chocolate frosting.</p>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1">
+                <i data-lucide="star" class="w-3.5 h-3.5 text-orange-400 fill-orange-400"></i>
+                <span class="text-xs text-zinc-400">4.9 (201)</span>
+              </div>
+              <button class="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center hover:bg-orange-500 transition-colors group/btn" onclick="addToCart('Chocolate Fondant')">
+                <i data-lucide="plus" class="w-4 h-4 group-hover/btn:scale-110 transition-transform"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Menu Item 6 -->
+        <div class="menu-item-card glass-card rounded-3xl overflow-hidden group" data-category="dessert">
+          <div class="editable-img-wrapper aspect-[4/3]" data-img-id="menu-6" onclick="triggerUpload(this)">
+            <img src="/image/d2.jpg" alt="Crème Brûlée" class="w-full h-full object-cover">
+            <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+              <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+              <span class="text-[10px] font-semibold text-white">Edit</span>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-3">
+              <div>
+                <h3 class="text-lg font-semibold">Strawberry Cake</h3>
+                <div class="menu-line h-0.5 bg-orange-500 mt-2 rounded-full"></div>
+              </div>
+              <span class="text-orange-400 font-semibold text-lg">$3</span>
+            </div>
+            <p class="text-zinc-400 text-sm font-light leading-relaxed mb-4">A light and refreshing dessert featuring fluffy sponge layers infused with strawberry flavor, filled with fresh strawberries and whipped cream or strawberry frosting. Sweet, fruity, and slightly tangy,</p>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1">
+                <i data-lucide="star" class="w-3.5 h-3.5 text-orange-400 fill-orange-400"></i>
+                <span class="text-xs text-zinc-400">4.8 (167)</span>
+              </div>
+              <button class="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center hover:bg-orange-500 transition-colors group/btn" onclick="addToCart('Crème Brûlée')">
+                <i data-lucide="plus" class="w-4 h-4 group-hover/btn:scale-110 transition-transform"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-12">
+        <a href="#" class="inline-flex items-center gap-2 border border-zinc-700 text-white px-8 py-3.5 rounded-full text-sm font-semibold hover:bg-zinc-800/50 transition-all group">
+          View Full Menu
+          <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== ABOUT ==================== -->
+  <section id="about" class="py-24 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-orange-500/[0.02] to-transparent"></div>
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 relative">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <!-- Image Side -->
+        <div class="relative">
+          <div class="editable-img-wrapper rounded-3xl overflow-hidden aspect-[4/5]" data-img-id="about-1" onclick="triggerUpload(this)">
+            <img src="/image/ad.avif" alt="Restaurant Interior" class="w-full h-full object-cover">
+            <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-3 py-1.5 flex items-center gap-1.5">
+              <i data-lucide="camera" class="w-3.5 h-3.5 text-white"></i>
+              <span class="text-xs font-semibold text-white">Change Photo</span>
+            </div>
+          </div>
+          <!-- Floating card -->
+          <div class="absolute -bottom-6 -right-6 glass-card rounded-2xl p-6 animate-float" style="animation-delay: -2s;">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center">
+                <i data-lucide="award" class="w-6 h-6 text-orange-400"></i>
+              </div>
+              <div>
+                <div class="text-2xl font-semibold">3★</div>
+                <div class="text-xs text-zinc-500">Michelin Stars</div>
+              </div>
+            </div>
+          </div>
+          <!-- Decorative ring -->
+          <div class="absolute -top-8 -left-8 w-32 h-32 border border-orange-500/20 rounded-full animate-spin-slow"></div>
+        </div>
+
+        <!-- Text Side -->
+        <div>
+          <div class="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
+            <span class="text-xs font-semibold uppercase tracking-wider text-orange-400">Our Story</span>
+          </div>
+          <h2 class="text-4xl sm:text-5xl font-semibold tracking-tight text-gradient mb-6">A Legacy of<br>Culinary Excellence</h2>
+          <p class="text-zinc-400 font-light leading-relaxed mb-6">
+            Founded in 2009, SAVORA was born from a simple vision: to create a dining experience that transcends the ordinary. Every ingredient is hand-selected from local farms and artisan producers. Every dish is a canvas where tradition meets innovation.
+          </p>
+          <p class="text-zinc-500 font-light leading-relaxed mb-10">
+            Our open kitchen design invites you to witness the artistry firsthand, while our sommelier-curated wine list features over 500 labels from the world's most prestigious vineyards.
+          </p>
+
+          <!-- Features -->
+          <div class="grid grid-cols-2 gap-6 mb-10">
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <i data-lucide="leaf" class="w-5 h-5 text-orange-400"></i>
+              </div>
+              <div>
+                <h4 class="text-sm font-semibold mb-1">Farm Fresh</h4>
+                <p class="text-xs text-zinc-500 font-light">Locally sourced daily</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <i data-lucide="flame" class="w-5 h-5 text-orange-400"></i>
+              </div>
+              <div>
+                <h4 class="text-sm font-semibold mb-1">Open Kitchen</h4>
+                <p class="text-xs text-zinc-500 font-light">Watch the magic happen</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <i data-lucide="wine" class="w-5 h-5 text-orange-400"></i>
+              </div>
+              <div>
+                <h4 class="text-sm font-semibold mb-1">500+ Wines</h4>
+                <p class="text-xs text-zinc-500 font-light">Expert sommelier picks</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <i data-lucide="heart" class="w-5 h-5 text-orange-400"></i>
+              </div>
+              <div>
+                <h4 class="text-sm font-semibold mb-1">Made with Love</h4>
+                <p class="text-xs text-zinc-500 font-light">Passion in every plate</p>
+              </div>
+            </div>
+          </div>
+
+          <a href="#" class="btn-glow bg-white text-zinc-900 px-8 py-3.5 rounded-full text-sm font-semibold hover:bg-zinc-100 transition-all inline-flex items-center gap-2 group">
+            Learn More
+            <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CHEFS ==================== -->
+  <section id="chefs" class="py-24 relative">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <div class="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
+          <span class="text-xs font-semibold uppercase tracking-wider text-orange-400">Master Minds</span>
+        </div>
+        <h2 class="text-4xl sm:text-5xl font-semibold tracking-tight text-gradient mb-4">Meet Our Chefs</h2>
+        <p class="text-zinc-400 font-light max-w-lg mx-auto">World-class culinary artists who bring passion, precision, and creativity to every plate.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Chef 1 -->
+        <div class="group glass-card rounded-3xl overflow-hidden">
+          <div class="editable-img-wrapper aspect-[3/4]" data-img-id="chef-1" onclick="triggerUpload(this)">
+            <img src="/image/chef1.avif" alt="Chef Marco" class="w-full h-full object-cover">
+            <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+              <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+              <span class="text-[10px] font-semibold text-white">Edit</span>
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent"></div>
+          </div>
+          <div class="p-6 -mt-16 relative z-10">
+            <h3 class="text-xl font-semibold">Fatima</h3>
+            <p class="text-orange-400 text-sm font-medium mb-3">Executive Chef</p>
+            <p class="text-zinc-500 text-sm font-light leading-relaxed mb-4">6 years of experience across Michelin restaurants in Milan, Paris, and Tokyo.</p>
+            <div class="flex items-center gap-3">
+              <a href="#" class="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center hover:bg-orange-500 transition-colors"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+              <a href="#" class="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center hover:bg-orange-500 transition-colors"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+              <a href="#" class="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center hover:bg-orange-500 transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chef 2 -->
+        <div class="group glass-card rounded-3xl overflow-hidden">
+          <div class="editable-img-wrapper aspect-[3/4]" data-img-id="chef-2" onclick="triggerUpload(this)">
+            <img src="/image/happy-male-inchef 2.jpg" alt="Chef Yuki" class="w-full h-full object-cover">
+            <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+              <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+              <span class="text-[10px] font-semibold text-white">Edit</span>
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent"></div>
+          </div>
+          <div class="p-6 -mt-16 relative z-10">
+            <h3 class="text-xl font-semibold">Muhammad Ali</h3>
+            <p class="text-orange-400 text-sm font-medium mb-3">Pastry Chef</p>
+            <p class="text-zinc-500 text-sm font-light leading-relaxed mb-4">Award-winning pastry artist blending Japanese precision with French technique.</p>
+            <div class="flex items-center gap-3">
+              <a href="#" class="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center hover:bg-orange-500 transition-colors"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+              <a href="#" class="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center hover:bg-orange-500 transition-colors"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+              <a href="#" class="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center hover:bg-orange-500 transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chef 3 -->
+        <div class="group glass-card rounded-3xl overflow-hidden">
+          <div class="editable-img-wrapper aspect-[3/4]" data-img-id="chef-3" onclick="triggerUpload(this)">
+            <img src="/image/chef 3.avif" alt="Chef Antoine" class="w-full h-full object-cover">
+            <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+              <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+              <span class="text-[10px] font-semibold text-white">Edit</span>
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent"></div>
+          </div>
+          <div class="p-6 -mt-16 relative z-10">
+            <h3 class="text-xl font-semibold">Antoine Dubois</h3>
+            <p class="text-orange-400 text-sm font-medium mb-3">Sous Chef</p>
+            <p class="text-zinc-500 text-sm font-light leading-relaxed mb-4">Trained under Alain Ducasse, specializes in modern French Mediterranean cuisine.</p>
+            <div class="flex items-center gap-3">
+              <a href="#" class="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center hover:bg-orange-500 transition-colors"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+              <a href="#" class="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center hover:bg-orange-500 transition-colors"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+              <a href="#" class="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center hover:bg-orange-500 transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== GALLERY ==================== -->
+  <section id="gallery" class="py-24 relative">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <div class="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
+          <span class="text-xs font-semibold uppercase tracking-wider text-orange-400">Visual Feast</span>
+        </div>
+        <h2 class="text-4xl sm:text-5xl font-semibold tracking-tight text-gradient mb-4">Our Gallery</h2>
+        <p class="text-zinc-400 font-light max-w-lg mx-auto">
+
+      <!-- Masonry-like grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="editable-img-wrapper rounded-2xl overflow-hidden aspect-square" data-img-id="gal-1" onclick="triggerUpload(this)">
+          <img src="/image/burger.jpg" alt="Gallery" class="w-full h-full object-cover">
+          <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+            <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+            <span class="text-[10px] font-semibold text-white">Edit</span>
+          </div>
+        </div>
+        <div class="editabhttps://picsum.photos/seed/gallery2/600/800.jpgle-img-wrapper rounded-2xl overflow-hidden aspect-[3/4] md:row-span-2" data-img-id="gal-2" onclick="triggerUpload(this)">
+          <img src="/image/roll.jpg" alt="Gallery" class="w-full h-full object-cover">
+          <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+            <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+            <span class="text-[10px] font-semibold text-white">Edit</span>
+          </div>
+        </div>
+        <div class="editable-img-wrapper rounded-2xl overflow-hidden aspect-square" data-img-id="gal-3" onclick="triggerUpload(this)">
+          <img src="/image/piza.avif" alt="Gallery" class="w-full h-full object-cover">
+          <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+            <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+            <span class="text-[10px] font-semibold text-white">Edit</span>
+          </div>
+        </div>
+        <div class="editable-img-wrapper rounded-2xl overflow-hidden aspect-square" data-img-id="gal-4" onclick="triggerUpload(this)">
+          <img src="/image/brost.avif" alt="Gallery" class="w-full h-full object-cover">
+          <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+            <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+            <span class="text-[10px] font-semibold text-white">Edit</span>
+          </div>
+        </div>
+        <div class="editable-img-wrapper rounded-2xl overflow-hidden aspect-square" data-img-id="gal-5" onclick="triggerUpload(this)">
+          <img src="/image/ball.webp" alt="Gallery" class="w-full h-full object-cover">
+          <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+            <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+            <span class="text-[10px] font-semibold text-white">Edit</span>
+          </div>
+        </div>
+        <div class="editable-img-wrapper rounded-2xl overflow-hidden aspect-square" data-img-id="gal-6" onclick="triggerUpload(this)">
+          <img src="/image/chy.webp" alt="Gallery" class="w-full h-full object-cover">
+          <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+            <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+            <span class="text-[10px] font-semibold text-white">Edit</span>
+          </div>
+        </div>
+        <div class="editable-img-wrapper rounded-2xl overflow-hidden aspect-square" data-img-id="gal-7" onclick="triggerUpload(this)">
+          <img src="/image/honey.webp" alt="Gallery" class="w-full h-full object-cover">
+          <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+            <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+            <span class="text-[10px] font-semibold text-white">Edit</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TESTIMONIALS ==================== -->
+  <section class="py-24 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-orange-500/[0.02] to-transparent"></div>
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 relative">
+      <div class="text-center mb-16">
+        <div class="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
+          <span class="text-xs font-semibold uppercase tracking-wider text-orange-400">Testimonials</span>
+        </div>
+        <h2 class="text-4xl sm:text-5xl font-semibold tracking-tight text-gradient mb-4">What Guests Say</h2>
+      </div>
+
+      <!-- Testimonial Cards -->
+      <div class="relative" id="testimonialContainer">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="testimonialGrid">
+          <!-- Testimonial 1 -->
+          <div class="glass-card rounded-3xl p-8 testimonial-card">
+            <div class="flex items-center gap-1 mb-4">
+              <i data-lucide="star" class="w-4 h-4 text-orange-400 fill-orange-400"></i>
+              <i data-lucide="star" class="w-4 h-4 text-orange-400 fill-orange-400"></i>
+              <i data-lucide="star" class="w-4 h-4 text-orange-400 fill-orange-400"></i>
+              <i data-lucide="star" class="w-4 h-4 text-orange-400 fill-orange-400"></i>
+              <i data-lucide="star" class="w-4 h-4 text-orange-400 fill-orange-400"></i>
+            </div>
+            <p class="text-zinc-300 font-light leading-relaxed mb-6">“Loved the ambiance and quick service. Highly recommended for family dinners.”</p>
+            <div class="flex items-center gap-3">
+              <div class="editable-img-wrapper w-11 h-11 rounded-full overflow-hidden flex-shrink-0" data-img-id="rev-1" onclick="event.stopPropagation(); triggerUpload(this)">
+                <img src="https://picsum.photos/seed/person1/100/100.jpg" alt="Reviewer" class="w-full h-full object-cover">
+                <div class="edit-badge" style="top:-4px;right:-4px;"><i data-lucide="camera" class="w-3 h-3 text-white"></i></div>
+              </div>
+              <div>
+                <div class="text-sm font-semibold">Hassan Malik</div>
+                <div class="text-xs text-zinc-500">Food Critic, NY Times</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Testimonial 2 -->
+          <div class="glass-card rounded-3xl p-8 testimonial-card">
+            <div class="flex items-center gap-1 mb-4">
+              <i data-lucide="star" class="w-4 h-4 text-orange-400 fill-orange-400"></i>
+              <i data-lucide="star" class="w-4 h-4 text-orange-400 fill-orange-400"></i>
+              <i data-lucide="star" class="w-4 h-4 text-orange-400 fill-orange-400"></i>
+              <i data-lucide="star" class="w-4 h-4 text-orange-400 fill-orange-400"></i>
+              <i data-lucide="star" class="w-4 h-4 text-orange-400 fill-orange-400"></i>
+            </div>
+            <p class="text-zinc-300 font-light leading-relaxed mb-6">  “Best place for desi and continental dishes. Chicken karahi was full of flavor!”</p>
+            <div class="flex items-center gap-3">
+              <div class="editable-img-wrapper w-11 h-11 rounded-full overflow-hidden flex-shrink-0" data-img-id="rev-2" onclick="event.stopPropagation(); triggerUpload(this)">
+                <img src="https://picsum.photos/seed/person2/100/100.jpg" alt="Reviewer" class="w-full h-full object-cover">
+                <div class="edit-badge" style="top:-4px;right:-4px;"><i data-lucide="camera" class="w-3 h-3 text-white"></i></div>
+              </div>
+              <div>
+                <div class="text-sm font-semibold">Ali Raza</div>
+                <div class="text-xs text-zinc-500">Regular Guests</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Testimonial 3 -->
+          <div class="glass-card rounded-3xl p-8 testimonial-card">
+            <div class="flex items-center gap-1 mb-4">
+              <i data-lucide="star" class="w-4 h-4 text-orange-400 fill-orange-400"></i>
+              <i data-lucide="star" class="w-4 h-4 text-orange-400 fill-orange-400"></i>
+              <i data-lucide="star" class="w-4 h-4 text-orange-400 fill-orange-400"></i>
+              <i data-lucide="star" class="w-4 h-4 text-orange-400 fill-orange-400"></i>
+              <i data-lucide="star" class="w-4 h-4 text-orange-400 fill-orange-400"></i>
+            </div>
+            <p class="text-zinc-300 font-light leading-relaxed mb-6"> “Savora’s food is absolutely delicious! The presentation and taste both feel premium.”</p>
+            <div class="flex items-center gap-3">
+              <div class="editable-img-wrapper w-11 h-11 rounded-full overflow-hidden flex-shrink-0" data-img-id="rev-3" onclick="event.stopPropagation(); triggerUpload(this)">
+                <img src="https://picsum.photos/seed/person3/100/100.jpg" alt="Reviewer" class="w-full h-full object-cover">
+                <div class="edit-badge" style="top:-4px;right:-4px;"><i data-lucide="camera" class="w-3 h-3 text-white"></i></div>
+              </div>
+              <div>
+                <div class="text-sm font-semibold">Ayesha Khan</div>
+                <div class="text-xs text-zinc-500">Chef, Le Petit Bistro</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== RESERVATION ==================== -->
+  <section id="reserve" class="py-24 relative">
+    <div class="absolute inset-0">
+      <div class="editable-img-wrapper absolute inset-0" data-img-id="reserve-bg" onclick="triggerUpload(this)">
+        <img src="https://picsum.photos/seed/ambience99/1920/800.jpg" alt="Ambience" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-zinc-950/85 backdrop-blur-sm"></div>
+        <div class="edit-badge bg-orange-500/90 backdrop-blur-sm rounded-full px-3 py-1.5 flex items-center gap-1.5" style="top:20px;right:20px;">
+          <i data-lucide="camera" class="w-3.5 h-3.5 text-white"></i>
+          <span class="text-xs font-semibold text-white">Change BG</span>
+        </div>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <!-- Left text -->
+        <div>
+          <div class="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
+            <span class="text-xs font-semibold uppercase tracking-wider text-orange-400">Reservation</span>
+          </div>
+          <h2 class="text-4xl sm:text-5xl font-semibold tracking-tight text-gradient mb-6">Reserve Your<br>Perfect Evening</h2>
+          <p class="text-zinc-400 font-light leading-relaxed mb-8">
+            Whether it's a romantic dinner for two or a celebration with friends, we'll ensure every detail is perfect. Book your table and let us create an unforgettable experience.
+          </p>
+          <div class="flex flex-col gap-4">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="clock" class="w-5 h-5 text-orange-400"></i>
+              </div>
+              <div>
+                <div class="text-sm font-semibold">Opening Hours</div>
+                <div class="text-xs text-zinc-500">Tue–Sun: 6:00 PM – 11:30 PM</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="phone" class="w-5 h-5 text-orange-400"></i>
+              </div>
+              <div>
+                <div class="text-sm font-semibold">Call Us</div>
+                <div class="text-xs text-zinc-500">03304001180</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="map-pin" class="w-5 h-5 text-orange-400"></i>
+              </div>
+              <div>
+                <div class="text-sm font-semibold">Location</div>
+                <div class="text-xs text-zinc-500">Pakistan,Sindh,Sukkur</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reservation Form -->
+        <div class="glass-card rounded-3xl p-8">
+          <form id="reserveForm" onsubmit="handleReserve(event)">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label class="text-xs text-zinc-500 font-medium mb-2 block">Full Name</label>
+                <input type="text" required placeholder="John Doe" class="w-full bg-zinc-800/50 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-orange-500/50 transition-colors">
+              </div>
+              <div>
+                <label class="text-xs text-zinc-500 font-medium mb-2 block">Phone</label>
+                <input type="tel" required placeholder="+1 555 000 0000" class="w-full bg-zinc-800/50 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-orange-500/50 transition-colors">
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label class="text-xs text-zinc-500 font-medium mb-2 block">Date</label>
+                <input type="date" required class="w-full bg-zinc-800/50 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-orange-500/50 transition-colors [color-scheme:dark]">
+              </div>
+              <div>
+                <label class="text-xs text-zinc-500 font-medium mb-2 block">Time</label>
+                <select required class="w-full bg-zinc-800/50 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-orange-500/50 transition-colors appearance-none">
+                  <option value="">Select time</option>
+                  <option>6:00 PM</option>
+                  <option>6:30 PM</option>
+                  <option>7:00 PM</option>
+                  <option>7:30 PM</option>
+                  <option>8:00 PM</option>
+                  <option>8:30 PM</option>
+                  <option>9:00 PM</option>
+                  <option>9:30 PM</option>
+                  <option>10:00 PM</option>
+                </select>
+              </div>
+            </div>
+            <div class="mb-4">
+              <label class="text-xs text-zinc-500 font-medium mb-2 block">Number of Guests</label>
+              <select required class="w-full bg-zinc-800/50 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-orange-500/50 transition-colors appearance-none">
+                <option value="">Select guests</option>
+                <option>1 Guest</option>
+                <option>2 Guests</option>
+                <option>3 Guests</option>
+                <option>4 Guests</option>
+                <option>5 Guests</option>
+                <option>6 Guests</option>
+                <option>7+ Guests (Private Dining)</option>
+              </select>
+            </div>
+            <div class="mb-6">
+              <label class="text-xs text-zinc-500 font-medium mb-2 block">Special Requests</label>
+              <textarea rows="3" placeholder="Allergies, celebrations, seating preferences..." class="w-full bg-zinc-800/50 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-orange-500/50 transition-colors resize-none"></textarea>
+            </div>
+            <button type="submit" class="btn-glow w-full bg-orange-500 text-white py-3.5 rounded-full text-sm font-semibold hover:bg-orange-600 transition-all flex items-center justify-center gap-2">
+              <i data-lucide="calendar-check" class="w-4 h-4"></i>
+              Reserve Now
+            </button>
+          </form>
+          <div id="reserveSuccess" class="hidden text-center py-8">
+            <div class="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
+              <i data-lucide="check-circle" class="w-8 h-8 text-green-400"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Reservation Confirmed!</h3>
+            <p class="text-zinc-400 text-sm">We'll send a confirmation to your phone shortly.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== NEWSLETTER ==================== -->
+  <section class="py-24 relative">
+    <div class="max-w-3xl mx-auto px-6 lg:px-8 text-center">
+      <div class="glass-card rounded-3xl p-12 relative overflow-hidden">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-orange-500/10 rounded-full blur-[100px]"></div>
+        <div class="relative z-10">
+          <div class="w-14 h-14 rounded-2xl bg-orange-500/10 flex items-center justify-center mx-auto mb-6">
+            <i data-lucide="mail" class="w-7 h-7 text-orange-400"></i>
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight text-gradient mb-4">Stay in the Loop</h2>
+          <p class="text-zinc-400 font-light mb-8 max-w-md mx-auto">Get exclusive recipes, event invitations, and seasonal menu updates delivered to your inbox.</p>
+          <form id="newsletterForm" onsubmit="handleNewsletter(event)" class="flex flex-col sm:flex-row items-center gap-3 max-w-md mx-auto">
+            <input type="email" required placeholder="Enter your email" class="flex-1 w-full bg-zinc-800/50 border border-zinc-700 rounded-full px-6 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-orange-500/50 transition-colors">
+            <button type="submit" class="btn-glow bg-white text-zinc-900 px-8 py-3.5 rounded-full text-sm font-semibold hover:bg-zinc-100 transition-all whitespace-nowrap">Subscribe</button>
+          </form>
+          <p id="newsletterMsg" class="text-xs text-zinc-600 mt-4 hidden"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer id="contact" class="pt-20 pb-8 border-t border-zinc-800/50">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+        <!-- Brand -->
+        <div>
+          <a href="#" class="flex items-center gap-2 mb-6">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
+              <i data-lucide="flame" class="w-5 h-5 text-white"></i>
+            </div>
+            <span class="text-xl font-semibold tracking-tight">SAVORA</span>
+          </a>
+          <p class="text-zinc-500 text-sm font-light leading-relaxed mb-6">Where culinary artistry meets unforgettable moments. A Michelin-starred experience in the heart of New York.</p>
+          <div class="flex items-center gap-3">
+            <a href="#" class="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-orange-500 hover:border-orange-500 transition-all"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+            <a href="#" class="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-orange-500 hover:border-orange-500 transition-all"><i data-lucide="facebook" class="w-4 h-4"></i></a>
+            <a href="#" class="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-orange-500 hover:border-orange-500 transition-all"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+            <a href="#" class="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-orange-500 hover:border-orange-500 transition-all"><i data-lucide="youtube" class="w-4 h-4"></i></a>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div>
+          <h4 class="text-sm font-semibold uppercase tracking-wider text-zinc-400 mb-6">Quick Links</h4>
+          <ul class="space-y-3">
+            <li><a href="#menu" class="text-sm text-zinc-500 hover:text-orange-400 transition-colors">Our Menu</a></li>
+            <li><a href="#about" class="text-sm text-zinc-500 hover:text-orange-400 transition-colors">About Us</a></li>
+            <li><a href="#chefs" class="text-sm text-zinc-500 hover:text-orange-400 transition-colors">Our Chefs</a></li>
+            <li><a href="#gallery" class="text-sm text-zinc-500 hover:text-orange-400 transition-colors">Gallery</a></li>
+            <li><a href="#reserve" class="text-sm text-zinc-500 hover:text-orange-400 transition-colors">Reservations</a></li>
+          </ul>
+        </div>
+
+        <!-- Services -->
+        <div>
+          <h4 class="text-sm font-semibold uppercase tracking-wider text-zinc-400 mb-6">Services</h4>
+          <ul class="space-y-3">
+            <li><a href="#" class="text-sm text-zinc-500 hover:text-orange-400 transition-colors">Private Dining</a></li>
+            <li><a href="#" class="text-sm text-zinc-500 hover:text-orange-400 transition-colors">Event Catering</a></li>
+            <li><a href="#" class="text-sm text-zinc-500 hover:text-orange-400 transition-colors">Wine Tastings</a></li>
+            <li><a href="#" class="text-sm text-zinc-500 hover:text-orange-400 transition-colors">Cooking Classes</a></li>
+            <li><a href="#" class="text-sm text-zinc-500 hover:text-orange-400 transition-colors">Gift Cards</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact Info -->
+        <div>
+          <h4 class="text-sm font-semibold uppercase tracking-wider text-zinc-400 mb-6">Contact</h4>
+          <ul class="space-y-4">
+            <li class="flex items-start gap-3">
+              <i data-lucide="map-pin" class="w-4 h-4 text-orange-500 mt-0.5 flex-shrink-0"></i>
+              <span class="text-sm text-zinc-500">Pakistan<br>Sindh,Sukkur</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <i data-lucide="phone" class="w-4 h-4 text-orange-500 flex-shrink-0"></i>
+              <span class="text-sm text-zinc-500">03304001180</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <i data-lucide="mail" class="w-4 h-4 text-orange-500 flex-shrink-0"></i>
+              <span class="text-sm text-zinc-500">hello@savora.com</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <i data-lucide="clock" class="w-4 h-4 text-orange-500 flex-shrink-0"></i>
+              <span class="text-sm text-zinc-500">Tue–Sun: 6PM – 11:30PM</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="divider-glow mb-8"></div>
+
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <p class="text-xs text-zinc-600">© 2025 SAVORA. All rights reserved.</p>
+        <div class="flex items-center gap-6">
+          <a href="#" class="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">Privacy Policy</a>
+          <a href="#" class="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">Terms of Service</a>
+          <a href="#" class="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">Accessibility</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to top -->
+  <button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-8 right-8 z-40 w-12 h-12 rounded-full bg-orange-500 text-white flex items-center justify-center shadow-2xl opacity-0 translate-y-4 transition-all duration-300 hover:bg-orange-600">
+    <i data-lucide="arrow-up" class="w-5 h-5"></i>
+  </button>
+
+  <script>
+    // ========== Initialize Lucide Icons ==========
+    lucide.createIcons();
+
+    // ========== Image Upload System ==========
+    let currentUploadTarget = null;
+
+    function triggerUpload(wrapper) {
+      currentUploadTarget = wrapper;
+      document.getElementById('imageUploader').click();
+    }
+
+    document.getElementById('imageUploader').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file || !currentUploadTarget) return;
+
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const img = currentUploadTarget.querySelector('img');
+        if (img) {
+          img.src = ev.target.result;
+          img.style.opacity = '0';
+          setTimeout(() => {
+            img.style.transition = 'opacity 0.5s ease';
+            img.style.opacity = '1';
+          }, 50);
+        }
+        showToast('Image updated successfully!');
+      };
+      reader.readAsDataURL(file);
+      this.value = '';
+    });
+
+    // ========== Toast ==========
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // ========== Navbar Scroll ==========
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 80) {
+        navbar.style.background = 'rgba(9,9,11,0.85)';
+        navbar.style.backdropFilter = 'blur(12px)';
+        navbar.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+      } else {
+        navbar.style.background = 'transparent';
+        navbar.style.backdropFilter = 'none';
+        navbar.style.borderBottom = 'none';
+      }
+
+      // Back to top button
+      const btn = document.getElementById('backToTop');
+      if (window.scrollY > 600) {
+        btn.style.opacity = '1';
+        btn.style.transform = 'translateY(0)';
+      } else {
+        btn.style.opacity = '0';
+        btn.style.transform = 'translateY(16px)';
+      }
+    });
+
+    // ========== Mobile Menu ==========
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileOverlay = document.getElementById('mobileOverlay');
+    document.getElementById('mobileToggle').addEventListener('click', () => {
+      mobileMenu.classList.add('open');
+      mobileOverlay.classList.remove('hidden');
+    });
+    function closeMobile() {
+      mobileMenu.classList.remove('open');
+      mobileOverlay.classList.add('hidden');
+    }
+    document.getElementById('mobileClose').addEventListener('click', closeMobile);
+    mobileOverlay.addEventListener('click', closeMobile);
+    document.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', closeMobile);
+    });
+
+    // ========== Menu Tabs ==========
+    function switchTab(btn, category) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const cards = document.querySelectorAll('.menu-item-card');
+      cards.forEach(card => {
+        if (category === 'all' || card.dataset.category === category) {
+          card.style.display = '';
+          card.style.animation = 'scaleIn 0.4s ease-out forwards';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // ========== Add to Cart ==========
+    let cartCount = 2;
+    function addToCart(name) {
+      cartCount++;
+      document.querySelector('[data-lucide="shopping-bag"]').parentElement.querySelector('span').textContent = cartCount;
+      showToast(`${name} added to cart!`);
+    }
+
+    // ========== Counter Animation ==========
+    function animateCounters() {
+      document.querySelectorAll('.counter').forEach(counter => {
+        const target = parseInt(counter.dataset.target);
+        const duration = 2000;
+        const step = target / (duration / 16);
+        let current = 0;
+        const timer = setInterval(() => {
+          current += step;
+          if (current >= target) {
+            counter.textContent = target;
+            clearInterval(timer);
+          } else {
+            counter.textContent = Math.floor(current);
+          }
+        }, 16);
+      });
+    }
+
+    // ========== Intersection Observer for animations ==========
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          if (entry.target.classList.contains('counter-section')) {
+            animateCounters();
+          }
+          entry.target.classList.add('animate-fade-up');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    // Start counter when hero is visible
+    const heroStats = document.querySelector('.counter')?.closest('div');
+    if (heroStats) {
+      setTimeout(animateCounters, 800);
+    }
+
+    // ========== Reservation Form ==========
+    function handleReserve(e) {
+      e.preventDefault();
+      document.getElementById('reserveForm').style.display = 'none';
+      document.getElementById('reserveSuccess').classList.remove('hidden');
+      lucide.createIcons();
+      showToast('Reservation confirmed! 🎉');
+    }
+
+    // ========== Newsletter ==========
+    function handleNewsletter(e) {
+      e.preventDefault();
+      const msg = document.getElementById('newsletterMsg');
+      msg.textContent = '✓ You\'re subscribed! Welcome to the SAVORA family.';
+      msg.classList.remove('hidden', 'text-zinc-600');
+      msg.classList.add('text-orange-400');
+      e.target.reset();
+      showToast('Subscribed successfully!');
+    }
+
+    // ========== Scroll-triggered animations ==========
+    const scrollObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.glass-card, .menu-item-card').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+      scrollObserver.observe(el);
+    });
+  </script>
+</body>
+</html>

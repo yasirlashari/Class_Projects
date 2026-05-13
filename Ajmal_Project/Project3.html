@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outfit Hub — Premium Clothing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { inter: ['Inter', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #09090b; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ef4444; }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes ping { 75%, 100% { transform: scale(2); opacity: 0; } }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes slideInRight { from { transform:translateX(100%); } to { transform:translateX(0); } }
+        @keyframes slideInUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes toastIn { from { transform:translateX(120%); opacity:0; } to { transform:translateX(0); opacity:1; } }
+        @keyframes toastOut { from { transform:translateX(0); opacity:1; } to { transform:translateX(120%); opacity:0; } }
+        
+        .animate-fadeIn { animation: fadeIn 0.6s ease-out forwards; }
+        .animate-slideInRight { animation: slideInRight 0.3s ease-out forwards; }
+        .animate-slideInUp { animation: slideInUp 0.5s ease-out forwards; }
+        .toast-in { animation: toastIn 0.4s ease-out forwards; }
+        .toast-out { animation: toastOut 0.3s ease-in forwards; }
+        
+        .clip-slant { clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%); }
+        .clip-slant-reverse { clip-path: polygon(0 15%, 100% 0, 100% 100%, 0 100%); }
+        
+        .gradient-text { background: linear-gradient(to right, #ef4444, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        
+        .product-card:hover .product-img { transform: scale(1.08); }
+        .product-card:hover .product-overlay { opacity: 1; }
+        .product-card:hover .quick-view-btn { transform: translateY(0); opacity: 1; }
+        
+        .category-card:hover .cat-img { transform: scale(1.1); }
+        .category-card:hover .cat-overlay { background: rgba(0,0,0,0.4); }
+        
+        html { scroll-behavior: smooth; }
+        
+        .size-btn.active { background: #dc2626; color: white; border-color: #dc2626; }
+        
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    </style>
+</head>
+<body class="bg-[#020617] text-white overflow-x-hidden">
+
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="fixed top-24 right-4 z-[100] flex flex-col gap-3"></div>
+
+    <!-- NAVIGATION -->
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 h-20 transition-all duration-300" style="background:rgba(2,6,23,0.8);backdrop-filter:blur(12px);">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 h-full flex items-center justify-between">
+            <!-- Logo -->
+            <a href="#" class="flex items-center gap-2">
+                <div class="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center">
+                    <span class="text-white font-bold text-lg">O</span>
+                </div>
+                <span class="text-xl font-semibold tracking-tight">Outfit Hub</span>
+            </a>
+
+            <!-- Desktop Nav -->
+            <div class="hidden lg:flex items-center gap-8">
+                <a href="#home" class="text-sm font-medium text-slate-300 hover:text-white transition-colors">Home</a>
+                <a href="#categories" class="text-sm font-medium text-slate-300 hover:text-white transition-colors">Categories</a>
+                <a href="#products" class="text-sm font-medium text-slate-300 hover:text-white transition-colors">Shop</a>
+                <a href="#bestsellers" class="text-sm font-medium text-slate-300 hover:text-white transition-colors">Bestsellers</a>
+                <a href="#about" class="text-sm font-medium text-slate-300 hover:text-white transition-colors">About</a>
+                <a href="#reviews" class="text-sm font-medium text-slate-300 hover:text-white transition-colors">Reviews</a>
+                <a href="#contact" class="text-sm font-medium text-slate-300 hover:text-white transition-colors">Contact</a>
+            </div>
+
+            <!-- Right Icons -->
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSearch()" class="p-2 text-slate-300 hover:text-white transition-colors">
+                    <i data-lucide="search" class="w-5 h-5"></i>
+                </button>
+                <button onclick="toggleWishlist()" class="p-2 text-slate-300 hover:text-white transition-colors relative">
+                    <i data-lucide="heart" class="w-5 h-5"></i>
+                    <span id="wishlistCount" class="absolute -top-1 -right-1 w-5 h-5 bg-red-600 text-white text-xs rounded-full flex items-center justify-center hidden">0</span>
+                </button>
+                <button onclick="toggleCart()" class="p-2 text-slate-300 hover:text-white transition-colors relative">
+                    <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                    <span id="cartCount" class="absolute -top-1 -right-1 w-5 h-5 bg-red-600 text-white text-xs rounded-full flex items-center justify-center hidden">0</span>
+                </button>
+                <button onclick="toggleMobileMenu()" class="lg:hidden p-2 text-slate-300 hover:text-white">
+                    <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- SEARCH OVERLAY -->
+    <div id="searchOverlay" class="fixed inset-0 z-[60] hidden" style="background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);">
+        <div class="max-w-2xl mx-auto px-6 pt-32">
+            <div class="relative">
+                <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-400"></i>
+                <input id="searchInput" type="text" placeholder="Search products..." 
+                    class="w-full bg-slate-900 border border-slate-700 rounded-2xl py-4 pl-14 pr-14 text-lg text-white placeholder-slate-500 focus:outline-none focus:border-red-500 transition-colors"
+                    oninput="handleSearch(this.value)">
+                <button onclick="toggleSearch()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div id="searchResults" class="mt-6 space-y-3 max-h-[60vh] overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- MOBILE MENU -->
+    <div id="mobileMenu" class="fixed inset-0 z-[55] hidden">
+        <div class="absolute inset-0 bg-black/80" onclick="toggleMobileMenu()"></div>
+        <div class="absolute right-0 top-0 bottom-0 w-72 bg-[#0f172a] p-6 animate-slideInRight">
+            <div class="flex justify-between items-center mb-10">
+                <span class="text-lg font-semibold">Menu</span>
+                <button onclick="toggleMobileMenu()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="flex flex-col gap-6">
+                <a href="#home" onclick="toggleMobileMenu()" class="text-base font-medium text-slate-300 hover:text-white transition-colors">Home</a>
+                <a href="#categories" onclick="toggleMobileMenu()" class="text-base font-medium text-slate-300 hover:text-white transition-colors">Categories</a>
+                <a href="#products" onclick="toggleMobileMenu()" class="text-base font-medium text-slate-300 hover:text-white transition-colors">Shop</a>
+                <a href="#bestsellers" onclick="toggleMobileMenu()" class="text-base font-medium text-slate-300 hover:text-white transition-colors">Bestsellers</a>
+                <a href="#about" onclick="toggleMobileMenu()" class="text-base font-medium text-slate-300 hover:text-white transition-colors">About</a>
+                <a href="#reviews" onclick="toggleMobileMenu()" class="text-base font-medium text-slate-300 hover:text-white transition-colors">Reviews</a>
+                <a href="#contact" onclick="toggleMobileMenu()" class="text-base font-medium text-slate-300 hover:text-white transition-colors">Contact</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- CART SIDEBAR -->
+    <div id="cartSidebar" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 bg-black/80" onclick="toggleCart()"></div>
+        <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-[#0f172a] flex flex-col animate-slideInRight">
+            <div class="flex justify-between items-center p-6 border-b border-slate-800">
+                <h3 class="text-lg font-semibold">Shopping Bag (<span id="cartItemCount">0</span>)</h3>
+                <button onclick="toggleCart()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div id="cartItems" class="flex-1 overflow-y-auto p-6 space-y-4"></div>
+            <div id="cartFooter" class="p-6 border-t border-slate-800 hidden">
+                <div class="flex justify-between mb-2 text-slate-300"><span>Subtotal</span><span id="cartSubtotal" class="text-white font-semibold">$0.00</span></div>
+                <div class="flex justify-between mb-4 text-slate-300"><span>Shipping</span><span class="text-green-400 text-sm">Free</span></div>
+                <div class="flex justify-between mb-6 text-lg"><span class="font-semibold">Total</span><span id="cartTotal" class="font-bold gradient-text">$0.00</span></div>
+                <button onclick="checkout()" class="w-full bg-red-600 hover:bg-red-500 text-white py-3.5 rounded-xl font-semibold transition-colors shadow-lg shadow-red-600/20">
+                    Checkout Now
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WISHLIST SIDEBAR -->
+    <div id="wishlistSidebar" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 bg-black/80" onclick="toggleWishlist()"></div>
+        <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-[#0f172a] flex flex-col animate-slideInRight">
+            <div class="flex justify-between items-center p-6 border-b border-slate-800">
+                <h3 class="text-lg font-semibold">Wishlist (<span id="wishlistItemCount">0</span>)</h3>
+                <button onclick="toggleWishlist()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div id="wishlistItems" class="flex-1 overflow-y-auto p-6 space-y-4"></div>
+        </div>
+    </div>
+
+    <!-- QUICK VIEW MODAL -->
+    <div id="quickViewModal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4" style="background:rgba(0,0,0,0.85);backdrop-filter:blur(4px);">
+        <div class="bg-[#0f172a] rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative" id="quickViewContent"></div>
+    </div>
+
+    <!-- ==================== HERO SECTION ==================== -->
+    <section id="home" class="relative clip-slant min-h-screen flex items-center">
+        <!-- BG Image — REPLACE: Change the src URL to your own image -->
+        <div class="absolute inset-0">
+            <img src="/image3/decstiop.webp" alt="Hero" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-r from-[#020617] via-[#020617]/90 to-[#020617]/40"></div>
+        </div>
+        <!-- Decorative blurs -->
+        <div class="absolute top-20 right-10 w-[500px] h-[500px] bg-red-600 rounded-full opacity-20 blur-[128px]"></div>
+        <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-600 rounded-full opacity-10 blur-[100px]"></div>
+
+        <div class="relative max-w-7xl mx-auto px-6 lg:px-8 pt-32 pb-48">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span class="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-red-400 mb-6">
+                        <span class="w-8 h-px bg-red-500"></span> New Collection 2025
+                    </span>
+                    <h1 class="text-4xl sm:text-5xl lg:text-7xl font-semibold tracking-tight leading-[1.1] mb-6">
+                        Define Your <br><span class="gradient-text">Style</span> Statement
+                    </h1>
+                    <p class="text-lg lg:text-xl text-slate-400 leading-relaxed mb-10 max-w-lg">
+                        Discover premium clothing crafted for those who dare to stand out. Elevate your wardrobe with timeless pieces.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#products" class="bg-red-600 hover:bg-red-500 text-white px-8 py-4 rounded-xl font-semibold transition-all shadow-lg shadow-red-600/20 flex items-center gap-2">
+                            Shop Now <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#about" class="border border-white/20 hover:border-white/40 text-white px-8 py-4 rounded-xl font-semibold transition-all flex items-center gap-2">
+                            Our Story <i data-lucide="play" class="w-4 h-4"></i>
+                        </a>
+                    </div>
+                    <div class="flex items-center gap-8 mt-12">
+                        <div><span class="text-3xl font-bold">500+</span><p class="text-sm text-slate-400 mt-1">Products</p></div>
+                        <div class="w-px h-12 bg-slate-700"></div>
+                        <div><span class="text-3xl font-bold">50k+</span><p class="text-sm text-slate-400 mt-1">Happy Customers</p></div>
+                        <div class="w-px h-12 bg-slate-700"></div>
+                        <div><span class="text-3xl font-bold">4.9</span><p class="text-sm text-slate-400 mt-1">Rating</p></div>
+                    </div>
+                </div>
+               
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FEATURES BAR ==================== -->
+    <section class="relative z-10 -mt-24">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="bg-[#0f172a] border border-slate-800 rounded-2xl p-8 grid grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-red-600/10 rounded-xl flex items-center justify-center flex-shrink-0"><i data-lucide="truck" class="w-6 h-6 text-red-500"></i></div>
+                    <div><p class="font-semibold text-sm">Free Shipping</p><p class="text-xs text-slate-400 mt-0.5">Orders over $99</p></div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-red-600/10 rounded-xl flex items-center justify-center flex-shrink-0"><i data-lucide="refresh-cw" class="w-6 h-6 text-red-500"></i></div>
+                    <div><p class="font-semibold text-sm">Easy Returns</p><p class="text-xs text-slate-400 mt-0.5">30 day returns</p></div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-red-600/10 rounded-xl flex items-center justify-center flex-shrink-0"><i data-lucide="shield-check" class="w-6 h-6 text-red-500"></i></div>
+                    <div><p class="font-semibold text-sm">Secure Payment</p><p class="text-xs text-slate-400 mt-0.5">100% protected</p></div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-red-600/10 rounded-xl flex items-center justify-center flex-shrink-0"><i data-lucide="headphones" class="w-6 h-6 text-red-500"></i></div>
+                    <div><p class="font-semibold text-sm">24/7 Support</p><p class="text-xs text-slate-400 mt-0.5">Always here for you</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== CATEGORIES ==================== -->
+    <section id="categories" class="py-24">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="text-sm font-semibold uppercase tracking-wide text-red-400 mb-4 block">Browse</span>
+                <h2 class="text-3xl lg:text-5xl font-semibold tracking-tight">Shop by Category</h2>
+                <p class="text-slate-400 mt-4 max-w-2xl mx-auto">Find exactly what you're looking for in our curated collections</p>
+            </div>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Category 1 — REPLACE IMAGE -->
+                <div class="category-card group relative rounded-2xl overflow-hidden cursor-pointer aspect-[3/4]" onclick="filterProducts('men')">
+                    <img src="/image3/men 0.webp" alt="Men" class="cat-img w-full h-full object-cover transition-transform duration-500">
+                    <div class="cat-overlay absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent transition-all duration-300"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-6">
+                        <h3 class="text-xl font-semibold">Men</h3>
+                        <p class="text-sm text-slate-300 mt-1">128 Products</p>
+                    </div>
+                </div>
+                <!-- Category 2 — REPLACE IMAGE -->
+                <div class="category-card group relative rounded-2xl overflow-hidden cursor-pointer aspect-[3/4]" onclick="filterProducts('women')">
+                    <img src="/image3/women0.webp" alt="Women" class="cat-img w-full h-full object-cover transition-transform duration-500">
+                    <div class="cat-overlay absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent transition-all duration-300"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-6">
+                        <h3 class="text-xl font-semibold">Women</h3>
+                        <p class="text-sm text-slate-300 mt-1">196 Products</p>
+                    </div>
+                </div>
+                <!-- Category 3 — REPLACE IMAGE -->
+                <div class="category-card group relative rounded-2xl overflow-hidden cursor-pointer aspect-[3/4]" onclick="filterProducts('accessories')">
+                    <img src="/image3/assce.webp" alt="Accessories" class="cat-img w-full h-full object-cover transition-transform duration-500">
+                    <div class="cat-overlay absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent transition-all duration-300"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-6">
+                        <h3 class="text-xl font-semibold">Accessories</h3>
+                        <p class="text-sm text-slate-300 mt-1">84 Products</p>
+                    </div>
+                </div>
+                <!-- Category 4 — REPLACE IMAGE -->
+                <div class="category-card group relative rounded-2xl overflow-hidden cursor-pointer aspect-[3/4]" onclick="filterProducts('shoes')">
+                    <img src="/image3/shoe.webp" alt="Shoes" class="cat-img w-full h-full object-cover transition-transform duration-500">
+                    <div class="cat-overlay absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent transition-all duration-300"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-6">
+                        <h3 class="text-xl font-semibold">Shoes</h3>
+                        <p class="text-sm text-slate-300 mt-1">72 Products</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== PRODUCTS ==================== -->
+    <section id="products" class="py-24 bg-[#0f172a]/50">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-12 gap-6">
+                <div>
+                    <span class="text-sm font-semibold uppercase tracking-wide text-red-400 mb-4 block">Collection</span>
+                    <h2 class="text-3xl lg:text-5xl font-semibold tracking-tight">New Arrivals</h2>
+                </div>
+                <div class="flex flex-wrap gap-2" id="filterBtns">
+                    <button onclick="filterProducts('all')" class="filter-btn active px-5 py-2 rounded-full text-sm font-medium transition-all bg-red-600 text-white" data-filter="all">All</button>
+                    <button onclick="filterProducts('men')" class="filter-btn px-5 py-2 rounded-full text-sm font-medium transition-all bg-slate-800 text-slate-300 hover:bg-slate-700" data-filter="men">Men</button>
+                    <button onclick="filterProducts('women')" class="filter-btn px-5 py-2 rounded-full text-sm font-medium transition-all bg-slate-800 text-slate-300 hover:bg-slate-700" data-filter="women">Women</button>
+                    <button onclick="filterProducts('accessories')" class="filter-btn px-5 py-2 rounded-full text-sm font-medium transition-all bg-slate-800 text-slate-300 hover:bg-slate-700" data-filter="accessories">Accessories</button>
+                    <button onclick="filterProducts('shoes')" class="filter-btn px-5 py-2 rounded-full text-sm font-medium transition-all bg-slate-800 text-slate-300 hover:bg-slate-700" data-filter="shoes">Shoes</button>
+                </div>
+            </div>
+            <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Products will be injected by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== PROMO BANNER ==================== -->
+    <section class="py-24 relative overflow-hidden">
+        <div class="absolute inset-0">
+            <!-- REPLACE: Change this banner image -->
+            <img src="/image3/off.jpg" alt="Promo" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-r from-[#020617] via-[#020617]/90 to-[#020617]/60"></div>
+        </div>
+        <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-red-600 rounded-full opacity-15 blur-[128px]"></div>
+        <div class="relative max-w-7xl mx-auto px-6 lg:px-8 text-center">
+            <span class="inline-block bg-red-600/20 text-red-400 text-sm font-semibold px-4 py-1.5 rounded-full mb-6">Limited Time Offer</span>
+            <h2 class="text-3xl lg:text-6xl font-semibold tracking-tight mb-6">Up to <span class="gradient-text">50% OFF</span></h2>
+            <p class="text-xl text-slate-400 max-w-2xl mx-auto mb-10">Don't miss our biggest sale of the season. Premium styles at unbeatable prices.</p>
+            <a href="#products" class="inline-flex bg-red-600 hover:bg-red-500 text-white px-10 py-4 rounded-xl font-semibold transition-all shadow-lg shadow-red-600/20 items-center gap-2">
+                Shop the Sale <i data-lucide="arrow-right" class="w-5 h-5"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- ==================== BESTSELLERS ==================== -->
+    <section id="bestsellers" class="py-24 bg-[#0f172a]/50">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="text-sm font-semibold uppercase tracking-wide text-red-400 mb-4 block">Trending</span>
+                <h2 class="text-3xl lg:text-5xl font-semibold tracking-tight">Bestsellers</h2>
+                <p class="text-slate-400 mt-4 max-w-2xl mx-auto">Our most loved pieces by customers worldwide</p>
+            </div>
+            <div id="bestsellersGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Injected by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== ABOUT ==================== -->
+    <section id="about" class="py-24">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="relative">
+                    <!-- REPLACE: Change this about image -->
+                    <img src="https://picsum.photos/seed/noir-about-studio/700/500.jpg" alt="About" class="rounded-2xl shadow-lg w-full">
+                    <div class="absolute -bottom-6 -right-6 bg-red-600 rounded-2xl p-6 text-center shadow-xl">
+                        <p class="text-3xl font-bold">12+</p>
+                        <p class="text-sm text-red-100">Years of Excellence</p>
+                    </div>
+                </div>
+                <div>
+                    <span class="text-sm font-semibold uppercase tracking-wide text-red-400 mb-4 block">Our Story</span>
+                    <h2 class="text-3xl lg:text-5xl font-semibold tracking-tight mb-6">Crafting Fashion<br>Since 2013</h2>
+                    <p class="text-slate-400 text-lg leading-relaxed mb-6"> Outfit Hub was born from a simple idea: clothing should make you feel confident, comfortable, and authentic. We source the finest materials and work with skilled artisans to create pieces that stand the test of time.</p>
+                    <p class="text-slate-400 leading-relaxed mb-8">Every stitch tells a story. Every fabric is chosen with care. We believe in sustainable fashion that doesn't compromise on style or quality.</p>
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 bg-red-600/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"><i data-lucide="leaf" class="w-5 h-5 text-red-500"></i></div>
+                            <div><p class="font-semibold text-sm">Sustainable</p><p class="text-xs text-slate-400 mt-1">Eco-friendly materials</p></div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 bg-red-600/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"><i data-lucide="gem" class="w-5 h-5 text-red-500"></i></div>
+                            <div><p class="font-semibold text-sm">Premium Quality</p><p class="text-xs text-slate-400 mt-1">Finest craftsmanship</p></div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 bg-red-600/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"><i data-lucide="heart-handshake" class="w-5 h-5 text-red-500"></i></div>
+                            <div><p class="font-semibold text-sm">Ethical</p><p class="text-xs text-slate-400 mt-1">Fair trade practices</p></div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 bg-red-600/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"><i data-lucide="globe" class="w-5 h-5 text-red-500"></i></div>
+                            <div><p class="font-semibold text-sm">Global</p><p class="text-xs text-slate-400 mt-1">Ships worldwide</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== REVIEWS ==================== -->
+    <section id="reviews" class="py-24 bg-[#0f172a]/50">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="text-sm font-semibold uppercase tracking-wide text-red-400 mb-4 block">Testimonials</span>
+                <h2 class="text-3xl lg:text-5xl font-semibold tracking-tight">What Customers Say</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-[#020617] border border-slate-800 rounded-2xl p-8 hover:-translate-y-2 transition-all duration-300">
+                    <div class="flex gap-1 mb-4">
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                    </div>
+                    <p class="text-slate-300 leading-relaxed mb-6">“Perfect fitting and trendy styles. This has become my go-to clothing store!”“Great designs at affordable prices. Delivery was quick and hassle-free.”</p>
+                    <div class="flex items-center gap-3">
+                        <!-- REPLACE: Customer avatar image -->
+                        <img src="https://picsum.photos/seed/customer-alex/80/80.jpg" alt="Customer" class="w-10 h-10 rounded-full object-cover">
+                        <div><p class="font-semibold text-sm">Alex Morgan</p><p class="text-xs text-slate-400">Verified Buyer</p></div>
+                    </div>
+                </div>
+                <div class="bg-[#020617] border border-slate-800 rounded-2xl p-8 hover:-translate-y-2 transition-all duration-300">
+                    <div class="flex gap-1 mb-4">
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                    </div>
+                    <p class="text-slate-300 leading-relaxed mb-6">“The collection is amazing! From casual wear to formal, everything looks premium.”“Absolutely love the fabric quality! The outfits are stylish and very comfortable.”</p>
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/customer-sarah/80/80.jpg" alt="Customer" class="w-10 h-10 rounded-full object-cover">
+                        <div><p class="font-semibold text-sm">Sarah Chen</p><p class="text-xs text-slate-400">Verified Buyer</p></div>
+                    </div>
+                </div>
+                <div class="bg-[#020617] border border-slate-800 rounded-2xl p-8 hover:-translate-y-2 transition-all duration-300">
+                    <div class="flex gap-1 mb-4">
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                    </div>
+                    <p class="text-slate-300 leading-relaxed mb-6">“Customer service is very helpful. Easy ordering and smooth experience overall.”</p>
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/customer-mike/80/80.jpg" alt="Customer" class="w-10 h-10 rounded-full object-cover">
+                        <div><p class="font-semibold text-sm">Mike Johnson</p><p class="text-xs text-slate-400">Verified Buyer</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== NEWSLETTER ==================== -->
+    <section class="py-24 relative overflow-hidden">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-600 rounded-full opacity-10 blur-[128px]"></div>
+        <div class="relative max-w-3xl mx-auto px-6 lg:px-8 text-center">
+            <span class="text-sm font-semibold uppercase tracking-wide text-red-400 mb-4 block">Newsletter</span>
+            <h2 class="text-3xl lg:text-5xl font-semibold tracking-tight mb-6">Stay in the Loop</h2>
+            <p class="text-slate-400 text-lg mb-10">Subscribe and get 15% off your first order plus early access to new drops.</p>
+            <form onsubmit="subscribeNewsletter(event)" class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+                <input type="email" id="emailInput" placeholder="Enter your email" required class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-5 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-red-500 transition-colors">
+                <button type="submit" class="bg-red-600 hover:bg-red-500 text-white px-8 py-3.5 rounded-xl font-semibold transition-all shadow-lg shadow-red-600/20 whitespace-nowrap">
+                    Subscribe
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- ==================== CONTACT ==================== -->
+    <section id="contact" class="py-24 bg-[#0f172a]/50">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16">
+                <div>
+                    <span class="text-sm font-semibold uppercase tracking-wide text-red-400 mb-4 block">Get in Touch</span>
+                    <h2 class="text-3xl lg:text-5xl font-semibold tracking-tight mb-6">Contact Us</h2>
+                    <p class="text-slate-400 text-lg leading-relaxed mb-10">Have a question about sizing, shipping, or anything else? Our team is ready to help.</p>
+                    <div class="space-y-6">
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-red-600/10 rounded-xl flex items-center justify-center flex-shrink-0"><i data-lucide="map-pin" class="w-6 h-6 text-red-500"></i></div>
+                            <div><p class="font-semibold">Visit Us</p><p class="text-slate-400 text-sm mt-1">123 Fashion Ave, New York, NY 10001</p></div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-red-600/10 rounded-xl flex items-center justify-center flex-shrink-0"><i data-lucide="mail" class="w-6 h-6 text-red-500"></i></div>
+                            <div><p class="font-semibold">Email Us</p><p class="text-slate-400 text-sm mt-1">hello@noir.com</p></div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-red-600/10 rounded-xl flex items-center justify-center flex-shrink-0"><i data-lucide="phone" class="w-6 h-6 text-red-500"></i></div>
+                            <div><p class="font-semibold">Call Us</p><p class="text-slate-400 text-sm mt-1">+1 (555) 123-4567</p></div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <form onsubmit="submitContact(event)" class="bg-[#020617] border border-slate-800 rounded-2xl p-8 space-y-5">
+                        <div class="grid sm:grid-cols-2 gap-5">
+                            <div>
+                                <label class="text-sm font-medium text-slate-300 mb-2 block">First Name</label>
+                                <input type="text" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-red-500 transition-colors" placeholder="John">
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-slate-300 mb-2 block">Last Name</label>
+                                <input type="text" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-red-500 transition-colors" placeholder="Doe">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-slate-300 mb-2 block">Email</label>
+                            <input type="email" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-red-500 transition-colors" placeholder="john@example.com">
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-slate-300 mb-2 block">Subject</label>
+                            <select class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors">
+                                <option>General Inquiry</option>
+                                <option>Order Status</option>
+                                <option>Returns & Exchange</option>
+                                <option>Size Guide</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-slate-300 mb-2 block">Message</label>
+                            <textarea rows="4" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-red-500 transition-colors resize-none" placeholder="How can we help?"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-red-600 hover:bg-red-500 text-white py-3.5 rounded-xl font-semibold transition-colors shadow-lg shadow-red-600/20">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="bg-[#0f172a] border-t border-slate-800 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
+                <div class="col-span-2 md:col-span-4 lg:col-span-1">
+                    <a href="#" class="flex items-center gap-2 mb-4">
+                        <div class="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center"><span class="text-white font-bold text-lg">N</span></div>
+                        <span class="text-xl font-semibold">Outfit Hub</span>
+                    </a>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-6">Premium clothing for the modern individual. Style that speaks volumes.</p>
+                    <div class="flex gap-3">
+                        <a href="#" class="w-10 h-10 bg-slate-800 hover:bg-red-600 rounded-lg flex items-center justify-center text-slate-400 hover:text-white transition-all"><i data-lucide="facebook" class="w-4 h-4"></i></a>
+                        <a href="#" class="w-10 h-10 bg-slate-800 hover:bg-red-600 rounded-lg flex items-center justify-center text-slate-400 hover:text-white transition-all"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+                        <a href="#" class="w-10 h-10 bg-slate-800 hover:bg-red-600 rounded-lg flex items-center justify-center text-slate-400 hover:text-white transition-all"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+                        <a href="#" class="w-10 h-10 bg-slate-800 hover:bg-red-600 rounded-lg flex items-center justify-center text-slate-400 hover:text-white transition-all"><i data-lucide="youtube" class="w-4 h-4"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-sm mb-4">Shop</h4>
+                    <ul class="space-y-2.5">
+                        <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Men</a></li>
+                        <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Women</a></li>
+                        <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Accessories</a></li>
+                        <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Shoes</a></li>
+                        <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Sale</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-sm mb-4">Company</h4>
+                    <ul class="space-y-2.5">
+                        <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Careers</a></li>
+                        <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Press</a></li>
+                        <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Blog</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-sm mb-4">Support</h4>
+                    <ul class="space-y-2.5">
+                        <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Shipping Info</a></li>
+                        <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Returns</a></li>
+                        <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Size Guide</a></li>
+                        <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-sm mb-4">Legal</h4>
+                    <ul class="space-y-2.5">
+                        <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-sm text-slate-500">&copy; 2025 NOIR. All rights reserved.</p>
+                <div class="flex items-center gap-4">
+                    <span class="text-xs text-slate-500">We accept:</span>
+                    <div class="flex gap-2">
+                        <div class="bg-slate-800 rounded-md px-3 py-1 text-xs font-semibold text-slate-300">VISA</div>
+                        <div class="bg-slate-800 rounded-md px-3 py-1 text-xs font-semibold text-slate-300">MC</div>
+                        <div class="bg-slate-800 rounded-md px-3 py-1 text-xs font-semibold text-slate-300">AMEX</div>
+                        <div class="bg-slate-800 rounded-md px-3 py-1 text-xs font-semibold text-slate-300">PAYPAL</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+    // ===== PRODUCT DATA =====
+    // TO EDIT IMAGES: Change the "image" URL for any product below
+    const products = [
+        { id:1, name:"Classic Blue Shalwar", category:"men", price:49, originalPrice:65, image:"image3/men1.webp", sizes:["S","M","L","XL"], badge:"Sale", rating:4.8, reviews:124 },
+        { id:2, name:"Slim Fit Denim Jacket", category:"men", price:129, originalPrice:null, image:"image3/men2.webp", sizes:["S","M","L","XL"], badge:"New", rating:4.9, reviews:89 },
+        { id:3, name:"Oversized Hoodie", category:"men", price:89, originalPrice:110, image:"image3/men3.webp", sizes:["M","L","XL"], badge:"Sale", rating:4.7, reviews:203 },
+        { id:4, name:"Tailored Chinos", category:"men", price:79, originalPrice:null, image:"image3/men4.webp", sizes:["28","30","32","34","36"], badge:null, rating:4.6, reviews:67 },
+        { id:5, name:"Silk Slip Dress", category:"women", price:159, originalPrice:null, image:"image3/women1.webp", sizes:["XS","S","M","L"], badge:"New", rating:5.0, reviews:56 },
+        { id:6, name:"Knit Sweater", category:"women", price:99, originalPrice:130, image:"image3/women2.webp", sizes:["S","M","L"], badge:"Sale", rating:4.8, reviews:142 },
+        { id:7, name:"High-Waist Trousers", category:"women", price:89, originalPrice:null, image:"image3/women3.webp", sizes:["XS","S","M","L","XL"], badge:null, rating:4.7, reviews:98 },
+        { id:8, name:"Crop Blazer", category:"women", price:139, originalPrice:null, image:"image3/women4.webp", sizes:["XS","S","M","L"], badge:"New", rating:4.9, reviews:73 },
+        { id:9, name:"Leather Belt", category:"accessories", price:45, originalPrice:null, image:"image3/acc1.webp", sizes:["S","M","L"], badge:null, rating:4.5, reviews:210 },
+        { id:10, name:"Minimal Watch", category:"accessories", price:199, originalPrice:249, image:"image3/acc2.jpg", sizes:["One Size"], badge:"Sale", rating:4.9, reviews:87 },
+        { id:11, name:"Canvas Tote Bag", category:"accessories", price:59, originalPrice:null, image:"image3/acc3.avif", sizes:["One Size"], badge:"New", rating:4.6, reviews:134 },
+        { id:12, name:"Retro Sneakers", category:"shoes", price:149, originalPrice:null, image:"image3/shoe1.avif", sizes:["8","9","10","11","12"], badge:"Bestseller", rating:4.8, reviews:312 },
+        { id:13, name:"Chelsea Boots", category:"shoes", price:189, originalPrice:220, image:"image3/shoe2.png", sizes:["8","9","10","11","12"], badge:"Sale", rating:4.9, reviews:178 },
+        { id:14, name:"Running Shoes", category:"shoes", price:129, originalPrice:null, image:"image3/shoe3.webp", sizes:["7","8","9","10","11","12"], badge:null, rating:4.7, reviews:95 },
+        { id:15, name:"Linen Shirt", category:"men", price:69, originalPrice:null, image:"image3/men5.webp", sizes:["S","M","L","XL"], badge:null, rating:4.6, reviews:88 },
+    ];
+
+    const bestsellerIds = [3, 5, 12, 13, 8, 10];
+
+    // ===== STATE =====
+    let cart = [];
+    let wishlist = [];
+    let currentFilter = 'all';
+
+    // ===== TOAST =====
+    function showToast(message, type='success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'alert-circle' : 'info';
+        const color = type === 'success' ? 'green' : type === 'error' ? 'red' : 'blue';
+        toast.className = 'toast-in flex items-center gap-3 bg-slate-900 border border-slate-700 rounded-xl px-5 py-3.5 shadow-2xl min-w-[280px]';
+        toast.innerHTML = `<i data-lucide="${icon}" class="w-5 h-5 text-${color}-400 flex-shrink-0"></i><span class="text-sm font-medium text-slate-200">${message}</span>`;
+        container.appendChild(toast);
+        lucide.createIcons({ nodes: [toast] });
+        setTimeout(() => { toast.classList.remove('toast-in'); toast.classList.add('toast-out'); setTimeout(() => toast.remove(), 300); }, 3000);
+    }
+
+    // ===== RENDER PRODUCTS =====
+    function renderProducts(filter='all') {
+        currentFilter = filter;
+        const grid = document.getElementById('productsGrid');
+        const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
+        
+        // Update filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            if (btn.dataset.filter === filter) {
+                btn.className = 'filter-btn active px-5 py-2 rounded-full text-sm font-medium transition-all bg-red-600 text-white';
+            } else {
+                btn.className = 'filter-btn px-5 py-2 rounded-full text-sm font-medium transition-all bg-slate-800 text-slate-300 hover:bg-slate-700';
+            }
+        });
+
+        grid.innerHTML = filtered.map((p, i) => `
+            <div class="product-card group bg-[#020617] border border-slate-800 rounded-2xl overflow-hidden hover:-translate-y-2 transition-all duration-300 animate-slideInUp" style="animation-delay:${i * 0.05}s">
+                <div class="relative overflow-hidden aspect-[3/4]">
+                    <img src="${p.image}" alt="${p.name}" class="product-img w-full h-full object-cover transition-transform duration-500">
+                    <div class="product-overlay absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300"></div>
+                    ${p.badge ? `<span class="absolute top-3 left-3 ${p.badge==='Sale'?'bg-red-600':p.badge==='New'?'bg-blue-600':'bg-amber-600'} text-white text-xs font-semibold px-3 py-1 rounded-full">${p.badge}</span>` : ''}
+                    <div class="absolute top-3 right-3 flex flex-col gap-2">
+                        <button onclick="toggleWishlistItem(${p.id})" class="w-9 h-9 bg-black/50 backdrop-blur rounded-full flex items-center justify-center text-white hover:bg-red-600 transition-colors">
+                            <i data-lucide="heart" class="w-4 h-4 ${wishlist.includes(p.id)?'fill-red-500 text-red-500':''}"></i>
+                        </button>
+                    </div>
+                    <div class="absolute bottom-3 left-3 right-3 flex gap-2 quick-view-btn transform translate-y-4 opacity-0 transition-all duration-300">
+                        <button onclick="openQuickView(${p.id})" class="flex-1 bg-white text-black py-2.5 rounded-lg text-sm font-semibold hover:bg-slate-200 transition-colors">Quick View</button>
+                        <button onclick="addToCart(${p.id})" class="w-10 bg-red-600 text-white rounded-lg flex items-center justify-center hover:bg-red-500 transition-colors">
+                            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-slate-500 uppercase tracking-wide mb-1">${p.category}</p>
+                    <h3 class="font-semibold text-sm mb-2 group-hover:text-red-400 transition-colors">${p.name}</h3>
+                    <div class="flex items-center gap-1 mb-2">
+                        <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-yellow-400"></i>
+                        <span class="text-xs text-slate-400">${p.rating} (${p.reviews})</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-lg">$${p.price}</span>
+                        ${p.originalPrice ? `<span class="text-sm text-slate-500 line-through">$${p.originalPrice}</span>` : ''}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        lucide.createIcons();
+    }
+
+    function renderBestsellers() {
+        const grid = document.getElementById('bestsellersGrid');
+        const items = bestsellerIds.map(id => products.find(p => p.id === id));
+        grid.innerHTML = items.map((p, i) => `
+            <div class="product-card group bg-[#020617] border border-slate-800 rounded-2xl overflow-hidden hover:-translate-y-2 transition-all duration-300 animate-slideInUp" style="animation-delay:${i * 0.1}s">
+                <div class="relative overflow-hidden aspect-[4/3]">
+                    <img src="${p.image}" alt="${p.name}" class="product-img w-full h-full object-cover transition-transform duration-500">
+                    <div class="product-overlay absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300"></div>
+                    ${p.badge ? `<span class="absolute top-3 left-3 ${p.badge==='Sale'?'bg-red-600':p.badge==='New'?'bg-blue-600':'bg-amber-600'} text-white text-xs font-semibold px-3 py-1 rounded-full">${p.badge}</span>` : ''}
+                    <div class="absolute top-3 right-3">
+                        <button onclick="toggleWishlistItem(${p.id})" class="w-9 h-9 bg-black/50 backdrop-blur rounded-full flex items-center justify-center text-white hover:bg-red-600 transition-colors">
+                            <i data-lucide="heart" class="w-4 h-4 ${wishlist.includes(p.id)?'fill-red-500 text-red-500':''}"></i>
+                        </button>
+                    </div>
+                    <div class="absolute bottom-3 left-3 right-3 flex gap-2 quick-view-btn transform translate-y-4 opacity-0 transition-all duration-300">
+                        <button onclick="openQuickView(${p.id})" class="flex-1 bg-white text-black py-2.5 rounded-lg text-sm font-semibold hover:bg-slate-200 transition-colors">Quick View</button>
+                        <button onclick="addToCart(${p.id})" class="w-10 bg-red-600 text-white rounded-lg flex items-center justify-center hover:bg-red-500 transition-colors">
+                            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-slate-500 uppercase tracking-wide mb-1">${p.category}</p>
+                    <h3 class="font-semibold mb-2 group-hover:text-red-400 transition-colors">${p.name}</h3>
+                    <div class="flex items-center gap-1 mb-2">
+                        <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-yellow-400"></i>
+                        <span class="text-xs text-slate-400">${p.rating} (${p.reviews})</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xl">$${p.price}</span>
+                            ${p.originalPrice ? `<span class="text-sm text-slate-500 line-through">$${p.originalPrice}</span>` : ''}
+                        </div>
+                        <button onclick="addToCart(${p.id})" class="bg-slate-800 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">Add to Bag</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        lucide.createIcons();
+    }
+
+    // ===== FILTER =====
+    function filterProducts(cat) {
+        renderProducts(cat);
+        document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ===== CART =====
+    function addToCart(id, size=null) {
+        const product = products.find(p => p.id === id);
+        if (!product) return;
+        const selectedSize = size || product.sizes[0];
+        const existing = cart.find(item => item.id === id && item.size === selectedSize);
+        if (existing) { existing.qty++; }
+        else { cart.push({ id, name: product.name, price: product.price, image: product.image, size: selectedSize, qty: 1 }); }
+        updateCartUI();
+        showToast(`${product.name} added to bag`);
+    }
+
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        updateCartUI();
+        renderCartItems();
+    }
+
+    function updateCartQty(index, delta) {
+        cart[index].qty += delta;
+        if (cart[index].qty <= 0) cart.splice(index, 1);
+        updateCartUI();
+        renderCartItems();
+    }
+
+    function updateCartUI() {
+        const count = cart.reduce((sum, item) => sum + item.qty, 0);
+        const countEl = document.getElementById('cartCount');
+        const itemCountEl = document.getElementById('cartItemCount');
+        if (count > 0) { countEl.textContent = count; countEl.classList.remove('hidden'); } else { countEl.classList.add('hidden'); }
+        itemCountEl.textContent = count;
+        const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+        document.getElementById('cartSubtotal').textContent = `$${subtotal.toFixed(2)}`;
+        document.getElementById('cartTotal').textContent = `$${subtotal.toFixed(2)}`;
+        document.getElementById('cartFooter').classList.toggle('hidden', cart.length === 0);
+    }
+
+    function renderCartItems() {
+        const container = document.getElementById('cartItems');
+        if (cart.length === 0) {
+            container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center"><i data-lucide="shopping-bag" class="w-16 h-16 text-slate-700 mb-4"></i><p class="text-slate-400 text-lg mb-2">Your bag is empty</p><p class="text-slate-500 text-sm">Add some items to get started</p></div>`;
+            lucide.createIcons({ nodes: [container] });
+            return;
+        }
+        container.innerHTML = cart.map((item, i) => `
+            <div class="flex gap-4 bg-slate-900/50 rounded-xl p-3">
+                <img src="${item.image}" alt="${item.name}" class="w-20 h-24 object-cover rounded-lg flex-shrink-0">
+                <div class="flex-1 min-w-0">
+                    <h4 class="font-semibold text-sm truncate">${item.name}</h4>
+                    <p class="text-xs text-slate-400 mt-0.5">Size: ${item.size}</p>
+                    <p class="text-sm font-bold text-red-400 mt-1">$${item.price}</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <div class="flex items-center border border-slate-700 rounded-lg">
+                            <button onclick="updateCartQty(${i},-1)" class="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-white transition-colors"><i data-lucide="minus" class="w-3 h-3"></i></button>
+                            <span class="w-8 h-7 flex items-center justify-center text-sm font-medium">${item.qty}</span>
+                            <button onclick="updateCartQty(${i},1)" class="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-white transition-colors"><i data-lucide="plus" class="w-3 h-3"></i></button>
+                        </div>
+                        <button onclick="removeFromCart(${i})" class="text-slate-500 hover:text-red-400 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        lucide.createIcons({ nodes: [container] });
+    }
+
+    function toggleCart() {
+        const sidebar = document.getElementById('cartSidebar');
+        sidebar.classList.toggle('hidden');
+        renderCartItems();
+        document.body.style.overflow = sidebar.classList.contains('hidden') ? '' : 'hidden';
+    }
+
+    function checkout() {
+        if (cart.length === 0) return;
+        showToast('Proceeding to checkout...', 'info');
+        setTimeout(() => {
+            showToast('Order placed successfully! 🎉');
+            cart = [];
+            updateCartUI();
+            toggleCart();
+        }, 1500);
+    }
+
+    // ===== WISHLIST =====
+    function toggleWishlistItem(id) {
+        const idx = wishlist.indexOf(id);
+        if (idx > -1) { wishlist.splice(idx, 1); showToast('Removed from wishlist', 'info'); }
+        else { wishlist.push(id); showToast('Added to wishlist'); }
+        updateWishlistUI();
+        renderProducts(currentFilter);
+        renderBestsellers();
+    }
+
+    function updateWishlistUI() {
+        const countEl = document.getElementById('wishlistCount');
+        const itemCountEl = document.getElementById('wishlistItemCount');
+        if (wishlist.length > 0) { countEl.textContent = wishlist.length; countEl.classList.remove('hidden'); } else { countEl.classList.add('hidden'); }
+        itemCountEl.textContent = wishlist.length;
+    }
+
+    function renderWishlistItems() {
+        const container = document.getElementById('wishlistItems');
+        if (wishlist.length === 0) {
+            container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center"><i data-lucide="heart" class="w-16 h-16 text-slate-700 mb-4"></i><p class="text-slate-400 text-lg mb-2">Wishlist is empty</p><p class="text-slate-500 text-sm">Save items you love</p></div>`;
+            lucide.createIcons({ nodes: [container] });
+            return;
+        }
+        container.innerHTML = wishlist.map(id => {
+            const p = products.find(pr => pr.id === id);
+            return `
+            <div class="flex gap-4 bg-slate-900/50 rounded-xl p-3">
+                <img src="${p.image}" alt="${p.name}" class="w-20 h-24 object-cover rounded-lg flex-shrink-0">
+                <div class="flex-1 min-w-0">
+                    <h4 class="font-semibold text-sm truncate">${p.name}</h4>
+                    <p class="text-xs text-slate-400 mt-0.5">${p.category}</p>
+                    <p class="text-sm font-bold text-red-400 mt-1">$${p.price}</p>
+                    <div class="flex items-center gap-2 mt-2">
+                        <button onclick="addToCart(${p.id});toggleWishlist();" class="flex-1 bg-red-600 hover:bg-red-500 text-white py-1.5 rounded-lg text-xs font-semibold transition-colors">Add to Bag</button>
+                        <button onclick="toggleWishlistItem(${p.id});renderWishlistItems();" class="w-8 h-8 bg-slate-800 hover:bg-red-600 rounded-lg flex items-center justify-center text-slate-400 hover:text-white transition-colors"><i data-lucide="x" class="w-3 h-3"></i></button>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+        lucide.createIcons({ nodes: [container] });
+    }
+
+    function toggleWishlist() {
+        const sidebar = document.getElementById('wishlistSidebar');
+        sidebar.classList.toggle('hidden');
+        renderWishlistItems();
+        document.body.style.overflow = sidebar.classList.contains('hidden') ? '' : 'hidden';
+    }
+
+    // ===== QUICK VIEW =====
+    function openQuickView(id) {
+        const p = products.find(pr => pr.id === id);
+        if (!p) return;
+        const modal = document.getElementById('quickViewModal');
+        const content = document.getElementById('quickViewContent');
+        content.innerHTML = `
+            <button onclick="closeQuickView()" class="absolute top-4 right-4 z-10 w-10 h-10 bg-slate-800 hover:bg-red-600 rounded-full flex items-center justify-center text-white transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <div class="grid md:grid-cols-2 gap-0">
+                <div class="aspect-square md:aspect-auto">
+                    <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none">
+                </div>
+                <div class="p-8 flex flex-col justify-center">
+                    <span class="text-xs uppercase tracking-wide text-red-400 font-semibold mb-2">${p.category}</span>
+                    <h2 class="text-2xl font-semibold mb-3">${p.name}</h2>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="flex gap-0.5">${Array(5).fill(0).map((_,i) => `<i data-lucide="star" class="w-4 h-4 ${i < Math.floor(p.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-slate-600'}"></i>`).join('')}</div>
+                        <span class="text-sm text-slate-400">${p.rating} (${p.reviews} reviews)</span>
+                    </div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="text-3xl font-bold">$${p.price}</span>
+                        ${p.originalPrice ? `<span class="text-lg text-slate-500 line-through">$${p.originalPrice}</span><span class="bg-red-600/20 text-red-400 text-sm font-semibold px-2 py-0.5 rounded-full">-${Math.round((1-p.price/p.originalPrice)*100)}%</span>` : ''}
+                    </div>
+                    <div class="mb-6">
+                        <p class="text-sm font-medium text-slate-300 mb-3">Select Size</p>
+                        <div class="flex flex-wrap gap-2" id="qvSizes">
+                            ${p.sizes.map((s,i) => `<button onclick="selectQVSize(this)" class="size-btn px-4 py-2 border border-slate-700 rounded-lg text-sm font-medium hover:border-red-500 transition-colors ${i===0?'active':''}">${s}</button>`).join('')}
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <p class="text-sm font-medium text-slate-300 mb-3">Quantity</p>
+                        <div class="inline-flex items-center border border-slate-700 rounded-lg">
+                            <button onclick="qvQtyChange(-1)" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"><i data-lucide="minus" class="w-4 h-4"></i></button>
+                            <span id="qvQty" class="w-12 h-10 flex items-center justify-center text-sm font-semibold">1</span>
+                            <button onclick="qvQtyChange(1)" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="qvAddToCart(${p.id})" class="flex-1 bg-red-600 hover:bg-red-500 text-white py-3.5 rounded-xl font-semibold transition-all shadow-lg shadow-red-600/20 flex items-center justify-center gap-2">
+                            <i data-lucide="shopping-bag" class="w-5 h-5"></i> Add to Bag
+                        </button>
+                        <button onclick="toggleWishlistItem(${p.id});closeQuickView();" class="w-14 border border-slate-700 hover:border-red-500 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-400 transition-colors">
+                            <i data-lucide="heart" class="w-5 h-5 ${wishlist.includes(p.id)?'fill-red-500 text-red-500':''}"></i>
+                        </button>
+                    </div>
+                    <div class="mt-6 pt-6 border-t border-slate-800 space-y-2">
+                        <div class="flex items-center gap-2 text-sm text-slate-400"><i data-lucide="truck" class="w-4 h-4"></i> Free shipping on orders over $99</div>
+                        <div class="flex items-center gap-2 text-sm text-slate-400"><i data-lucide="refresh-cw" class="w-4 h-4"></i> 30-day easy returns</div>
+                        <div class="flex items-center gap-2 text-sm text-slate-400"><i data-lucide="shield-check" class="w-4 h-4"></i> Secure checkout</div>
+                    </div>
+                </div>
+            </div>
+        `;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+        lucide.createIcons({ nodes: [content] });
+        window._qvQty = 1;
+    }
+
+    function closeQuickView() {
+        const modal = document.getElementById('quickViewModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = '';
+    }
+
+    function selectQVSize(btn) {
+        btn.closest('#qvSizes').querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    function qvQtyChange(delta) {
+        window._qvQty = Math.max(1, (window._qvQty || 1) + delta);
+        document.getElementById('qvQty').textContent = window._qvQty;
+    }
+
+    function qvAddToCart(id) {
+        const sizeBtn = document.querySelector('#qvSizes .size-btn.active');
+        const size = sizeBtn ? sizeBtn.textContent : null;
+        const qty = window._qvQty || 1;
+        const product = products.find(p => p.id === id);
+        const existing = cart.find(item => item.id === id && item.size === size);
+        if (existing) { existing.qty += qty; }
+        else { cart.push({ id, name: product.name, price: product.price, image: product.image, size, qty }); }
+        updateCartUI();
+        showToast(`${product.name} (×${qty}) added to bag`);
+        closeQuickView();
+    }
+
+    // ===== SEARCH =====
+    function toggleSearch() {
+        const overlay = document.getElementById('searchOverlay');
+        overlay.classList.toggle('hidden');
+        if (!overlay.classList.contains('hidden')) {
+            document.getElementById('searchInput').focus();
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+            document.getElementById('searchResults').innerHTML = '';
+            document.getElementById('searchInput').value = '';
+        }
+    }
+
+    function handleSearch(query) {
+        const container = document.getElementById('searchResults');
+        if (!query.trim()) { container.innerHTML = ''; return; }
+        const results = products.filter(p => p.name.toLowerCase().includes(query.toLowerCase()) || p.category.toLowerCase().includes(query.toLowerCase()));
+        if (results.length === 0) {
+            container.innerHTML = `<p class="text-slate-400 text-center py-8">No products found for "${query}"</p>`;
+            return;
+        }
+        container.innerHTML = results.map(p => `
+            <div class="flex items-center gap-4 bg-slate-900/80 rounded-xl p-3 cursor-pointer hover:bg-slate-800 transition-colors" onclick="toggleSearch();openQuickView(${p.id})">
+                <img src="${p.image}" alt="${p.name}" class="w-14 h-14 object-cover rounded-lg">
+                <div class="flex-1">
+                    <p class="font-semibold text-sm">${p.name}</p>
+                    <p class="text-xs text-slate-400 capitalize">${p.category}</p>
+                </div>
+                <span class="font-bold text-red-400">$${p.price}</span>
+            </div>
+        `).join('');
+    }
+
+    // ===== MOBILE MENU =====
+    function toggleMobileMenu() {
+        const menu = document.getElementById('mobileMenu');
+        menu.classList.toggle('hidden');
+        document.body.style.overflow = menu.classList.contains('hidden') ? '' : 'hidden';
+    }
+
+    // ===== NEWSLETTER =====
+    function subscribeNewsletter(e) {
+        e.preventDefault();
+        const email = document.getElementById('emailInput').value;
+        showToast(`Subscribed with ${email}! Check your inbox for 15% off.`);
+        document.getElementById('emailInput').value = '';
+    }
+
+    // ===== CONTACT FORM =====
+    function submitContact(e) {
+        e.preventDefault();
+        showToast('Message sent successfully! We\'ll get back to you soon.');
+        e.target.reset();
+    }
+
+    // ===== NAVBAR SCROLL =====
+    window.addEventListener('scroll', () => {
+        const nav = document.getElementById('navbar');
+        if (window.scrollY > 50) {
+            nav.style.background = 'rgba(2,6,23,0.95)';
+            nav.style.boxShadow = '0 4px 30px rgba(0,0,0,0.3)';
+        } else {
+            nav.style.background = 'rgba(2,6,23,0.8)';
+            nav.style.boxShadow = 'none';
+        }
+    });
+
+    // ===== CLOSE MODALS ON ESC =====
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            const search = document.getElementById('searchOverlay');
+            const cartS = document.getElementById('cartSidebar');
+            const wishS = document.getElementById('wishlistSidebar');
+            const qv = document.getElementById('quickViewModal');
+            if (!search.classList.contains('hidden')) toggleSearch();
+            if (!cartS.classList.contains('hidden')) toggleCart();
+            if (!wishS.classList.contains('hidden')) toggleWishlist();
+            if (!qv.classList.contains('hidden')) closeQuickView();
+        }
+    });
+
+    // ===== CLOSE QUICK VIEW ON BACKDROP CLICK =====
+    document.getElementById('quickViewModal').addEventListener('click', e => {
+        if (e.target === document.getElementById('quickViewModal')) closeQuickView();
+    });
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+        renderProducts('all');
+        renderBestsellers();
+    });
+    </script>
+</body>
+</html>
